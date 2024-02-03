@@ -1,0 +1,32 @@
+﻿<Page x:Class="Cari_kayıt_Programı.Filtre_TR"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Cari_kayıt_Programı"
+      mc:Ignorable="d" 
+      d:DesignHeight="560" d:DesignWidth="426"
+      Title="Filtre_TR">
+
+    <Grid>
+        <ListBox x:Name="FiltreListbox" Margin="10,58,10,0" Height="387" VerticalAlignment="Top">
+            <CheckBox Content="ID" IsChecked="True" IsEnabled="False"/>
+            <CheckBox Content="İşletme Adı" IsChecked="True" IsEnabled="False"/>
+            <CheckBox Content="Vergi Dairesi" IsChecked="True"/>
+            <CheckBox Content="Vergi No" IsChecked="True"/>
+            <CheckBox Content="Banka" IsChecked="True"/>
+            <CheckBox Content="Hesap No / IBAN" IsChecked="True"/>
+            <CheckBox Content="Adres" IsChecked="True"/>
+            <CheckBox Content="E-Posta 1" IsChecked="True"/>
+            <CheckBox Content="E-Posta 2" IsChecked="True"/>
+            <CheckBox Content="Telefon 1" IsChecked="True"/>
+            <CheckBox Content="Telefon 2" IsChecked="True"/>
+        </ListBox>
+        <Button x:Name="HepsiniSecButton" Content="Hepsini Seç" Margin="10,450,0,0" HorizontalAlignment="Left" Width="100" Height="26" VerticalAlignment="Top" Click="HepsiniSecButton_Click"/>
+        <Button x:Name="HicbiriniSecmeButton" Content="Hiçbirini Seçme" Margin="115,450,0,0" HorizontalAlignment="Left" Width="100" Height="26" VerticalAlignment="Top" Click="HicbiriniSecmeButton_Click"/>
+        <Label Content="Lütfen filtrelemek istediklerinizi seçiniz:" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="FiltreleButton" Content="Filtrele" HorizontalAlignment="Right" Margin="0,0,75,10" VerticalAlignment="Bottom" Height="26" Width="60" Click="FiltreleButton_Click"/>
+        <Button x:Name="VazgecButton" Content="Vazgeç" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="26" Width="60" Click="VazgecButton_Click"/>
+
+    </Grid>
+</Page>

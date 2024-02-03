@@ -1,0 +1,8 @@
+﻿<Window x:Class="CariKayitProgrami.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Cari Kayit Programı" Height="599" Width="956" WindowStartupLocation="CenterScreen" MinWidth="550" MinHeight="460" Loaded="Window_Loaded">
+
+    <Frame x:Name="Main" Content="Frame" NavigationUIVisibility="Hidden"/>
+
+</Window>

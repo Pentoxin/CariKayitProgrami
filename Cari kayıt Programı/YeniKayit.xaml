@@ -1,0 +1,10 @@
+﻿<Window x:Class="Cari_kayıt_Programı.YeniKayit"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Cari_kayıt_Programı"
+        mc:Ignorable="d"
+        Title="YeniKayit" Height="450" Width="450" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Frame x:Name="YeniKayitFrame" Content="Frame"/>
+</Window>
