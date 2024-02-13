@@ -5,17 +5,17 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Cari_kayıt_Programı"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="Main_TR" Loaded="Window_Loaded" MinWidth="550" MinHeight="460">
+      d:DesignHeight="630" d:DesignWidth="950"
+      Title="Main_TR" Loaded="Window_Loaded" MinWidth="650" MinHeight="460">
 
     <Grid>
-        <Label Margin="10,10,0,0" Content="İşletme Adı:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
-        <TextBox x:Name="isletmeadiTextBox" Grid.Row="0" Margin="160,10,95,0" Height="26" VerticalAlignment="Top" TabIndex="1" MaxLength="100" IsReadOnly="True"/>
-        <Label Margin="10,134,0,0" Content="Adres:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
-        <TextBox x:Name="adresTextBox" Margin="160,134,95,0" Height="26" VerticalAlignment="Top" TabIndex="6" MaxLength="100" IsReadOnly="True"/>
-        <Label Margin="10,196,0,0" Content="Telefon 1:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
-        <TextBox x:Name="telefon1TextBox" Margin="160,196,0,0" Height="26" VerticalAlignment="Top" TabIndex="9" MaxLength="20" HorizontalAlignment="Left" Width="255" MaxWidth="255" IsReadOnly="True"/>
-        <Button x:Name="KaydetButton" Margin="0,41,10,0" Click="KaydetButton_Click" Height="26" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Right" Width="80" Padding="1,1,1,1">
+        <Label Margin="10,41,0,0" Content="İşletme Adı:" HorizontalAlignment="Left" Width="145" Height="26" VerticalAlignment="Top"/>
+        <TextBox x:Name="isletmeadiTextBox" Grid.Row="0" Margin="160,41,95,0" TabIndex="1" MaxLength="100" IsReadOnly="True" Height="26" VerticalAlignment="Top"/>
+        <Label Margin="10,165,0,0" Content="Adres:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
+        <TextBox x:Name="adresTextBox" Margin="160,165,95,0" Height="26" VerticalAlignment="Top" TabIndex="6" MaxLength="100" IsReadOnly="True"/>
+        <Label Margin="10,227,0,0" Content="Telefon 1:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
+        <TextBox x:Name="telefon1TextBox" Margin="160,227,0,0" Height="26" VerticalAlignment="Top" TabIndex="9" MaxLength="20" HorizontalAlignment="Left" Width="255" MaxWidth="255" IsReadOnly="True"/>
+        <Button x:Name="KaydetButton" Margin="0,72,10,0" Click="KaydetButton_Click" Height="26" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Right" Width="80" Padding="1,1,1,1">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/arti-image.png" Width="18" Height="18"/>
@@ -23,8 +23,8 @@
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button x:Name="ListeleButton" Margin="0,103,10,0" Content="Listele" Click="ListeleButton_Click" Height="26" VerticalAlignment="Top" TabIndex="16" HorizontalAlignment="Right" Width="80"/>
-        <Button x:Name="DeleteButton" Margin="0,72,10,0" Click="DeleteButton_Click" Height="26" VerticalAlignment="Top" TabIndex="17" HorizontalAlignment="Right" Width="80">
+        <Button x:Name="ListeleButton" Margin="0,134,10,0" Content="Listele" Click="ListeleButton_Click" Height="26" VerticalAlignment="Top" TabIndex="16" HorizontalAlignment="Right" Width="80"/>
+        <Button x:Name="DeleteButton" Margin="0,103,10,0" Click="DeleteButton_Click" Height="26" VerticalAlignment="Top" TabIndex="17" HorizontalAlignment="Right" Width="80">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/eksi-image.png" Width="18" Height="18"/>
@@ -32,30 +32,32 @@
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button x:Name="Updatebutton" Margin="0,134,10,0" Content="Değiştir" Click="Updatebutton_Click" Height="26" VerticalAlignment="Top" TabIndex="18" HorizontalAlignment="Right" Width="80"/>
-        <TextBox x:Name="txtSearch" Margin="10,227,474,0" Height="26" VerticalAlignment="Top" TabIndex="11" Tag="" TextChanged="txtSearch_TextChanged" />
-        <DataGrid x:Name="dataGrid" Margin="10,258,10,10" SelectionChanged="DataGrid_SelectionChanged" IsReadOnly="True"/>
-        <Label Grid.Column="0" Margin="10,41,0,0" Content="Vergi Dairesi:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
-        <TextBox x:Name="vergidairesiTextBox" Margin="160,41,95,0" Height="26" VerticalAlignment="Top" TabIndex="2" MaxLength="40" RenderTransformOrigin="0.5,0.5" IsReadOnly="True"/>
-        <Label Grid.Column="0" Margin="10,72,0,0" Content="Vergi No:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
-        <TextBox x:Name="verginoTextBox" Margin="160,72,95,0" Height="26" VerticalAlignment="Top" TabIndex="3" MaxLength="15" IsReadOnly="True"/>
-        <Label Grid.Column="0" Margin="420,196,0,0" Content="Telefon 2:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="144"/>
-        <TextBox x:Name="telefon2TextBox" Margin="565,196,95,0" Height="26" VerticalAlignment="Top" TabIndex="10" MaxLength="20" IsReadOnly="True"/>
-        <Button x:Name="XButton" Content="X" Click="XButton_Click" Margin="0,227,450,0" Height="26" VerticalAlignment="Top" Width="25" HorizontalAlignment="Right" TabIndex="12" FontWeight="Bold" RenderTransformOrigin="-0.068,0.502"/>
-        <Button x:Name="YazdırButton" Margin="0,165,10,0" Content="Yazdır" Click="YazdırButton_Click" Height="26" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Right" Width="80"/>
-        <Label Grid.Column="0" Margin="420,103,0,0" Content="Hesap No / IBAN:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="146"/>
-        <TextBox x:Name="bankaTextBox" Margin="160,103,0,0" Height="26" VerticalAlignment="Top" TabIndex="4" MaxLength="30" HorizontalAlignment="Left" Width="255" MaxWidth="255" IsReadOnly="True"/>
-        <Label Grid.Column="0" Margin="10,103,0,0" Content="Banka:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
-        <Label Grid.Column="0" Margin="10,165,0,0" Content="E-Posta 1:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
-        <Label Grid.Column="0" Margin="420,165,0,0" Content="E-Posta 2:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
-        <TextBox x:Name="mail1TextBox" Margin="160,165,0,0" Height="26" VerticalAlignment="Top" TabIndex="7" MaxLength="40" HorizontalAlignment="Left" Width="255" MaxWidth="255" IsReadOnly="True"/>
-        <TextBox x:Name="mail2TextBox" Margin="565,165,95,0" Height="26" VerticalAlignment="Top" TabIndex="8" MaxLength="40" IsReadOnly="True"/>
-        <ComboBox x:Name="DilComboBox" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="80" Height="26" SelectionChanged="DilComboBox_SelectionChanged" SelectedIndex="0" IsEnabled="False">
+        <Button x:Name="Updatebutton" Margin="0,165,10,0" Content="Değiştir" Click="Updatebutton_Click" Height="26" VerticalAlignment="Top" TabIndex="18" HorizontalAlignment="Right" Width="80"/>
+        <TextBox x:Name="txtSearch" Margin="10,258,474,0" Height="26" VerticalAlignment="Top" TabIndex="11" Tag="" TextChanged="txtSearch_TextChanged" />
+        <DataGrid x:Name="dataGrid" Margin="10,289,10,10" SelectionChanged="DataGrid_SelectionChanged" IsReadOnly="True"/>
+        <Label Grid.Column="0" Margin="10,72,0,0" Content="Vergi Dairesi:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
+        <TextBox x:Name="vergidairesiTextBox" Margin="160,72,95,0" Height="26" VerticalAlignment="Top" TabIndex="2" MaxLength="40" RenderTransformOrigin="0.5,0.5" IsReadOnly="True"/>
+        <Label Grid.Column="0" Margin="10,103,0,0" Content="Vergi No:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
+        <TextBox x:Name="verginoTextBox" Margin="160,103,95,0" Height="26" VerticalAlignment="Top" TabIndex="3" MaxLength="15" IsReadOnly="True"/>
+        <Label Grid.Column="0" Margin="420,227,0,0" Content="Telefon 2:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="144"/>
+        <TextBox x:Name="telefon2TextBox" Margin="565,227,95,0" Height="26" VerticalAlignment="Top" TabIndex="10" MaxLength="20" IsReadOnly="True"/>
+        <Button x:Name="XButton" Content="X" Click="XButton_Click" Margin="0,258,450,0" Height="26" VerticalAlignment="Top" Width="25" HorizontalAlignment="Right" TabIndex="12" FontWeight="Bold" RenderTransformOrigin="-0.068,0.502"/>
+        <Button x:Name="YazdırButton" Margin="0,196,10,0" Content="Yazdır" Click="YazdırButton_Click" Height="26" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Right" Width="80"/>
+        <Label Grid.Column="0" Margin="420,134,0,0" Content="Hesap No / IBAN:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="146"/>
+        <TextBox x:Name="bankaTextBox" Margin="160,134,0,0" Height="26" VerticalAlignment="Top" TabIndex="4" MaxLength="30" HorizontalAlignment="Left" Width="255" MaxWidth="255" IsReadOnly="True"/>
+        <Label Grid.Column="0" Margin="10,134,0,0" Content="Banka:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
+        <Label Grid.Column="0" Margin="10,196,0,0" Content="E-Posta 1:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
+        <Label Grid.Column="0" Margin="420,196,0,0" Content="E-Posta 2:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145"/>
+        <TextBox x:Name="mail1TextBox" Margin="160,196,0,0" Height="26" VerticalAlignment="Top" TabIndex="7" MaxLength="40" HorizontalAlignment="Left" Width="255" MaxWidth="255" IsReadOnly="True"/>
+        <TextBox x:Name="mail2TextBox" Margin="565,196,95,0" Height="26" VerticalAlignment="Top" TabIndex="8" MaxLength="40" IsReadOnly="True"/>
+        <ComboBox x:Name="DilComboBox" HorizontalAlignment="Right" Margin="0,41,10,0" VerticalAlignment="Top" Width="80" Height="26" SelectionChanged="DilComboBox_SelectionChanged" SelectedIndex="0" IsEnabled="False">
             <ComboBoxItem Content="Türkçe"/>
             <ComboBoxItem Content="English"/>
         </ComboBox>
-        <Button x:Name="FiltreleButton" Content="Filtrele" HorizontalAlignment="Right" Margin="0,227,365,0" VerticalAlignment="Top" Width="80" Height="26" Click="FiltreleButton_Click"/>
-        <TextBox x:Name="hesapnoTextBox" Margin="565,103,95,0" Height="26" VerticalAlignment="Top" TabIndex="8" MaxLength="40" IsReadOnly="True"/>
+        <Button x:Name="FiltreleButton" Content="Filtrele" HorizontalAlignment="Right" Margin="0,258,365,0" VerticalAlignment="Top" Width="80" Height="26" Click="FiltreleButton_Click"/>
+        <TextBox x:Name="hesapnoTextBox" Margin="565,134,95,0" Height="26" VerticalAlignment="Top" TabIndex="8" MaxLength="40" IsReadOnly="True"/>
         <Button x:Name="Admin" Content="Admin" HorizontalAlignment="Right" Margin="0,227,227,0" VerticalAlignment="Top" Width="80" Height="26" Click="Admin_Click" Visibility="Hidden"/>
+        <Button x:Name="IceriAktarButton" Content="İçeri Aktar" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="80" Height="26" Click="IceriAktarButton_Click"/>
+        <Button x:Name="DışarıAktarButton" Content="Dışarı Aktar" HorizontalAlignment="Left" Margin="95,10,0,0" VerticalAlignment="Top" Width="80" Height="26" Click="DışarıAktarButton_Click"/>
     </Grid>
 </Page>

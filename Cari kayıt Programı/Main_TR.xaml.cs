@@ -490,6 +490,62 @@ namespace Cari_kayıt_Programı
             }
         }
 
+        private void IceriAktarButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "DB Dosyaları (*.db)|*.db";
+                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    string selectedFilePath = openFileDialog.FileName;
+
+                    // Mevcut CariKayitDB.db dosyasını sil
+                    if (File.Exists(DatabaseFileName))
+                    {
+                        File.Delete(DatabaseFileName);
+                    }
+
+                    // Seçilen dosyayı AppData dizinine kopyala
+                    File.Copy(selectedFilePath, DatabaseFileName, true);
+
+                    // Yeni dosyanın adını CariKayitDB.db olarak değiştir
+                    File.Move(DatabaseFileName, DatabaseFileName);
+
+                    MessageBox.Show("Veritabanı başarıyla içe aktarıldı.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    dataGrid.ItemsSource = GetBusinesses(ConnectionString);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+        }
+
+        private void DışarıAktarButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Veritabanı Dosyası (*.db)|*.db";
+                saveFileDialog.FileName = "CariKayitDB Yedek.db";
+                saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    string destinationFilePath = saveFileDialog.FileName;
+
+                    File.Copy(DatabaseFileName, destinationFilePath, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+        }
+
         private static List<Business> Businesses(string searchTerm)
         {
             List<Business> businesses = new List<Business>();
