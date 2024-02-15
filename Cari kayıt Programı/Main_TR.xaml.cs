@@ -92,6 +92,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
+                //Klasör oluşturma
                 if (!Directory.Exists(AppDataPath))
                 {
                     Directory.CreateDirectory(AppDataPath);
