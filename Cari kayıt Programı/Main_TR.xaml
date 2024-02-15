@@ -59,5 +59,6 @@
         <Button x:Name="Admin" Content="Admin" HorizontalAlignment="Right" Margin="0,227,227,0" VerticalAlignment="Top" Width="80" Height="26" Click="Admin_Click" Visibility="Hidden"/>
         <Button x:Name="IceriAktarButton" Content="İçeri Aktar" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="80" Height="26" Click="IceriAktarButton_Click"/>
         <Button x:Name="DışarıAktarButton" Content="Dışarı Aktar" HorizontalAlignment="Left" Margin="95,10,0,0" VerticalAlignment="Top" Width="80" Height="26" Click="DışarıAktarButton_Click"/>
+        <Button x:Name="UygulamayıGuncelle" Content="Güncellemeleri Denetle" HorizontalAlignment="Left" Margin="180,10,0,0" VerticalAlignment="Top" Width="140" Height="26" Click="UygulamayıGuncelle_Click"/>
     </Grid>
 </Page>

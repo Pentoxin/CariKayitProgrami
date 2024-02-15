@@ -16,6 +16,9 @@ using iText.Layout;
 using iText.Kernel.Font;
 using iText.Layout.Properties;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 
 namespace Cari_kayıt_Programı
@@ -26,15 +29,19 @@ namespace Cari_kayıt_Programı
         {
             InitializeComponent();
 
+            GuncellemeKontrol();
             AppDataCreate();
             InitializeDatabase();
         }
 
-        private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cari Kayıt Programı");
+        public static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Cari Kayıt Programı");
         private static readonly string DatabaseFileName = Path.Combine(AppDataPath, "CariKayitDB.db");
         private static readonly string LogFilePath = Path.Combine(AppDataPath, "log.txt");
         public static readonly string ConnectionString = $"Data Source={DatabaseFileName};Version=3;";
         public static readonly string PDFPath2 = Path.Combine(AppDataPath, "Cari Kayıt Rehberi.pdf");
+        public static readonly string version = "1.3.0.0";
+        public static readonly string verisonUrl = "https://raw.githubusercontent.com/Pentoxin/CariKayitProgrami/master/Version.txt";
+        public static readonly string dosyaAdi = Path.Combine(AppDataPath, "cari_kayit_programi_setup.exe");
 
         int temizle = 0;
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -48,11 +55,43 @@ namespace Cari_kayıt_Programı
             }
         }
 
+        public bool guncel;
+        public void GuncellemeKontrol()
+        {
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    string html = client.DownloadString(verisonUrl);
+
+                    if (version != html)
+                    {
+                        UygulamayıGuncelle.Visibility = Visibility.Visible;
+                        guncel = false;
+                    }
+                    else if (version == html)
+                    {
+                        UygulamayıGuncelle.Visibility = Visibility.Hidden;
+
+                        UygulamayıGuncelle.Visibility = Visibility.Hidden;
+                        if (File.Exists(dosyaAdi))
+                        {
+                            File.Delete(dosyaAdi);
+                        }
+                        guncel = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+        }
+
         public static void AppDataCreate()
         {
             try
             {
-                // Klasörü oluştur
                 if (!Directory.Exists(AppDataPath))
                 {
                     Directory.CreateDirectory(AppDataPath);
@@ -546,6 +585,33 @@ namespace Cari_kayıt_Programı
             }
         }
 
+        private void UygulamayıGuncelle_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    if (guncel == false)
+                    {
+                        YuklemeEkrani yuklemeEkrani = new YuklemeEkrani();
+                        yuklemeEkrani.ShowDialog();
+                    }
+                    else if (guncel == true)
+                    {
+                        UygulamayıGuncelle.Visibility = Visibility.Hidden;
+                        if (File.Exists(dosyaAdi))
+                        {
+                            File.Delete(dosyaAdi);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+        }
+
         private static List<Business> Businesses(string searchTerm)
         {
             List<Business> businesses = new List<Business>();
@@ -668,7 +734,6 @@ namespace Cari_kayıt_Programı
         {
 
         }
-
 
         public static int selectedValue;
 
