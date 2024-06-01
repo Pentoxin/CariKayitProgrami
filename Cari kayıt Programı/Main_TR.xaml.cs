@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using CariKayitProgrami;
 
 
 namespace Cari_kayıt_Programı
@@ -39,7 +40,7 @@ namespace Cari_kayıt_Programı
         private static readonly string LogFilePath = Path.Combine(AppDataPath, "log.txt");
         public static readonly string ConnectionString = $"Data Source={DatabaseFileName};Version=3;";
         public static readonly string PDFPath2 = Path.Combine(AppDataPath, "Cari Kayıt Rehberi.pdf");
-        public static readonly string version = "1.3.0.0";
+        public static readonly string version = "1.3.1";
         public static readonly string verisonUrl = "https://raw.githubusercontent.com/Pentoxin/CariKayitProgrami/master/Version.txt";
         public static readonly string dosyaAdi = Path.Combine(AppDataPath, "cari_kayit_programi_setup.exe");
 
@@ -73,7 +74,6 @@ namespace Cari_kayıt_Programı
                     {
                         UygulamayıGuncelle.Visibility = Visibility.Hidden;
 
-                        UygulamayıGuncelle.Visibility = Visibility.Hidden;
                         if (File.Exists(dosyaAdi))
                         {
                             File.Delete(dosyaAdi);
@@ -181,6 +181,12 @@ namespace Cari_kayıt_Programı
             }
         }
 
+        private void OpenWindow(Window window)
+        {
+            window.Owner = App.Current.MainWindow;
+            window.ShowDialog();
+        }
+
         private void XButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -221,8 +227,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                YeniKayit yeniKayit = new YeniKayit();
-                yeniKayit.ShowDialog();
+                OpenWindow(new YeniKayit());
 
                 dataGrid.SelectedItem = null;
                 dataGrid.ItemsSource = GetBusinesses(ConnectionString);
@@ -296,7 +301,7 @@ namespace Cari_kayıt_Programı
                 LogError(ex);
             }
         }
-
+        
         public static Business selectedBusiness;
         private void Updatebutton_Click(object sender, RoutedEventArgs e)
         {
@@ -310,8 +315,7 @@ namespace Cari_kayıt_Programı
                     return;
                 }
 
-                Degistir degistir = new Degistir();
-                degistir.ShowDialog();
+                OpenWindow(new Degistir());
 
                 isletmeadiTextBox.Clear();
                 vergidairesiTextBox.Clear();
@@ -336,8 +340,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                Yazdir yazdir = new Yazdir();
-                yazdir.ShowDialog();
+                OpenWindow(new Yazdir());
 
                 if (Yazdir_TR.degiskenler.olustur == true)
                 {
@@ -471,8 +474,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                Filtre filtre = new Filtre();
-                filtre.ShowDialog();
+                OpenWindow(new Filtre());
 
                 if (Filtre_TR.SecilenSutunlar != null || Filtre_TR.SecilmeyenSutunlar != null)
                 {
@@ -590,19 +592,21 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                using (WebClient client = new WebClient())
+                if (MessageBox.Show("Uygulama güncellensin mi?", "Güncelleme", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
                 {
-                    if (guncel == false)
+                    using (WebClient client = new WebClient())
                     {
-                        YuklemeEkrani yuklemeEkrani = new YuklemeEkrani();
-                        yuklemeEkrani.ShowDialog();
-                    }
-                    else if (guncel == true)
-                    {
-                        UygulamayıGuncelle.Visibility = Visibility.Hidden;
-                        if (File.Exists(dosyaAdi))
+                        if (!guncel)
                         {
-                            File.Delete(dosyaAdi);
+                            OpenWindow(new YuklemeEkrani());
+                        }
+                        else if (guncel)
+                        {
+                            UygulamayıGuncelle.Visibility = Visibility.Hidden;
+                            if (File.Exists(dosyaAdi))
+                            {
+                                File.Delete(dosyaAdi);
+                            }
                         }
                     }
                 }

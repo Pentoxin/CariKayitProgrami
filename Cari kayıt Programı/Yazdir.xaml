@@ -6,6 +6,6 @@
         xmlns:local="clr-namespace:Cari_kayıt_Programı"
         xmlns:CariKayitProgrami="clr-namespace:CariKayitProgrami" x:Class="Cari_kayıt_Programı.Yazdir"
         mc:Ignorable="d"
-        Title="Yazdır" Height="560" Width="426" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Yazdır" Height="560" Width="426" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Frame x:Name="YazdirFrame" Content="Frame"/>
 </Window>

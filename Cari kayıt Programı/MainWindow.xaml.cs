@@ -31,8 +31,6 @@ namespace CariKayitProgrami
             Yazdir_TR yazdir_tr = new Yazdir_TR();
 
             Yazdir_TR.degiskenler.secilenOzellikler.Clear();
-
-            
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

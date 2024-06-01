@@ -5,5 +5,5 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Cari_kayıt_Programı"
         mc:Ignorable="d"
-        Title="Reload" Height="10" Width="10" Loaded="Window_Loaded">
+        Title="Reload" Height="10" Width="10" Loaded="Window_Loaded" Visibility="Hidden">
 </Window>

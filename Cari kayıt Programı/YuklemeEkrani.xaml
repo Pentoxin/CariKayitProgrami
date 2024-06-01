@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Güncellemeleri Denetle" Height="150
         " Width="300
-        " Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
+        " Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
     <Grid>
         <ProgressBar Name="progressBar" VerticalAlignment="Center" Margin="10"/>
         <Label Name="statusLabel" Content="İndirme Başlıyor..." HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10,0,10,0"/>
