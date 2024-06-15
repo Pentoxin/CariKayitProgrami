@@ -4,10 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Cari_kayıt_Programı"
-        mc:Ignorable="d"
-        Title="Güncellemeleri Denetle" Height="150
-        " Width="300
-        " Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"  
+        mc:Ignorable="d" Title="Güncellemeleri Denetle" Height="150" Width="300" Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
     <Grid>
         <ProgressBar Name="progressBar" VerticalAlignment="Center" Margin="10"/>
         <Label Name="statusLabel" Content="İndirme Başlıyor..." HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10,0,10,0"/>

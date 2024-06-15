@@ -4,9 +4,15 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Cari_kayıt_Programı"
-      mc:Ignorable="d" 
-      d:DesignHeight="560" d:DesignWidth="426"
-      Title="Yazdir_TR">
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="13"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{DynamicResource MaterialDesignFont}"  
+      mc:Ignorable="d" d:DesignHeight="580" d:DesignWidth="426" Title="Yazdir_TR">
     <Grid>
         <ListBox x:Name="YazdirListbox" Margin="10,58,10,0" Height="387" VerticalAlignment="Top">
             <CheckBox Content="ID" IsChecked="True" IsEnabled="False"/>
@@ -21,11 +27,11 @@
             <CheckBox Content="Telefon 1" IsChecked="True"/>
             <CheckBox Content="Telefon 2"/>
         </ListBox>
-        <Button x:Name="HepsiniSecButton" Content="Hepsini Seç" Margin="10,450,0,0" HorizontalAlignment="Left" Width="100" Height="26" VerticalAlignment="Top" Click="HepsiniSecButton_Click"/>
-        <Button x:Name="HicbiriniSecmeButton" Content="Hiçbirini Seçme" Margin="115,450,0,0" HorizontalAlignment="Left" Width="100" Height="26" VerticalAlignment="Top" Click="HicbiriniSecmeButton_Click"/>
+        <Button x:Name="HepsiniSecButton" Content="Hepsini Seç" Margin="10,450,0,0" HorizontalAlignment="Left" Width="140" Height="26" VerticalAlignment="Top" Click="HepsiniSecButton_Click"/>
+        <Button x:Name="HicbiriniSecmeButton" Content="Hiçbirini Seçme" Margin="155,450,0,0" HorizontalAlignment="Left" Width="140" Height="26" VerticalAlignment="Top" Click="HicbiriniSecmeButton_Click"/>
         <Label Content="Lütfen yazdırmak istediklerinizi seçiniz:" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="OlusturButton" Content="Oluştur" HorizontalAlignment="Right" Margin="0,0,75,10" VerticalAlignment="Bottom" Height="26" Width="60" Click="OlusturButton_Click"/>
-        <Button x:Name="VazgecButton" Content="Vazgeç" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="26" Width="60" Click="VazgecButton_Click"/>
+        <Button x:Name="OlusturButton" Content="Oluştur" HorizontalAlignment="Right" Margin="0,0,115,10" VerticalAlignment="Bottom" Height="26" Width="100" Click="OlusturButton_Click"/>
+        <Button x:Name="VazgecButton" Content="Vazgeç" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="26" Width="100" Click="VazgecButton_Click"/>
 
     </Grid>
 </Page>

@@ -92,12 +92,12 @@ namespace Cari_kayıt_Programı
 
                         if (result > 0)
                         {
-                            MessageBox.Show("Bu İşletme Adı Daha Önce Girilmiş!", "Veri Kaydetme Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show("Bu işletme adı daha önce girilmiş!", "Veri Kaydetme Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
                             return;
                         }
                     }
 
-                    if (MessageBox.Show("Seçili Veriyi Güncellemek İstediğinize Emin Misiniz?", "Veri Güncelleme", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("Seçili veriyi değiştirmek istediğinize emin misiniz?", "Veri Güncelleme", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         string updateSql = "UPDATE CariKayit SET isletmeadi=@isletmeadi, vergidairesi=@vergidairesi, vergino=@vergino, banka=@banka, hesapno=@hesapno, adres=@adres, mail1=@mail1, mail2=@mail2, telefon1=@telefon1, telefon2=@telefon2 WHERE ID=@ID";
 
@@ -119,11 +119,11 @@ namespace Cari_kayıt_Programı
 
                             if (rowsAffected > 0)
                             {
-                                MessageBox.Show("Veri Güncellendi.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+                                MessageBox.Show("Veri güncellendi.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                             else
                             {
-                                MessageBox.Show("Veri Güncelleme Hatası!", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                                MessageBox.Show("Veri güncelleme hatası!", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                         }
                     }

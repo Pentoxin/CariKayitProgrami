@@ -5,6 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Cari_kayıt_Programı"
         mc:Ignorable="d"
-        Title="Degistir" Height="450" Width="450" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+        Title="Degistir" Height="600" Width="520" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
     <Frame x:Name="DegistirFrame" Content="Frame"/>
 </Window>

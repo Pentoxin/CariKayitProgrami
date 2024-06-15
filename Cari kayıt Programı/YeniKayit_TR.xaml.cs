@@ -33,7 +33,7 @@ namespace Cari_kayıt_Programı
             {
                 if (isletmeadiTextBox.Text == "")
                 {
-                    MessageBox.Show("Lütfen İşletme Adını Giriniz.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Lütfen işletme adını giriniz.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else
                 {
@@ -49,11 +49,11 @@ namespace Cari_kayıt_Programı
                             int count = Convert.ToInt32(command.ExecuteScalar());
                             if (count > 0)
                             {
-                                MessageBox.Show("Bu İşletme Adı Daha Önce Girilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                MessageBox.Show("Bu işletme adı daha önce girilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
                             }
                             else
                             {
-                                if (MessageBox.Show("Seçilen Veriyi Kaydetmek İstediğinize Emin Misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
+                                if (MessageBox.Show("Seçilen veriyi kaydetmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
                                 {
                                     kayit = true;
 
@@ -71,7 +71,7 @@ namespace Cari_kayıt_Programı
                                         insertCommand.Parameters.AddWithValue("@telefon1", telefon1TextBox.Text);
                                         insertCommand.Parameters.AddWithValue("@telefon2", telefon2TextBox.Text);
                                         insertCommand.ExecuteNonQuery();
-                                        MessageBox.Show("İşletme Bilgileri Veritabanina Kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                                        MessageBox.Show("İşletme bilgileri veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Asterisk);
                                     }
                                 }
                             }
