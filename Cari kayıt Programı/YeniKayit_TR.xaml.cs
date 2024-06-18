@@ -1,20 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SQLite;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Data.SQLite;
 
 namespace Cari_kayıt_Programı
 {
@@ -39,7 +26,7 @@ namespace Cari_kayıt_Programı
                 {
                     bool kayit = false;
 
-                    using (SQLiteConnection connection = new SQLiteConnection(Main_TR.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
                     {
                         connection.Open();
                         string selectSql = "SELECT COUNT(*) FROM CariKayit WHERE lower(isletmeadi) = lower(@isletmeadi)";
@@ -77,7 +64,7 @@ namespace Cari_kayıt_Programı
                             }
                         }
                     }
-                    if (kayit == true)
+                    if (kayit)
                     {
                         isletmeadiTextBox.Clear();
                         vergidairesiTextBox.Clear();

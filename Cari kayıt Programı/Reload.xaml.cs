@@ -1,17 +1,4 @@
-﻿using CariKayitProgrami;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
 namespace Cari_kayıt_Programı
 {
@@ -27,11 +14,18 @@ namespace Cari_kayıt_Programı
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
-            this.Close();
+            // Method intentionally left empty.
+        }
 
-            Main_TR main_TR = new Main_TR();
+        public void WindowReloadSD(Window window)
+        {
+            window.ShowDialog();
+            this.Close();
+        }
+        public void WindowReload(Window window)
+        {
+            window.Show();
+            this.Close();
         }
     }
 }

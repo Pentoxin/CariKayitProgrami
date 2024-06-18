@@ -12,9 +12,7 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"  
-        mc:Ignorable="d" Title="Güncellemeleri Denetle" Height="150" Width="300" Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
-    <Grid>
-        <ProgressBar Name="progressBar" VerticalAlignment="Center" Margin="10"/>
-        <Label Name="statusLabel" Content="İndirme Başlıyor..." HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10,0,10,0"/>
-    </Grid>
+        mc:Ignorable="d" Title="Güncellemeleri Denetle" Height="450" Width="800" Loaded="Window_Loaded" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Frame x:Name="YuklemeEkraniFrame" Content="Frame" />
+
 </Window>

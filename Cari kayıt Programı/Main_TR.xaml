@@ -13,10 +13,8 @@
       Background="{DynamicResource MaterialDesignPaper}"
       FontFamily="{DynamicResource MaterialDesignFont}"      
       mc:Ignorable="d" d:DesignHeight="700" d:DesignWidth="980" Title="Main_TR" Loaded="Window_Loaded" MinWidth="650" MinHeight="460">
-
-
+    
     <Grid>
-
         <Label Margin="10,45,0,0" Content="İşletme Adı:" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom"/>
         <TextBox x:Name="isletmeadiTextBox" Grid.Row="0" Margin="95,45,120,0" TabIndex="1" MaxLength="100" IsReadOnly="True" Height="26" VerticalAlignment="Top"/>
         <Label Margin="10,174,0,0" Content="Adres:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom"/>
@@ -64,7 +62,7 @@
         </ComboBox>
         <Button x:Name="FiltreleButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Filtrele" HorizontalAlignment="Right" Margin="0,300,370,0" VerticalAlignment="Top" Width="100" Height="26" Click="FiltreleButton_Click"/>
         <TextBox x:Name="hesapnoTextBox" Margin="530,132,120,0" Height="26" VerticalAlignment="Top" TabIndex="8" MaxLength="40" IsReadOnly="True"/>
-        <Button x:Name="Admin" Content="Admin" HorizontalAlignment="Right" Margin="0,227,227,0" VerticalAlignment="Top" Width="80" Height="26" Click="Admin_Click" Visibility="Hidden"/>
+        <Button x:Name="Admin" materialDesign:ButtonAssist.CornerRadius="8" Content="Admin" HorizontalAlignment="Right" Margin="0,300,160,0" VerticalAlignment="Top" Width="100" Height="26" Click="Admin_Click" Cursor="Hand"/>
         <Button x:Name="IceriAktarButton" materialDesign:ButtonAssist.CornerRadius="8" Content="İçeri Aktar" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="110" Height="26" Click="IceriAktarButton_Click"/>
         <Button x:Name="DışarıAktarButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Dışarı Aktar" HorizontalAlignment="Left" Margin="130,10,0,0" VerticalAlignment="Top" Width="110" Height="26" Click="DışarıAktarButton_Click"/>
         <Button x:Name="UygulamayıGuncelle" materialDesign:ButtonAssist.CornerRadius="8" Content="Güncellemeleri Denetle" HorizontalAlignment="Left" Margin="250,10,0,0" VerticalAlignment="Top" Width="180" Height="26" Click="UygulamayıGuncelle_Click"/>

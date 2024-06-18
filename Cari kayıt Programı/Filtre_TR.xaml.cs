@@ -1,18 +1,7 @@
-﻿using CariKayitProgrami;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Cari_kayıt_Programı
 {
@@ -24,12 +13,22 @@ namespace Cari_kayıt_Programı
         public Filtre_TR()
         {
             InitializeComponent();
-
-            Main_TR main_TR = new Main_TR();
         }
 
-        public static List<string> SecilenSutunlar = new List<string>();
-        public static List<string> SecilmeyenSutunlar = new List<string>();
+        private static readonly List<string> SecilenSutunlar = new List<string>();
+        private static readonly List<string> SecilmeyenSutunlar = new List<string>();
+
+        // Listedeki elemanları okumak için bir metot
+        public static IReadOnlyList<string> GetSecilenSutunlar()
+        {
+            return SecilenSutunlar.AsReadOnly();
+        }
+
+        // Listedeki elemanları okumak için bir metot
+        public static IReadOnlyList<string> GetSecilmeyenSutunlar()
+        {
+            return SecilmeyenSutunlar.AsReadOnly();
+        }
 
         private void HepsiniSecButton_Click(object sender, RoutedEventArgs e)
         {

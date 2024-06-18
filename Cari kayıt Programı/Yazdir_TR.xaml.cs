@@ -1,18 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static Cari_kayıt_Programı.Yazdir;
 
 namespace Cari_kayıt_Programı
 {
@@ -25,17 +14,45 @@ namespace Cari_kayıt_Programı
         {
             InitializeComponent();
 
-            degiskenler.olustur = false;
+            YazdirDegiskenler.olustur = false;
 
-            degiskenler.secilenOzellikler.Clear();
+            YazdirDegiskenler.ClearSecilenOzellikler();
         }
 
-        public class degiskenler
+        public static class YazdirDegiskenler
         {
-            public static List<string> secilenOzellikler = new List<string>();
-            public static bool olustur = false;
+            private static readonly List<string> SecilenOzellikler = new List<string>();
+            public static bool olustur { get; set; } = false;
 
+            public static IReadOnlyList<string> GetSecilenOzellikler()
+            {
+                return YazdirDegiskenler.SecilenOzellikler.AsReadOnly();
+            }
+
+            public static void AddSecilenOzellik(string ozellik)
+            {
+                // Null kontrolü
+                if (ozellik == null)
+                {
+                    throw new ArgumentNullException(nameof(ozellik), "Ozellik parametresi null olamaz.");
+                }
+                else
+                {
+                    // Daha önce eklenmemişse ekle
+                    if (!SecilenOzellikler.Contains(ozellik))
+                    {
+                        SecilenOzellikler.Add(ozellik);
+                    }
+                }
+            }
+
+            public static void ClearSecilenOzellikler()
+            {
+                SecilenOzellikler.Clear();
+            }
         }
+
+
 
         private void HepsiniSecButton_Click(object sender, RoutedEventArgs e)
         {
@@ -78,10 +95,10 @@ namespace Cari_kayıt_Programı
                 {
                     if (checkBox.IsChecked == true)
                     {
-                        degiskenler.secilenOzellikler.Add(checkBox.Content.ToString());
+                        YazdirDegiskenler.AddSecilenOzellik(checkBox.Content.ToString());
                     }
                 }
-                degiskenler.olustur = true;
+                YazdirDegiskenler.olustur = true;
 
                 Window mainWindow = Window.GetWindow(this);
 

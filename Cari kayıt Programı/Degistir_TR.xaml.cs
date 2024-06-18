@@ -1,21 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SQLite;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using static Cari_kayıt_Programı.Main_TR;
-using System.Data.SQLite;
 
 
 namespace Cari_kayıt_Programı
@@ -43,7 +30,7 @@ namespace Cari_kayıt_Programı
                 textBox.GotFocus += TextBox_GotFocus;
             }
 
-            Business selectedBusiness = Main_TR.selectedBusiness;
+            Business selectedBusiness = Main_TR.Degiskenler.selectedBusiness;
 
             if (selectedBusiness != null)
             {
@@ -71,13 +58,13 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                Business selectedBusiness = Main_TR.selectedBusiness;
+                Business selectedBusiness = Main_TR.Degiskenler.selectedBusiness;
 
                 if (selectedBusiness == null)
                     return;
 
 
-                using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
                 {
                     connection.Open();
 
