@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,7 +38,6 @@ namespace Cari_kayıt_Programı
         {
             public static bool guncellemeOnay { get; set; } = false;
             public static bool guncel { get; set; }
-
             public static Business? selectedBusiness { get; set; }
         }
 
@@ -87,14 +87,11 @@ namespace Cari_kayıt_Programı
                             if (assets != null && assets.Any())
                             {
                                 downloadUrl = assets[0]?["browser_download_url"]?.ToString() ?? "No assets found";
-                                // assets null değilse ve en az bir öğe içeriyorsa işlem yap
                             }
                             else
                             {
                                 downloadUrl = "No assets found";
-                                // assets null ise veya hiç öğe içermiyorsa işlem yap
                             }
-
                             return (version, notes, downloadUrl, title);
                         }
                         else
@@ -137,30 +134,42 @@ namespace Cari_kayıt_Programı
 
                 if (InternetErisimiKontrolEt())
                 {
-                    HttpClient client = new HttpClient();
-                    HttpResponseMessage response = await client.GetAsync(Config.VersiyonUrl);
-                    response.EnsureSuccessStatusCode(); // İsteğin başarılı olup olmadığını kontrol edin
+                    var releaseInfo = await GetLatestReleaseInfoAsync();
 
-                    string html = await response.Content.ReadAsStringAsync();
-                    int guncelVersiyon = Convert.ToInt32(html);
+                    int guncelVersiyon = Convert.ToInt32(releaseInfo.version.Replace("v", "").Replace(".", ""));
 
-                    if (Config.version < guncelVersiyon)
+                    Assembly? assembly = Assembly.GetExecutingAssembly();
+                    Version? version = assembly.GetName().Version;
+                    string? versionString = $"{version.Major}.{version.Minor}.{version.Build}".Replace(".", "");
+
+                    int v = Convert.ToInt32(versionString);
+
+                    if (v < guncelVersiyon)
                     {
                         UygulamayıGuncelle.Visibility = Visibility.Visible;
                         Degiskenler.guncel = false;
                     }
-                    else if (Config.version >= guncelVersiyon)
+                    else if (v >= guncelVersiyon)
                     {
                         UygulamayıGuncelle.Visibility = Visibility.Hidden;
 
                         if (File.Exists(Config.dosyaAdi))
                         {
-                            FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(Config.dosyaAdi);
-                            int productVersion = Convert.ToInt32(fileInfo.ProductVersion);
-                            if (Config.version >= productVersion)
+                            int productVersion;
+                            try
+                            {
+                                FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(Config.dosyaAdi);
+                                productVersion = Convert.ToInt32(fileInfo.ProductVersion.Replace(".", ""));
+                                if (v >= productVersion)
+                                {
+                                    File.Delete(Config.dosyaAdi);
+                                }
+                            }
+                            catch (Exception)
                             {
                                 File.Delete(Config.dosyaAdi);
                             }
+
                         }
                         Degiskenler.guncel = true;
                     }
@@ -819,14 +828,7 @@ namespace Cari_kayıt_Programı
 
         private void Admin_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            // FileVersionInfo kullanarak dosya bilgilerini alın
-            FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(Config.dosyaAdi);
-
-            // Ürün sürümü bilgisini alın
-            string productVersion = fileInfo.ProductVersion;
-            MessageBox.Show(productVersion);
-            */
+            // Method intentionally left empty.
         }
 
         //public static int selectedValue;

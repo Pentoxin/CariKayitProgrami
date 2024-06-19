@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,7 +30,58 @@ namespace Cari_kayıt_Programı
 
                 string urlP = releaseInfo.downloadUrl;
 
-                HttpClient client = new HttpClient();
+                Assembly? assembly = Assembly.GetExecutingAssembly();
+                Version? version = assembly.GetName().Version;
+                string? versionString = $"{version.Major}.{version.Minor}.{version.Build}".Replace(".", "");
+
+                int v = Convert.ToInt32(versionString);
+
+                if (File.Exists(Config.dosyaAdi))
+                {
+                    int productVersion;
+                    try
+                    {
+                        FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(Config.dosyaAdi);
+                        productVersion = Convert.ToInt32(fileInfo.ProductVersion.Replace(".", ""));
+
+                        if (v < productVersion)
+                        {
+                            statusLabel.Content = "İndirme tamamlandı, dosya açılıyor...";
+                            await Task.Delay(1000); // İşlemi tamamlamadan önce bekleme
+
+                            Process.Start(Config.dosyaAdi);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        statusLabel.Content = "Dosya bozuk, tekrar indiriliyor...";
+                        await Task.Delay(1000);
+                        await DownloadAndStartFile(urlP);
+                    }                    
+                }
+                else
+                {
+                    await DownloadAndStartFile(urlP);
+                }                
+
+                Window mainWindow = Window.GetWindow(this);
+                if (mainWindow != null)
+                {
+                    // Ana pencereyi kapat
+                    mainWindow.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Main_TR.LogError(ex);
+            }
+        }
+
+        private async Task DownloadAndStartFile(string urlP)
+        {
+            HttpClient client = new HttpClient();
+            try
+            {
                 if (!Main_TR.Degiskenler.guncel)
                 {
                     client.DefaultRequestHeaders.Accept.Clear();
@@ -69,22 +121,24 @@ namespace Cari_kayıt_Programı
                     }
                     statusLabel.Content = "İndirme tamamlandı, dosya açılıyor...";
                     await Task.Delay(1000); // İşlemi tamamlamadan önce bekleme
-                    Process.Start(Config.dosyaAdi);
-                    client.Dispose();
-                }
 
-                Window mainWindow = Window.GetWindow(this);
-                if (mainWindow != null)
-                {
-                    // Ana pencereyi kapat
-                    mainWindow.Close();
+                    try
+                    {
+                        Process.Start(Config.dosyaAdi);
+                    }
+                    catch (Exception ex)
+                    {
+                        statusLabel.Content = "Dosya çalıştırılamadı, tekrar indiriliyor...";
+                        Main_TR.LogError(ex);
+                        await DownloadAndStartFile(urlP); // İndirme işlemini tekrar dene
+                    }
+                    client.Dispose();
                 }
             }
             catch (Exception ex)
             {
                 Main_TR.LogError(ex);
             }
-
         }
     }
 }
