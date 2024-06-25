@@ -5,6 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Cari_kayıt_Programı"
         mc:Ignorable="d"
-        Title="YeniKayit" Height="600" Width="520" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+        Title="Yeni Kayit" Height="600" Width="520" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
     <Frame x:Name="YeniKayitFrame" Content="Frame"/>
 </Window>

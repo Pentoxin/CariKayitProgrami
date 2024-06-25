@@ -380,6 +380,13 @@ namespace Cari_kayıt_Programı
                                 command.Parameters.AddWithValue("@Id", selectedBusinessItem.ID);
                                 command.ExecuteNonQuery();
                             }
+
+                            // Önce Odeme tablosunu silme işlemi
+                            string queryOdeme = $"DROP TABLE IF EXISTS Cari_{selectedBusinessItem.ID}";
+                            using (SQLiteCommand commandOdeme = new SQLiteCommand(queryOdeme, connection))
+                            {
+                                commandOdeme.ExecuteNonQuery();
+                            }
                         }
                         dataGrid.ItemsSource = GetBusinesses(Config.ConnectionString);
                     }
@@ -406,7 +413,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                Main_TR.Degiskenler.selectedBusiness = (Business)dataGrid.SelectedItem;
+                Degiskenler.selectedBusiness = (Business)dataGrid.SelectedItem;
 
                 if (Degiskenler.selectedBusiness == null)
                 {
@@ -441,7 +448,7 @@ namespace Cari_kayıt_Programı
             {
                 OpenWindow(new Yazdir());
 
-                if (Yazdir_TR.YazdirDegiskenler.olustur)
+                if (YazdirDegiskenler.olustur)
                 {
                     SaveFileDialog saveFileDialog = new SaveFileDialog();
                     saveFileDialog.Filter = "PDF Dosyası|*.pdf";
@@ -452,7 +459,7 @@ namespace Cari_kayıt_Programı
                     {
                         string path = saveFileDialog.FileName;
 
-                        if (Yazdir_TR.YazdirDegiskenler.olustur)
+                        if (YazdirDegiskenler.olustur)
                         {
                             DataTable dt = new DataTable();
                             dt.Columns.Add("ID");
@@ -706,6 +713,19 @@ namespace Cari_kayıt_Programı
             {
                 LogError(ex);
             }
+        }
+
+        private void HareketlerButton_Click(object sender, RoutedEventArgs e)
+        {
+            Degiskenler.selectedBusiness = (Business)dataGrid.SelectedItem;
+
+            if (Degiskenler.selectedBusiness == null)
+            {
+                MessageBox.Show("Önce harektleri kontrol istediğiniz veriyi seçiniz", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            OpenWindow(new Hareketler());
         }
 
         private static List<Business> Businesses(string searchTerm)

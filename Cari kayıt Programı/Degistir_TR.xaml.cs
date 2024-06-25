@@ -7,9 +7,6 @@ using static Cari_kayıt_Programı.Main_TR;
 
 namespace Cari_kayıt_Programı
 {
-    /// <summary>
-    /// Degistir_TR.xaml etkileşim mantığı
-    /// </summary>
     public partial class Degistir_TR : Page
     {
         public Degistir_TR()
@@ -30,7 +27,7 @@ namespace Cari_kayıt_Programı
                 textBox.GotFocus += TextBox_GotFocus;
             }
 
-            Business selectedBusiness = Main_TR.Degiskenler.selectedBusiness;
+            Business? selectedBusiness = Degiskenler.selectedBusiness;
 
             if (selectedBusiness != null)
             {
@@ -58,7 +55,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                Business selectedBusiness = Main_TR.Degiskenler.selectedBusiness;
+                Business? selectedBusiness = Degiskenler.selectedBusiness;
 
                 if (selectedBusiness == null)
                     return;

@@ -24,23 +24,30 @@
         <Button x:Name="KaydetButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,76,10,0" Click="KaydetButton_Click" Height="26" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Right" Width="100" Padding="1,1,1,1">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="/plus.ico" Width="21" Height="21" Stretch="Fill" VerticalAlignment="Center"/>
+                    <materialDesign:PackIcon Kind="PlusCircle" Foreground="#FF39B753" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
                     <TextBlock Text="Yeni Kayıt" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </StackPanel>
-            </Button.Content>
+            </Button.Content> 
         </Button>
         <Button x:Name="ListeleButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,138,10,0" Content="Listele" Click="ListeleButton_Click" Height="26" VerticalAlignment="Top" TabIndex="16" HorizontalAlignment="Right" Width="100"/>
         <Button x:Name="DeleteButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,107,10,0" Click="DeleteButton_Click" Height="26" VerticalAlignment="Top" TabIndex="17" HorizontalAlignment="Right" Width="100">
             <Button.Content>
                 <StackPanel Orientation="Horizontal" Margin="-7,0,0,0">
-                    <Image Source="/minus.ico" Width="21" Height="21" Stretch="Fill" VerticalAlignment="Center"/>
-                    <TextBlock Text="Kaydı Sil  " VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <materialDesign:PackIcon Kind="Delete" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
+                    <TextBlock Text="Kaydı Sil" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button x:Name="Updatebutton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,169,10,0" Content="Değiştir" Click="Updatebutton_Click" Height="26" VerticalAlignment="Top" TabIndex="18" HorizontalAlignment="Right" Width="100"/>
+        <Button x:Name="Updatebutton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,169,10,0" Click="Updatebutton_Click" Height="26" VerticalAlignment="Top" TabIndex="18" HorizontalAlignment="Right" Width="100">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal" Margin="-7,0,0,0">
+                    <materialDesign:PackIcon Kind="Pencil" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
+                    <TextBlock Text="Değiştir" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
         <TextBox x:Name="txtSearch" materialDesign:TextFieldAssist.HasClearButton="True" Margin="95,300,475,0" Height="26" VerticalAlignment="Top" TabIndex="11" Tag="" MaxLength="100" TextChanged="txtSearch_TextChanged" />
-        <DataGrid x:Name="dataGrid" Margin="10,360,10,10" SelectionChanged="DataGrid_SelectionChanged" IsReadOnly="True"/>
+        <DataGrid x:Name="dataGrid" BorderThickness="1" materialDesign:DataGridAssist.CornerRadius="8" Margin="10,360,10,10" SelectionChanged="DataGrid_SelectionChanged" IsReadOnly="True"/>
         <Label Grid.Column="0" Margin="10,87,0,0" Content="Vergi Dairesi:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right"/>
         <TextBox x:Name="vergidairesiTextBox" Margin="95,87,0,0" Height="26" VerticalAlignment="Top" TabIndex="2" MaxLength="40" RenderTransformOrigin="0.5,0.5" IsReadOnly="True" HorizontalAlignment="Left" Width="310"/>
         <Label Grid.Column="0" Margin="420,87,0,0" Content="Vergi No:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom"/>
@@ -48,7 +55,14 @@
         <Label Grid.Column="0" Margin="420,258,0,0" Content="Telefon 2:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom"/>
         <TextBox x:Name="telefon2TextBox" Margin="530,258,120,0" Height="26" VerticalAlignment="Top" TabIndex="10" MaxLength="20" IsReadOnly="True"/>
         <Button x:Name="XButton" materialDesign:ButtonAssist.CornerRadius="8" Click="XButton_Click" Margin="0,300,265,0" Height="26" VerticalAlignment="Top" TabIndex="12" FontWeight="Bold" RenderTransformOrigin="-0.068,0.502" BorderBrush="#FF3F51B5" HorizontalAlignment="Right" Width="100" Content="Temizle"/>
-        <Button x:Name="YazdırButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,200,10,0" Content="Yazdır" Click="YazdırButton_Click" Height="26" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Right" Width="100"/>
+        <Button x:Name="YazdırButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,200,10,0" Click="YazdırButton_Click" Height="26" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Right" Width="100">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Printer" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
+                    <TextBlock Text="Yazdır" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
         <Label Grid.Column="0" Margin="420,132,0,0" Content="Hesap No / IBAN:" Height="26" VerticalAlignment="Top" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" HorizontalAlignment="Left"/>
         <TextBox x:Name="bankaTextBox"  Margin="95,132,0,0" Height="26" VerticalAlignment="Top" TabIndex="4" MaxLength="30" HorizontalAlignment="Left" Width="310" IsReadOnly="True"/>
         <Label Grid.Column="0" Margin="10,132,0,0" Content="Banka:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom"/>
@@ -60,12 +74,41 @@
             <ComboBoxItem Content="Türkçe"/>
             <ComboBoxItem Content="English"/>
         </ComboBox>
-        <Button x:Name="FiltreleButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Filtrele" HorizontalAlignment="Right" Margin="0,300,370,0" VerticalAlignment="Top" Width="100" Height="26" Click="FiltreleButton_Click"/>
+        <Button x:Name="FiltreleButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,300,370,0" VerticalAlignment="Top" Width="100" Height="26" Click="FiltreleButton_Click">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Filter" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
+                    <TextBlock Text="Filtrele" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
         <TextBox x:Name="hesapnoTextBox" Margin="530,132,120,0" Height="26" VerticalAlignment="Top" TabIndex="8" MaxLength="40" IsReadOnly="True"/>
         <Button x:Name="Admin" materialDesign:ButtonAssist.CornerRadius="8" Content="Admin" HorizontalAlignment="Right" Margin="0,300,160,0" VerticalAlignment="Top" Width="100" Height="26" Click="Admin_Click" Cursor="Hand"/>
-        <Button x:Name="IceriAktarButton" materialDesign:ButtonAssist.CornerRadius="8" Content="İçeri Aktar" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="110" Height="26" Click="IceriAktarButton_Click"/>
-        <Button x:Name="DışarıAktarButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Dışarı Aktar" HorizontalAlignment="Left" Margin="130,10,0,0" VerticalAlignment="Top" Width="110" Height="26" Click="DışarıAktarButton_Click"/>
-        <Button x:Name="UygulamayıGuncelle" materialDesign:ButtonAssist.CornerRadius="8" Content="Güncellemeleri Denetle" HorizontalAlignment="Left" Margin="250,10,0,0" VerticalAlignment="Top" Width="180" Height="26" Click="UygulamayıGuncelle_Click"/>
+        <Button x:Name="IceriAktarButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="130" Height="26" Click="IceriAktarButton_Click">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="import" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
+                    <TextBlock Text="İçeri Aktar" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button x:Name="DışarıAktarButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Left" Margin="150,10,0,0" VerticalAlignment="Top" Width="130" Height="26" Click="DışarıAktarButton_Click">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Export" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
+                    <TextBlock Text="Dışarı Aktar" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button x:Name="UygulamayıGuncelle" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Left" Margin="290,10,0,0" VerticalAlignment="Top" Width="200" Height="26" Click="UygulamayıGuncelle_Click">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Update" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
+                    <TextBlock Text="Güncellemeleri Denetle" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
         <Label Margin="10,300,0,0" Content="Arama:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom"/>
+        <Button x:Name="HareketlerButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,231,10,0" Content="Hareketler" Height="26" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Right" Width="100" Click="HareketlerButton_Click"/>
     </Grid>
 </Page>

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Globalization;
+using System.Windows;
+using System.Windows.Markup;
 
 namespace Cari_kayıt_Programı
 {
@@ -6,6 +8,6 @@ namespace Cari_kayıt_Programı
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
-    {
+    {        
     }
 }

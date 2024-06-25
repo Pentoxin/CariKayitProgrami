@@ -1,0 +1,91 @@
+﻿<Page x:Class="Cari_kayıt_Programı.Hareketler_TR"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+      xmlns:local="clr-namespace:Cari_kayıt_Programı"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="13"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{DynamicResource MaterialDesignFont}"
+      mc:Ignorable="d" d:DesignHeight="600" d:DesignWidth="900" Title="Hareketler_TR" Loaded="Page_Loaded">
+
+    <Page.Resources>
+        <Style x:Key="CustomMaterialDesignTextBox" 
+               BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" 
+               TargetType="TextBox">
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style x:Key="CustomMaterialDesignOutlinedDatePicker" 
+       BasedOn="{StaticResource MaterialDesignOutlinedDatePicker}" 
+       TargetType="DatePicker">
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style x:Key="DefaultGroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5" Padding="10">
+                            <DockPanel>
+                                <ContentPresenter Margin="{TemplateBinding Padding}" />
+                                <ContentPresenter />
+                            </DockPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <DataTemplate x:Key="WrappedLabelTemplate">
+            <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <Label x:Name="IsletmeAdiLabel" Content="Label" ContentTemplate="{StaticResource WrappedLabelTemplate}" HorizontalAlignment="Left" Margin="30,12,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold" MaxWidth="600" Height="43"/>
+        <DataGrid x:Name="dataGrid" BorderThickness="1" materialDesign:DataGridAssist.CornerRadius="8" materialDesign:DataGridAssist.CellPadding="12 8 8 10" materialDesign:DataGridAssist.ColumnHeaderPadding="12 10 12 10" Margin="30,160,30,30" IsReadOnly="True" SelectionChanged="dataGrid_SelectionChanged" />
+        <Button x:Name="YeniHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,126,360,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="YeniHareketButton_Click">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ContentSave" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    <TextBlock Text="Kaydet" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <DatePicker x:Name="TarihDatePicker" materialDesign:HintAssist.Hint="Tarih*" Language="tr-TR" Style="{StaticResource CustomMaterialDesignOutlinedDatePicker}" SelectedDate="{Binding SelectedDate}" HorizontalAlignment="Left" Margin="30,67,0,0" VerticalAlignment="Top" SelectedDateFormat="Short"  Width="120" />
+        <TextBox x:Name="EvrakNoTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Evrak No" Margin="160,67,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="150" Height="NaN"/>
+        <TextBox x:Name="AciklamaTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Açıklama*" Margin="320,67,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="180" Height="NaN"/>
+        <DatePicker x:Name="VadeDatePicker" DisplayDateStart="{Binding SelectedDate}" materialDesign:HintAssist.Hint="Vade Tarihi*" Language="tr-TR" Style="{StaticResource CustomMaterialDesignOutlinedDatePicker}" SelectedDate="{Binding SelectedDate}" HorizontalAlignment="Left" Margin="510,67,0,0" VerticalAlignment="Top" SelectedDateFormat="Short"  Width="120"/>
+        <GroupBox Header="GroupBox" Margin="30,112,0,0" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150">
+            <Grid>
+                <RadioButton x:Name="BorcRadioButton" Content="Borç" GroupName="TipGroup" IsChecked="True"/>
+                <RadioButton x:Name="AlacakRadioButton" Content="Alacak" GroupName="TipGroup" Margin="60,0,0,0" />
+            </Grid>
+        </GroupBox>
+        <TextBox x:Name="TutarTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Tutar*" PreviewTextInput="TutarTextBox_PreviewTextInput" DataObject.Pasting="TutarTextBox_Pasting"  Margin="190,112,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="150" Height="NaN"/>
+        <Button x:Name="SilHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,126,250,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="SilHareketButton_Click" Padding="10,4,10,4">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Kind="Delete" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <TextBlock Text="Kaydı Sil" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+        <Button x:Name="DegistirHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,126,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="DegistirHareketButton_Click" Padding="10,4,10,4">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Kind="pencil" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,1,0"/>
+                <TextBlock Text="Değiştir" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+        <Button x:Name="YazdırButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,126,30,0" Click="YazdırButton_Click" Height="26" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Right" Width="100">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Kind="Printer" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
+                <TextBlock Text="Yazdır" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+    </Grid>
+</Page>

@@ -10,18 +10,12 @@
     <PackageIcon>Notebook_icon.png</PackageIcon>
     <Company>Gökmen Ali Üngör</Company>
     <ApplicationManifest></ApplicationManifest>
-    <AssemblyVersion>1.3.4</AssemblyVersion>
-    <FileVersion>1.3.4</FileVersion>
+    <AssemblyVersion>1.4.0</AssemblyVersion>
+    <FileVersion>1.4.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <EditorConfigFiles Remove="C:\Users\GOKMEN\Documents\Visual Studio Project\Cari kayıt Programı\Cari kayıt Programı\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="delete.ico" />
-    <None Remove="minus.ico" />
-    <None Remove="plus.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,18 +27,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.102.2" />
     <PackageReference Include="itext7" Version="8.0.4" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.4" />
-    <PackageReference Include="MaterialDesignThemes" Version="5.0.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.6" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="delete.ico" />
-    <Resource Include="minus.ico" />
-    <Resource Include="plus.ico" />
   </ItemGroup>
 
   <ItemGroup>

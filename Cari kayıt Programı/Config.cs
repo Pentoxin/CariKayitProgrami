@@ -12,6 +12,4 @@ namespace Cari_kayıt_Programı
         public static readonly string PDFPath2 = Path.Combine(AppDataPath, "Cari Kayıt Rehberi.pdf");
         public static readonly string dosyaAdi = Path.Combine(AppDataPath, "cari_kayit_programi_setup.exe");
     }
-
-
 }

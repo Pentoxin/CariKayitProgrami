@@ -58,7 +58,26 @@ namespace Cari_kayıt_Programı
                                         insertCommand.Parameters.AddWithValue("@telefon1", telefon1TextBox.Text);
                                         insertCommand.Parameters.AddWithValue("@telefon2", telefon2TextBox.Text);
                                         insertCommand.ExecuteNonQuery();
-                                        MessageBox.Show("İşletme bilgileri veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+
+                                        // Yeni kaydın ID'sini al
+                                        long newId = connection.LastInsertRowId;
+
+                                        // Yeni tabloyu oluştur
+                                        string createTableSql = $"CREATE TABLE Cari_{newId} (" +
+                                                                "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                                                "tarih TEXT, " +
+                                                                "tip TEXT, " +
+                                                                "evrakno TEXT, " +
+                                                                "aciklama TEXT, " +
+                                                                "vadetarihi TEXT, " +
+                                                                "borc INTEGER, " +
+                                                                "alacak INTEGER)";
+                                        using (SQLiteCommand createTableCommand = new SQLiteCommand(createTableSql, connection))
+                                        {
+                                            createTableCommand.ExecuteNonQuery();
+                                        }
+
+                                        MessageBox.Show("İşletme bilgileri veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Information);
                                     }
                                 }
                             }
