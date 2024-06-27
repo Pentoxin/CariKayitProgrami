@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SQLite;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using static Cari_kayıt_Programı.Main_TR;
@@ -31,7 +32,7 @@ namespace Cari_kayıt_Programı
 
             if (selectedBusiness != null)
             {
-                isletmeadiTextBox.Text = selectedBusiness.İşletme_Adı;
+                isletmeadiTextBox.Text = selectedBusiness.Isletme_Adi;
                 vergidairesiTextBox.Text = selectedBusiness.VergiDairesi;
                 verginoTextBox.Text = selectedBusiness.VergiNo;
                 bankaTextBox.Text = selectedBusiness.Banka;
@@ -59,6 +60,8 @@ namespace Cari_kayıt_Programı
 
                 if (selectedBusiness == null)
                     return;
+
+                string firstBusiness = selectedBusiness.Isletme_Adi;
 
 
                 using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
@@ -109,6 +112,10 @@ namespace Cari_kayıt_Programı
                             {
                                 MessageBox.Show("Veri güncelleme hatası!", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
                             }
+                        }
+                        if (!Directory.Exists(Path.Combine(Config.IsletmePath, isletmeadiTextBox.Text)))
+                        {
+                            Directory.Move(Path.Combine(Config.IsletmePath, firstBusiness), Path.Combine(Config.IsletmePath, isletmeadiTextBox.Text));
                         }
                     }
                 }

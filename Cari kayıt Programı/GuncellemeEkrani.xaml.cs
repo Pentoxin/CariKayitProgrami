@@ -18,8 +18,7 @@ namespace Cari_kayıt_Programı
 
         private async Task Veriler()
         {
-            Main_TR main_TR = new Main_TR();
-            var releaseInfo = await main_TR.GetLatestReleaseInfoAsync();
+            var releaseInfo = await Main_TR.Check.GetLatestReleaseInfoAsync();
             TitleLabel.Content = releaseInfo.title;
             ContentTextbox.Text = releaseInfo.notes;
         }

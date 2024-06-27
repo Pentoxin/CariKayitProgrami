@@ -7,10 +7,12 @@ using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -18,6 +20,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using static Cari_kayıt_Programı.Yazdir_TR;
 
 
@@ -25,9 +29,14 @@ namespace Cari_kayıt_Programı
 {
     public partial class Main_TR : Page
     {
+        public MainViewModel ViewModel { get; set; }
+
         public Main_TR()
         {
             InitializeComponent();
+
+            ViewModel = new MainViewModel();
+            DataContext = ViewModel;
 
             _ = GuncellemeKontrol();
             AppDataCreate();
@@ -47,7 +56,7 @@ namespace Cari_kayıt_Programı
         {
             Admin.Visibility = Visibility.Hidden;
 
-            dataGrid.ItemsSource = GetBusinesses(Config.ConnectionString);
+            dataGrid.ItemsSource = GetBusinesses();
 
             if (temizle == 0)
             {
@@ -56,73 +65,235 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        public async Task<(string version, string notes, string downloadUrl, string title)> GetLatestReleaseInfoAsync()
+        public DataGrid MainDataGrid
         {
-            try
+            get { return dataGrid; }
+        }
+
+        public class Check
+        {
+            private readonly Main_TR _mainTR;
+            public Check(Main_TR mainTR)
             {
-                if (InternetErisimiKontrolEt())
+                _mainTR = mainTR;
+            }
+
+            public void CheckAndCreateIsletmeFolders()
+            {
+                try
                 {
-                    string owner = "Pentoxin";
-                    string repo = "CariKayitProgrami";
-                    using (HttpClient client = new())
+                    foreach (var item in _mainTR.MainDataGrid.Items)
                     {
-                        client.DefaultRequestHeaders.UserAgent.TryParseAdd("request");
-
-                        string url = $"https://api.github.com/repos/{owner}/{repo}/releases";
-                        HttpResponseMessage response = await client.GetAsync(url);
-                        response.EnsureSuccessStatusCode();
-
-                        string responseBody = await response.Content.ReadAsStringAsync();
-                        JArray releases = JArray.Parse(responseBody);
-                        var latestRelease = releases[0];
-
-
-                        if (latestRelease != null)
+                        if (item is Business business)
                         {
-                            string title = latestRelease["name"]?.ToString() ?? "";
-                            string version = latestRelease["tag_name"]?.ToString() ?? "";
-                            string notes = latestRelease["body"]?.ToString() ?? "";
-                            var assets = latestRelease["assets"];
-                            string downloadUrl;
-                            if (assets != null && assets.Any())
+                            string isletmeAdi = business.Isletme_Adi; // Odeme sınıfında Isletme_Adi özelliği varsa kullanılabilir
+                            string isletmePath = Path.Combine(Config.IsletmePath, isletmeAdi);
+
+                            // Klasörü kontrol et veya oluştur
+                            if (!Directory.Exists(isletmePath))
                             {
-                                downloadUrl = assets[0]?["browser_download_url"]?.ToString() ?? "No assets found";
+                                Directory.CreateDirectory(isletmePath);
                             }
-                            else
-                            {
-                                downloadUrl = "No assets found";
-                            }
-                            return (version, notes, downloadUrl, title);
-                        }
-                        else
-                        {
-                            return ("", "", "", "");
                         }
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    return ("", "", "", "");
+                    LogError(ex);
                 }
             }
-            catch (Exception ex)
-            {
-                return ($"Error: {ex.Message}", string.Empty, string.Empty, string.Empty);
-            }
-        }
 
-        public static bool InternetErisimiKontrolEt()
-        {
-            string hedefAdres = "www.google.com";
-            try
+            public void CheckAndUpdateTables()
             {
-                Ping ping = new Ping();
-                PingReply cevap = ping.Send(hedefAdres);
-                return (cevap.Status == IPStatus.Success);
+                try
+                {
+                    var idList = new List<int>();
+                    foreach (var item in _mainTR.MainDataGrid.Items)
+                    {
+                        if (item is Business business)
+                        {
+                            idList.Add(business.ID);
+                        }
+                    }
+
+                    foreach (int id in idList)
+                    {
+                        string tableName = $"Cari_{id}";
+                        AddMissingColumns(tableName);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                }
             }
-            catch (PingException)
+
+            public static List<string> MissingColumns(string tableName)
             {
-                return false;
+                List<string> requiredColumns = new List<string> { "ID", "tarih", "tip", "evrakno", "aciklama", "vadetarihi", "borc", "alacak", "dosya" };
+                List<string> missingColumns = new List<string>();
+                try
+                {
+                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    {
+                        connection.Open();
+
+                        // PRAGMA table_info komutu ile sütunları sorgula
+                        using (SQLiteCommand command = new SQLiteCommand($"PRAGMA table_info({tableName})", connection))
+                        {
+                            using (SQLiteDataReader reader = command.ExecuteReader())
+                            {
+                                List<string> existingColumns = new List<string>();
+                                while (reader.Read())
+                                {
+                                    string existingColumnName = reader.GetString(1);
+                                    existingColumns.Add(existingColumnName);
+                                }
+
+                                // Gerekli sütunların var olup olmadığını kontrol et
+                                foreach (string column in requiredColumns)
+                                {
+                                    if (!existingColumns.Contains(column, StringComparer.OrdinalIgnoreCase))
+                                    {
+                                        missingColumns.Add(column);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return missingColumns;
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                    return missingColumns;
+                }
+            }
+
+            public static void AddMissingColumns(string tableName)
+            {
+                List<string> missingColumns = MissingColumns(tableName);
+                try
+                {
+                    if (missingColumns.Count > 0)
+                    {
+                        using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                        {
+                            connection.Open();
+
+                            foreach (string columnName in missingColumns)
+                            {
+                                string columnType = "TEXT";
+
+                                // Sütun adlarına göre sütun tiplerini belirleyin
+                                switch (columnName.ToLower())
+                                {
+                                    case "id":
+                                        columnType = "INTEGER";
+                                        break;
+                                    case "tarih":
+                                    case "vadetarihi":
+                                        columnType = "TEXT";
+                                        break;
+                                    case "borc":
+                                    case "alacak":
+                                        columnType = "REAL";
+                                        break;
+                                    default:
+                                        columnType = "TEXT";
+                                        break;
+                                }
+
+                                // ALTER TABLE komutu ile sütunu ekleyin
+                                string query = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {columnType}";
+
+                                using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                                {
+                                    command.ExecuteNonQuery();
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Tüm gerekli sütunlar zaten mevcut.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                }
+            }
+
+            public static async Task<(string version, string notes, string downloadUrl, string title)> GetLatestReleaseInfoAsync()
+            {
+                try
+                {
+                    if (InternetErisimiKontrolEt())
+                    {
+                        string owner = "Pentoxin";
+                        string repo = "CariKayitProgrami";
+                        using (HttpClient client = new())
+                        {
+                            client.DefaultRequestHeaders.UserAgent.TryParseAdd("request");
+
+                            string url = $"https://api.github.com/repos/{owner}/{repo}/releases";
+                            HttpResponseMessage response = await client.GetAsync(url);
+                            response.EnsureSuccessStatusCode();
+
+                            string responseBody = await response.Content.ReadAsStringAsync();
+                            JArray releases = JArray.Parse(responseBody);
+                            var latestRelease = releases[0];
+
+
+                            if (latestRelease != null)
+                            {
+                                string title = latestRelease["name"]?.ToString() ?? "";
+                                string version = latestRelease["tag_name"]?.ToString() ?? "";
+                                string notes = latestRelease["body"]?.ToString() ?? "";
+                                var assets = latestRelease["assets"];
+                                string downloadUrl;
+                                if (assets != null && assets.Any())
+                                {
+                                    downloadUrl = assets[0]?["browser_download_url"]?.ToString() ?? "No assets found";
+                                }
+                                else
+                                {
+                                    downloadUrl = "No assets found";
+                                }
+                                return (version, notes, downloadUrl, title);
+                            }
+                            else
+                            {
+                                return ("", "", "", "");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return ("", "", "", "");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return ($"Error: {ex.Message}", string.Empty, string.Empty, string.Empty);
+                }
+            }
+
+            public static bool InternetErisimiKontrolEt()
+            {
+                string hedefAdres = "www.google.com";
+                try
+                {
+                    Ping ping = new Ping();
+                    PingReply cevap = ping.Send(hedefAdres);
+                    return (cevap.Status == IPStatus.Success);
+                }
+                catch (PingException)
+                {
+                    return false;
+                }
             }
         }
 
@@ -130,11 +301,12 @@ namespace Cari_kayıt_Programı
         {
             try
             {
+                Check check = new Check(this);
                 UygulamayıGuncelle.Visibility = Visibility.Hidden;
 
-                if (InternetErisimiKontrolEt())
+                if (Check.InternetErisimiKontrolEt())
                 {
-                    var releaseInfo = await GetLatestReleaseInfoAsync();
+                    var releaseInfo = await Check.GetLatestReleaseInfoAsync();
 
                     int guncelVersiyon = Convert.ToInt32(releaseInfo.version.Replace("v", "").Replace(".", ""));
 
@@ -280,29 +452,6 @@ namespace Cari_kayıt_Programı
             window.ShowDialog();
         }
 
-        private void XButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                isletmeadiTextBox.Clear();
-                vergidairesiTextBox.Clear();
-                verginoTextBox.Clear();
-                hesapnoTextBox.Clear();
-                bankaTextBox.Clear();
-                adresTextBox.Clear();
-                mail1TextBox.Clear();
-                mail2TextBox.Clear();
-                telefon1TextBox.Clear();
-                telefon2TextBox.Clear();
-                txtSearch.Clear();
-                dataGrid.ItemsSource = GetBusinesses(Config.ConnectionString);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-            }
-        }
-
         private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
@@ -323,30 +472,7 @@ namespace Cari_kayıt_Programı
                 OpenWindow(new YeniKayit());
 
                 dataGrid.SelectedItem = null;
-                dataGrid.ItemsSource = GetBusinesses(Config.ConnectionString);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-            }
-        }
-
-        private void ListeleButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                dataGrid.ItemsSource = GetBusinesses(Config.ConnectionString);
-                isletmeadiTextBox.Clear();
-                vergidairesiTextBox.Clear();
-                verginoTextBox.Clear();
-                bankaTextBox.Clear();
-                hesapnoTextBox.Clear();
-                adresTextBox.Clear();
-                mail1TextBox.Clear();
-                mail2TextBox.Clear();
-                telefon1TextBox.Clear();
-                telefon2TextBox.Clear();
-                dataGrid.SelectedItem = null;
+                dataGrid.ItemsSource = GetBusinesses();
             }
             catch (Exception ex)
             {
@@ -388,7 +514,7 @@ namespace Cari_kayıt_Programı
                                 commandOdeme.ExecuteNonQuery();
                             }
                         }
-                        dataGrid.ItemsSource = GetBusinesses(Config.ConnectionString);
+                        dataGrid.ItemsSource = GetBusinesses();
                     }
                 }
                 isletmeadiTextBox.Clear();
@@ -434,7 +560,7 @@ namespace Cari_kayıt_Programı
                 telefon1TextBox.Clear();
                 telefon2TextBox.Clear();
                 txtSearch.Clear();
-                dataGrid.ItemsSource = GetBusinesses(Config.ConnectionString);
+                dataGrid.ItemsSource = GetBusinesses();
             }
             catch (Exception ex)
             {
@@ -478,7 +604,7 @@ namespace Cari_kayıt_Programı
                                 var business = item as Business;
                                 if (business != null)
                                 {
-                                    dt.Rows.Add(business.ID, business.İşletme_Adı, business.VergiDairesi, business.VergiNo, business.Banka, business.HesapNo,
+                                    dt.Rows.Add(business.ID, business.Isletme_Adi, business.VergiDairesi, business.VergiNo, business.Banka, business.HesapNo,
                                     business.Adres, business.EPosta1, business.EPosta2, business.Telefon1, business.Telefon2);
                                 }
                             }
@@ -616,7 +742,7 @@ namespace Cari_kayıt_Programı
                 var selectedBusiness = dataGrid.SelectedItem as Business;
                 if (selectedBusiness != null)
                 {
-                    isletmeadiTextBox.Text = selectedBusiness.İşletme_Adı;
+                    isletmeadiTextBox.Text = selectedBusiness.Isletme_Adi;
                     vergidairesiTextBox.Text = selectedBusiness.VergiDairesi;
                     verginoTextBox.Text = selectedBusiness.VergiNo;
                     bankaTextBox.Text = selectedBusiness.Banka;
@@ -634,33 +760,34 @@ namespace Cari_kayıt_Programı
             }
         }
 
+        private void dataGrid_Loaded(object sender, RoutedEventArgs e)
+        {
+            Check check = new Check(this);
+            check.CheckAndUpdateTables();
+            check.CheckAndCreateIsletmeFolders();
+        }
+
         private void IceriAktarButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.Filter = "DB Dosyaları (*.db)|*.db";
+                openFileDialog.Filter = "Zip Dosyalası (*.zip)|*.zip";
                 openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
                 if (openFileDialog.ShowDialog() == true)
                 {
+                    Check check = new Check(this);
+
                     string selectedFilePath = openFileDialog.FileName;
 
-                    // Mevcut CariKayitDB.db dosyasını sil
-                    if (File.Exists(Config.DatabaseFileName))
-                    {
-                        File.Delete(Config.DatabaseFileName);
-                    }
+                    ZipFile.ExtractToDirectory(selectedFilePath, Config.AppDataPath, true);
 
-                    // Seçilen dosyayı AppData dizinine kopyala
-                    File.Copy(selectedFilePath, Config.DatabaseFileName, true);
-
-                    // Yeni dosyanın adını CariKayitDB.db olarak değiştir
-                    File.Move(Config.DatabaseFileName, Config.DatabaseFileName);
-
+                    check.CheckAndUpdateTables();
+                    check.CheckAndCreateIsletmeFolders();
                     MessageBox.Show("Veritabanı başarıyla içe aktarıldı.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    dataGrid.ItemsSource = GetBusinesses(Config.ConnectionString);
+                    dataGrid.ItemsSource = GetBusinesses();
                 }
             }
             catch (Exception ex)
@@ -674,14 +801,30 @@ namespace Cari_kayıt_Programı
             try
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = "Veritabanı Dosyası (*.db)|*.db";
-                saveFileDialog.FileName = "CariKayitDB Yedek.db";
+                saveFileDialog.Filter = "Zip Dosyası (*.zip)|*.zip";
+                saveFileDialog.FileName = "CariKayitDB Yedek.zip";
                 saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     string destinationFilePath = saveFileDialog.FileName;
 
-                    File.Copy(Config.DatabaseFileName, destinationFilePath, true);
+                    if (File.Exists(destinationFilePath))
+                    {
+                        File.Delete(destinationFilePath);
+                    }
+                    if (Directory.Exists(Config.IsletmePath))
+                    {
+                        ZipFile.CreateFromDirectory(Config.IsletmePath, destinationFilePath, CompressionLevel.Optimal, true);
+                    }
+
+                    // CariKayitDB dosyasını ekleme
+                    if (File.Exists(Config.DatabaseFileName))
+                    {
+                        using (var zipArchive = ZipFile.Open(destinationFilePath, ZipArchiveMode.Update))
+                        {
+                            zipArchive.CreateEntryFromFile(Config.DatabaseFileName, Path.GetFileName(Config.DatabaseFileName), CompressionLevel.Optimal);
+                        }
+                    }
 
                     MessageBox.Show("Veritabanı başarıyla dışa aktarıldı.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -728,9 +871,10 @@ namespace Cari_kayıt_Programı
             OpenWindow(new Hareketler());
         }
 
-        private static List<Business> Businesses(string searchTerm)
+        private ObservableCollection<Business> Businesses(string searchTerm)
         {
-            List<Business> businesses = new List<Business>();
+            MainViewModel viewModel = (MainViewModel)this.DataContext;
+            viewModel.businesses.Clear();
 
             using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
             {
@@ -761,7 +905,7 @@ namespace Cari_kayıt_Programı
                             Business b = new Business
                             {
                                 ID = id,
-                                İşletme_Adı = name,
+                                Isletme_Adi = name,
                                 VergiDairesi = vergidairesi,
                                 VergiNo = vergino,
                                 Banka = banka,
@@ -772,19 +916,20 @@ namespace Cari_kayıt_Programı
                                 Telefon1 = phone1,
                                 Telefon2 = phone2
                             };
-                            businesses.Add(b);
+                            viewModel.businesses.Add(b);
                         }
                     }
                 }
             }
-            return businesses;
+            return viewModel.businesses;
         }
 
-        public static List<Business> GetBusinesses(string connectionString)
+        public ObservableCollection<Business> GetBusinesses()
         {
-            List<Business> businesses = new List<Business>();
+            MainViewModel viewModel = (MainViewModel)this.DataContext;
+            viewModel.businesses.Clear();
 
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
             {
                 connection.Open();
 
@@ -811,7 +956,7 @@ namespace Cari_kayıt_Programı
                             Business b = new Business
                             {
                                 ID = id,
-                                İşletme_Adı = name,
+                                Isletme_Adi = name,
                                 VergiDairesi = vergidairesi,
                                 VergiNo = vergino,
                                 Banka = banka,
@@ -822,18 +967,18 @@ namespace Cari_kayıt_Programı
                                 Telefon1 = phone1,
                                 Telefon2 = phone2
                             };
-                            businesses.Add(b);
+                            viewModel.businesses.Add(b);
                         }
                     }
                 }
             }
-            return businesses;
+            return viewModel.businesses;
         }
 
         public class Business
         {
             public int ID { get; set; }
-            public string? İşletme_Adı { get; set; }
+            public string? Isletme_Adi { get; set; }
             public string? VergiDairesi { get; set; }
             public string? VergiNo { get; set; }
             public string? Banka { get; set; }
@@ -848,7 +993,8 @@ namespace Cari_kayıt_Programı
 
         private void Admin_Click(object sender, RoutedEventArgs e)
         {
-            // Method intentionally left empty.
+
+
         }
 
         //public static int selectedValue;
@@ -872,6 +1018,51 @@ namespace Cari_kayıt_Programı
                     mainWindow.Close();
                 }
             }*/
+        }
+
+        private void Page_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!IsMouseOverDataGrid(e))
+            {
+                isletmeadiTextBox.Clear();
+                vergidairesiTextBox.Clear();
+                verginoTextBox.Clear();
+                hesapnoTextBox.Clear();
+                bankaTextBox.Clear();
+                adresTextBox.Clear();
+                mail1TextBox.Clear();
+                mail2TextBox.Clear();
+                telefon1TextBox.Clear();
+                telefon2TextBox.Clear();
+                txtSearch.Clear();
+                dataGrid.ItemsSource = GetBusinesses();
+            }
+        }
+
+        private bool IsMouseOverDataGrid(MouseButtonEventArgs e)
+        {
+            DependencyObject originalSource = e.OriginalSource as DependencyObject;
+
+            // Tıklanan öğenin DataGrid, Button, TextBox, RadioButton veya GroupBox olup olmadığını kontrol et
+            while (originalSource != null)
+            {
+                if (originalSource == dataGrid)
+                {
+                    return true;
+                }
+
+                if (originalSource is Button ||
+                    originalSource is TextBox ||
+                    originalSource is RadioButton ||
+                    originalSource is GroupBox)
+                {
+                    return true;
+                }
+
+                originalSource = VisualTreeHelper.GetParent(originalSource);
+            }
+
+            return false;
         }
     }
 }

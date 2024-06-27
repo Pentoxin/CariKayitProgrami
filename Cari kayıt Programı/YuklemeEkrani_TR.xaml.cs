@@ -25,8 +25,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                Main_TR main_TR = new Main_TR();
-                var releaseInfo = await main_TR.GetLatestReleaseInfoAsync();
+                var releaseInfo = await Main_TR.Check.GetLatestReleaseInfoAsync();
 
                 string urlP = releaseInfo.downloadUrl;
 
@@ -57,12 +56,12 @@ namespace Cari_kayıt_Programı
                         statusLabel.Content = "Dosya bozuk, tekrar indiriliyor...";
                         await Task.Delay(1000);
                         await DownloadAndStartFile(urlP);
-                    }                    
+                    }
                 }
                 else
                 {
                     await DownloadAndStartFile(urlP);
-                }                
+                }
 
                 Window mainWindow = Window.GetWindow(this);
                 if (mainWindow != null)

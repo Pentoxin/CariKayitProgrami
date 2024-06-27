@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SQLite;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -71,11 +72,13 @@ namespace Cari_kayıt_Programı
                                                                 "aciklama TEXT, " +
                                                                 "vadetarihi TEXT, " +
                                                                 "borc INTEGER, " +
-                                                                "alacak INTEGER)";
+                                                                "alacak INTEGER," +
+                                                                "dosya string)";
                                         using (SQLiteCommand createTableCommand = new SQLiteCommand(createTableSql, connection))
                                         {
                                             createTableCommand.ExecuteNonQuery();
                                         }
+                                        Directory.CreateDirectory(Path.Combine(Config.IsletmePath, isletmeadiTextBox.Text));
 
                                         MessageBox.Show("İşletme bilgileri veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Information);
                                     }

@@ -15,9 +15,9 @@
       mc:Ignorable="d" d:DesignHeight="600" d:DesignWidth="520" Title="YeniKayit_TR">
 
     <Grid>
-        <Label Margin="10,10,0,0" Content="İşletme Adı:" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105" HorizontalContentAlignment="Right"/>
+        <Label Margin="10,10,0,0" Content="İşletme Adı:" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
         <TextBox x:Name="isletmeadiTextBox" Margin="120,10,10,0" VerticalAlignment="Top" TabIndex="1" MaxLength="100" TextWrapping="Wrap" Height="50"/>
-        <Label Margin="10,244,0,0" Content="Adres:" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105" HorizontalContentAlignment="Right"/>
+        <Label Margin="10,244,0,0" Content="Adres:" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
         <TextBox x:Name="adresTextBox" Margin="120,244,10,0" Height="50" VerticalAlignment="Top" TabIndex="6" MaxLength="100" TextWrapping="Wrap"/>
         <Label Margin="10,394,0,0" Content="Telefon 1:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right"/>
         <TextBox x:Name="telefon1TextBox" Margin="120,394,10,0" Height="26" VerticalAlignment="Top" TabIndex="9" MaxLength="20"/>
