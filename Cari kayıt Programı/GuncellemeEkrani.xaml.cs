@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -18,9 +19,16 @@ namespace Cari_kayıt_Programı
 
         private async Task Veriler()
         {
-            var releaseInfo = await Main_TR.Check.GetLatestReleaseInfoAsync();
-            TitleLabel.Content = releaseInfo.title;
-            ContentTextbox.Text = releaseInfo.notes;
+            try
+            {
+                var releaseInfo = await Main_TR.Check.GetLatestReleaseInfoAsync();
+                TitleLabel.Content = releaseInfo.title;
+                ContentTextbox.Text = releaseInfo.notes;
+            }
+            catch (Exception ex)
+            {
+                Main_TR.LogError(ex);
+            }
         }
 
         private static void SetGuncellemeOnay()
@@ -30,25 +38,39 @@ namespace Cari_kayıt_Programı
 
         private void GuncelleButton_Click(object sender, RoutedEventArgs e)
         {
-            SetGuncellemeOnay();
-
-            Window mainWindow = Window.GetWindow(this);
-
-            if (mainWindow != null)
+            try
             {
-                // Ana pencereyi kapat
-                mainWindow.Close();
+                SetGuncellemeOnay();
+
+                Window mainWindow = Window.GetWindow(this);
+
+                if (mainWindow != null)
+                {
+                    // Ana pencereyi kapat
+                    mainWindow.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Main_TR.LogError(ex);
             }
         }
 
         private void IptalButton_Click(object sender, RoutedEventArgs e)
         {
-            Window mainWindow = Window.GetWindow(this);
-
-            if (mainWindow != null)
+            try
             {
-                // Ana pencereyi kapat
-                mainWindow.Close();
+                Window mainWindow = Window.GetWindow(this);
+
+                if (mainWindow != null)
+                {
+                    // Ana pencereyi kapat
+                    mainWindow.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Main_TR.LogError(ex);
             }
         }
     }

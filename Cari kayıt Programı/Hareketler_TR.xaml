@@ -13,7 +13,7 @@
       TextOptions.TextRenderingMode="Auto"
       Background="{DynamicResource MaterialDesignPaper}"
       FontFamily="{DynamicResource MaterialDesignFont}"
-      mc:Ignorable="d" d:DesignHeight="600" d:DesignWidth="900" Title="Hareketler_TR" Loaded="Page_Loaded" PreviewMouseDown="Page_PreviewMouseDown">
+      mc:Ignorable="d" d:DesignHeight="600" d:DesignWidth="966" Title="Hareketler_TR" Loaded="Page_Loaded" PreviewMouseDown="Page_PreviewMouseDown">
 
     <Page.Resources>
         <Style x:Key="CustomMaterialDesignTextBox" 
@@ -32,12 +32,16 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="GroupBox">
-                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5" Padding="10">
+                        <Border Name="PART_Border" BorderBrush="#FF494949" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5" Padding="10">
                             <DockPanel>
                                 <ContentPresenter Margin="{TemplateBinding Padding}" />
-                                <ContentPresenter />
                             </DockPanel>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="PART_Border" Property="BorderBrush" Value="#FFc1c1c1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -49,7 +53,14 @@
             <Setter Property="Opacity" Value="1" />
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value="1" />
+                    <Setter Property="Opacity" Value="0.5" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="CustomDisabledBorderStyle" TargetType="Border">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -82,7 +93,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTemplateColumn Header="Dosya" Visibility="Hidden">
+                <DataGridTemplateColumn Header="Dosya">
                     <DataGridTemplateColumn.CellStyle>
                         <Style TargetType="DataGridCell">
                             <Setter Property="Padding" Value="5"/>
@@ -101,7 +112,7 @@
             </DataGrid.Columns>
             
         </DataGrid>
-        <Button x:Name="YeniHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,126,360,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="YeniHareketButton_Click" Padding="16,4,16,4">
+        <Button x:Name="YeniHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,97,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="YeniHareketButton_Click" Padding="16,4,16,4">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="ContentSave" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
@@ -120,36 +131,36 @@
             </Grid>
         </GroupBox>
         <TextBox x:Name="TutarTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Tutar*" PreviewTextInput="TutarTextBox_PreviewTextInput" DataObject.Pasting="TutarTextBox_Pasting"  Margin="190,112,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="150" Height="NaN"/>
-        <Button x:Name="SilHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,126,250,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="SilHareketButton_Click" Padding="10,4,10,4">
+        <Button x:Name="SilHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,128,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="SilHareketButton_Click" Padding="10,4,10,4">
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon Kind="Delete" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 <TextBlock Text="Kaydı Sil" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </StackPanel>
         </Button>
-        <Button x:Name="DegistirHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,126,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="DegistirHareketButton_Click" Padding="10,4,10,4">
+        <Button x:Name="DegistirHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,97,30,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="DegistirHareketButton_Click" Padding="10,4,10,4">
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon x:Name="DegistirIcon" Kind="pencil" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,1,0"/>
                 <TextBlock x:Name="DegistirTextbox" Text="Değiştir" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </StackPanel>
         </Button>
-        <Button x:Name="YazdırButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,126,30,0" Click="YazdırButton_Click" Height="26" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Right" Width="100">
+        <Button x:Name="YazdırButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,128,30,0" Click="YazdırButton_Click" Height="26" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Right" Width="100">
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon Kind="Printer" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
                 <TextBlock Text="Yazdır" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </StackPanel>
         </Button>
-        <GroupBox x:Name="YukleGroupBox" Visibility="Hidden" Header="GroupBox" Margin="640,67,0,0" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" Height="42" VerticalAlignment="Top" HorizontalAlignment="Left" Width="214">
-            <Grid Margin="-10,-10, 0,-10" Width="212">
-                <Button x:Name="YukleButton" BorderThickness="0.5" materialDesign:ButtonAssist.CornerRadius="4" BorderBrush="Gray" Style="{StaticResource CustomDisabledButtonStyle}" Background="#E5FAFAFA" Click="YukleButton_Click" Padding="10,4,10,4" Margin="7,0,0,0" Height="26" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" >
+        <GroupBox x:Name="YukleGroupBox" Header="GroupBox" Margin="350,112,0,0" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" Height="42" VerticalAlignment="Top" HorizontalAlignment="Left" Width="280" >
+            <Grid Margin="-10,-10, 0,-10" Width="270">
+                <Button x:Name="YukleButton" BorderThickness="0.5" materialDesign:ButtonAssist.CornerRadius="4" BorderBrush="Gray" Style="{StaticResource CustomDisabledButtonStyle}" Background="#E5FAFAFA" Click="YukleButton_Click" Padding="10,4,10,4" Margin="7,0,0,0" Height="26" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="FileUpload" Foreground="Black" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
                         <TextBlock Text="Dosya Yükle" Height="18"  Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
-                <Border x:Name="YukleBorder" BorderBrush="Gray" Margin="7,45,0,0" BorderThickness="0.5" CornerRadius="4" Background="#E5FAFAFA" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Padding="10,4,10,4" MaxWidth="195">
+                <Border x:Name="YukleBorder" BorderBrush="Gray" Margin="7,45,0,0" Style="{StaticResource CustomDisabledBorderStyle}" BorderThickness="0.5" CornerRadius="4" Background="#E5FAFAFA" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Padding="10,4,10,4" MaxWidth="260">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="YukleTextbox" Text="Dosya Yükle" Height="18"  Foreground="Black" VerticalAlignment="Center" FontSize="14" MaxWidth="155"/>
+                        <TextBlock x:Name="YukleTextbox" Text="Dosya Yükle" Height="18"  Foreground="Black" VerticalAlignment="Center" FontSize="14" MaxWidth="222"/>
                         <Button x:Name="YukleButton2" Style="{StaticResource MaterialDesignIconButton}" Width="17" Click="YukleButton_Click" Height="17" Margin="2,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Center" >
                             <Image Source="/x_icon.png" Width="16" Height="16"/>
                         </Button>
@@ -160,7 +171,7 @@
         <TextBox x:Name="BorcTopTextbox" HorizontalAlignment="Left" Text="" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Borç Bakiyesi" IsReadOnly="True" Margin="30,0,0,30" TextWrapping="NoWrap" VerticalAlignment="Bottom" Width="150" Height="NaN"/>
         <TextBox x:Name="AlacakTopTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Alacak Bakiyesi" IsReadOnly="True" Margin="190,0,0,30" TextWrapping="NoWrap" VerticalAlignment="Bottom" Width="150" Height="NaN"/>
         <TextBox x:Name="BakiyeTopTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Toplam Bakiye" IsReadOnly="True" Margin="351,0,0,29" TextWrapping="NoWrap" VerticalAlignment="Bottom" Width="150" Height="NaN"/>
-        <Button x:Name="DegistirIptalButton" Visibility="Hidden" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,95,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="DegistirIptalButton_Click" Padding="10,4,10,4">
+        <Button x:Name="DegistirIptalButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,66,30,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="DegistirIptalButton_Click" Padding="10,4,10,4">
             <StackPanel Orientation="Horizontal">
                 <Image Source="/x_icon_beyaz.png" Width="16" Height="16" Margin="0,0,2,0"/>
                 <TextBlock Text="İptal" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>

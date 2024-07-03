@@ -92,22 +92,22 @@ namespace Cari_kayıt_Programı
                     {
                         if (checkBox.IsChecked == true)
                         {
-                            SecilenSutunlar.Add("VergiDairesi");
+                            SecilenSutunlar.Add("Vergi Dairesi");
                         }
                         if (checkBox.IsChecked == false)
                         {
-                            SecilmeyenSutunlar.Add("VergiDairesi");
+                            SecilmeyenSutunlar.Add("Vergi Dairesi");
                         }
                     }
                     else if (checkBox.Content.ToString() == "Vergi No")
                     {
                         if (checkBox.IsChecked == true)
                         {
-                            SecilenSutunlar.Add("VergiNo");
+                            SecilenSutunlar.Add("Vergi No");
                         }
                         if (checkBox.IsChecked == false)
                         {
-                            SecilmeyenSutunlar.Add("VergiNo");
+                            SecilmeyenSutunlar.Add("Vergi No");
                         }
                     }
                     else if (checkBox.Content.ToString() == "Banka")
@@ -125,11 +125,11 @@ namespace Cari_kayıt_Programı
                     {
                         if (checkBox.IsChecked == true)
                         {
-                            SecilenSutunlar.Add("HesapNo");
+                            SecilenSutunlar.Add("Hesap No");
                         }
                         if (checkBox.IsChecked == false)
                         {
-                            SecilmeyenSutunlar.Add("HesapNo");
+                            SecilmeyenSutunlar.Add("Hesap No");
                         }
                     }
                     else if (checkBox.Content.ToString() == "Adres")
@@ -147,44 +147,44 @@ namespace Cari_kayıt_Programı
                     {
                         if (checkBox.IsChecked == true)
                         {
-                            SecilenSutunlar.Add("EPosta1");
+                            SecilenSutunlar.Add("E-Posta 1");
                         }
                         if (checkBox.IsChecked == false)
                         {
-                            SecilmeyenSutunlar.Add("EPosta1");
+                            SecilmeyenSutunlar.Add("E-Posta 1");
                         }
                     }
                     else if (checkBox.Content.ToString() == "E-Posta 2")
                     {
                         if (checkBox.IsChecked == true)
                         {
-                            SecilenSutunlar.Add("EPosta2");
+                            SecilenSutunlar.Add("E-Posta 2");
                         }
                         if (checkBox.IsChecked == false)
                         {
-                            SecilmeyenSutunlar.Add("EPosta2");
+                            SecilmeyenSutunlar.Add("E-Posta 2");
                         }
                     }
                     else if (checkBox.Content.ToString() == "Telefon 1")
                     {
                         if (checkBox.IsChecked == true)
                         {
-                            SecilenSutunlar.Add("Telefon1");
+                            SecilenSutunlar.Add("Telefon 1");
                         }
                         if (checkBox.IsChecked == false)
                         {
-                            SecilmeyenSutunlar.Add("Telefon1");
+                            SecilmeyenSutunlar.Add("Telefon 1");
                         }
                     }
                     else if (checkBox.Content.ToString() == "Telefon 2")
                     {
                         if (checkBox.IsChecked == true)
                         {
-                            SecilenSutunlar.Add("Telefon2");
+                            SecilenSutunlar.Add("Telefon 2");
                         }
                         if (checkBox.IsChecked == false)
                         {
-                            SecilmeyenSutunlar.Add("Telefon2");
+                            SecilmeyenSutunlar.Add("Telefon 2");
                         }
                     }
                 }

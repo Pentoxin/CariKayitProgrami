@@ -31,18 +31,25 @@ namespace Cari_kayıt_Programı
 
             public static void AddSecilenOzellik(string ozellik)
             {
-                // Null kontrolü
-                if (ozellik == null)
+                try
                 {
-                    throw new ArgumentNullException(nameof(ozellik), "Ozellik parametresi null olamaz.");
-                }
-                else
-                {
-                    // Daha önce eklenmemişse ekle
-                    if (!SecilenOzellikler.Contains(ozellik))
+                    // Null kontrolü
+                    if (ozellik == null)
                     {
-                        SecilenOzellikler.Add(ozellik);
+                        throw new ArgumentNullException(nameof(ozellik), "Ozellik parametresi null olamaz.");
                     }
+                    else
+                    {
+                        // Daha önce eklenmemişse ekle
+                        if (!SecilenOzellikler.Contains(ozellik))
+                        {
+                            SecilenOzellikler.Add(ozellik);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Main_TR.LogError(ex);
                 }
             }
 

@@ -19,12 +19,12 @@
     </Page.DataContext>
 
     <Grid>
-        <DataGrid x:Name="dataGrid" BorderThickness="1" ItemsSource="{Binding Businesses}" materialDesign:DataGridAssist.CornerRadius="8" AutoGenerateColumns="False" Margin="10,360,10,10" SelectionChanged="DataGrid_SelectionChanged" IsReadOnly="True" Loaded="dataGrid_Loaded">
+        <DataGrid x:Name="dataGrid" BorderThickness="1" Language="tr-TR" ItemsSource="{Binding Businesses}" materialDesign:DataGridAssist.CornerRadius="8" AutoGenerateColumns="False" Margin="10,360,10,10" SelectionChanged="DataGrid_SelectionChanged" IsReadOnly="True" Loaded="dataGrid_Loaded">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding ID}"/>
                 <DataGridTextColumn Header="İşletme Adı" Binding="{Binding Isletme_Adi}" />
-                <DataGridTextColumn Header="Vergi Dairesi" Binding="{Binding VergiNo}" />
-                <DataGridTextColumn Header="Evrak No" Binding="{Binding EvrakNo}" />
+                <DataGridTextColumn Header="Vergi Dairesi" Binding="{Binding VergiDairesi}" />
+                <DataGridTextColumn Header="Vergi No" Binding="{Binding VergiNo}" />
                 <DataGridTextColumn Header="Banka" Binding="{Binding Banka}" />
                 <DataGridTextColumn Header="Hesap No" Binding="{Binding HesapNo}" />
                 <DataGridTextColumn Header="Adres" Binding="{Binding Adres}" />
@@ -90,7 +90,7 @@
             <ComboBoxItem Content="Türkçe"/>
             <ComboBoxItem Content="English"/>
         </ComboBox>
-        <Button x:Name="FiltreleButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,300,370,0" VerticalAlignment="Top" Width="100" Height="26" Click="FiltreleButton_Click">
+        <Button x:Name="FiltreleButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,300,365,0" VerticalAlignment="Top" Width="100" Height="26" Click="FiltreleButton_Click">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Filter" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
@@ -99,7 +99,7 @@
             </Button.Content>
         </Button>
         <TextBox x:Name="hesapnoTextBox" Margin="530,132,120,0" Height="26" VerticalAlignment="Top" TabIndex="8" MaxLength="40" IsReadOnly="True"/>
-        <Button x:Name="Admin" materialDesign:ButtonAssist.CornerRadius="8" Content="Admin" HorizontalAlignment="Right" Margin="0,300,260,0" VerticalAlignment="Top" Width="100" Height="26" Click="Admin_Click" Cursor="Hand"/>
+        <Button x:Name="Admin" materialDesign:ButtonAssist.CornerRadius="8" Content="Admin" HorizontalAlignment="Right" Margin="0,300,255,0" VerticalAlignment="Top" Width="100" Height="26" Click="Admin_Click" Cursor="Hand"/>
         <Button x:Name="IceriAktarButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="130" Height="26" Click="IceriAktarButton_Click">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
