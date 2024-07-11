@@ -10,17 +10,12 @@
     <PackageIcon>Notebook_icon.png</PackageIcon>
     <Company>Gökmen Ali Üngör</Company>
     <ApplicationManifest></ApplicationManifest>
-    <AssemblyVersion>1.5.0</AssemblyVersion>
-    <FileVersion>1.5.0</FileVersion>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
+    <FileVersion>1.6.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <EditorConfigFiles Remove="C:\Users\GOKMEN\Documents\Visual Studio Project\Cari kayıt Programı\Cari kayıt Programı\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="x_icon.png" />
-    <None Remove="x_icon_beyaz.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,12 +34,7 @@
     <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.6" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="x_icon.png" />
-    <Resource Include="x_icon_beyaz.png" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>

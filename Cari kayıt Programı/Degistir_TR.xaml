@@ -35,8 +35,8 @@
         <TextBox x:Name="mail1TextBox" Margin="120,312,10,0" Height="26" VerticalAlignment="Top" TabIndex="7" MaxLength="40" GotFocus="TextBox_GotFocus"/>
         <TextBox x:Name="mail2TextBox" Margin="120,354,10,0" Height="26" VerticalAlignment="Top" TabIndex="8" MaxLength="40" GotFocus="TextBox_GotFocus"/>
         <TextBox x:Name="hesapnoTextBox" Margin="120,204,10,0" Height="26" VerticalAlignment="Top" TabIndex="5" MaxLength="40" GotFocus="TextBox_GotFocus"/>
-        <Button x:Name="DegistirButton" Content="Değiştir" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="26" Width="100" Click="DegistirButton_Click" Margin="0,0,115,10"/>
-        <Button x:Name="VazgecButton" Content="Vazgeç" HorizontalAlignment="Right"  VerticalAlignment="Bottom" Height="26" Width="100" Click="VazgecButton_Click" Margin="0,0,10,10"/>
+        <Button x:Name="DegistirButton"  materialDesign:ButtonAssist.CornerRadius="8" Content="Değiştir" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="26" Width="100" Click="DegistirButton_Click" Margin="0,0,115,10"/>
+        <Button x:Name="VazgecButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Vazgeç" HorizontalAlignment="Right"  VerticalAlignment="Bottom" Height="26" Width="100" Click="VazgecButton_Click" Margin="0,0,10,10"/>
 
     </Grid>
 </Page>

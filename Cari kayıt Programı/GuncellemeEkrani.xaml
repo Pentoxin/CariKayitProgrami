@@ -17,7 +17,7 @@
     <Grid>
         <Label x:Name="TitleLabel" Content="Label"  HorizontalAlignment="Left" Margin="30,30,0,0" VerticalAlignment="Top" Height="26"/>
         <TextBox x:Name="ContentTextbox" MinWidth="280" materialDesign:HintAssist.Hint="Güncelleme Notları" AcceptsReturn="True" SpellCheck.IsEnabled="True" IsReadOnly="True" TextWrapping="Wrap" Style="{StaticResource MaterialDesignOutlinedTextBox}"  Margin="30,61,30,106" IsTabStop="False" Focusable="False" />
-        <Button x:Name="GuncelleButton" Content="Güncelle" HorizontalAlignment="Right" Margin="0,0,135,30" VerticalAlignment="Bottom" Height="26" Width="100" Click="GuncelleButton_Click"/>
-        <Button x:Name="IptalButton" Content="İptal Et" HorizontalAlignment="Right" Margin="0,0,30,30" Width="100" Height="26" VerticalAlignment="Bottom" Click="IptalButton_Click"/>
+        <Button x:Name="GuncelleButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Güncelle" HorizontalAlignment="Right" Margin="0,0,135,30" VerticalAlignment="Bottom" Height="26" Width="100" Click="GuncelleButton_Click"/>
+        <Button x:Name="IptalButton" materialDesign:ButtonAssist.CornerRadius="8" Content="İptal Et" HorizontalAlignment="Right" Margin="0,0,30,30" Width="100" Height="26" VerticalAlignment="Bottom" Click="IptalButton_Click"/>
     </Grid>
 </Page>

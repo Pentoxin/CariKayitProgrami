@@ -31,23 +31,50 @@ namespace Cari_kayıt_Programı
 
         private string? DosyaPath = "";
 
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             Business? selectedBusiness = Degiskenler.selectedBusiness;
-            string? isletmeAdı = "Bir Hata Oluştu";
             if (selectedBusiness != null)
             {
-                isletmeAdı = selectedBusiness.Isletme_Adi;
-            }
+                CariKodLabel.Content = selectedBusiness.ID;
+                IsletmeAdiLabel.Content = selectedBusiness.Isletme_Adi;
+                LoadDataGrid();
 
-            if (isletmeAdı != null)
+                BorcRadioButton.IsChecked = true;
+                TarihDatePicker.IsEnabled = true;
+                EvrakNoTextbox.IsEnabled = true;
+                AciklamaTextbox.IsEnabled = true;
+                VadeDatePicker.IsEnabled = true;
+                BAGroupBox.IsEnabled = true;
+                YukleGroupBox.IsEnabled = true;
+                TutarTextbox.IsEnabled = true;
+                YeniHareketButton.IsEnabled = true;
+                SilHareketButton.IsEnabled = true;
+                DegistirHareketButton.IsEnabled = true;
+                YazdırButton.IsEnabled = true;
+                txtSearch.IsEnabled = true;
+            }
+            else
             {
-                IsletmeAdiLabel.Content = isletmeAdı.ToString();
+                IsletmeAdiLabel.Content = "-";
+                BorcRadioButton.IsChecked = false;
+                TarihDatePicker.IsEnabled = false;
+                EvrakNoTextbox.IsEnabled = false;
+                AciklamaTextbox.IsEnabled = false;
+                VadeDatePicker.IsEnabled = false;
+                BAGroupBox.IsEnabled = false;
+                YukleGroupBox.IsEnabled = false;
+                TutarTextbox.IsEnabled = false;
+                YeniHareketButton.IsEnabled = false;
+                SilHareketButton.IsEnabled = false;
+                DegistirHareketButton.IsEnabled = false;
+                YazdırButton.IsEnabled = false;
+                txtSearch.IsEnabled = false;
             }
-
-            LoadDataGrid();
 
             DegistirIptalButton.Visibility = Visibility.Hidden;
+            AdminButton.Visibility = Visibility.Hidden;
         }
 
         private void YeniHareketButton_Click(object sender, RoutedEventArgs e)
@@ -99,7 +126,7 @@ namespace Cari_kayıt_Programı
                     {
                         connection.Open();
 
-                        string checkQuery = $"SELECT COUNT(*) FROM Cari_{ID} WHERE EvrakNo = @EvrakNo";
+                        string checkQuery = $"SELECT COUNT(*) FROM Cari_{ID} WHERE lower(EvrakNo) = lower(@EvrakNo)";
                         using (SQLiteCommand checkCommand = new SQLiteCommand(checkQuery, connection))
                         {
                             checkCommand.Parameters.AddWithValue("@EvrakNo", EvrakNoTextbox.Text);
@@ -175,7 +202,7 @@ namespace Cari_kayıt_Programı
 
                 // Seçilen öğenin ID'sini alın
                 int selectedOdemeId = 0; // varsayılan olarak 0 ayarlandı
-                string selectedOdemeDosya = "";
+                string? selectedOdemeDosya = "";
                 if (dataGrid.SelectedItem != null)
                 {
                     // Seçilen öğenin ID'sini alma
@@ -288,6 +315,9 @@ namespace Cari_kayıt_Programı
                     BAGroupBox.IsEnabled = true;
                     YukleGroupBox.IsEnabled = true;
                     TutarTextbox.IsEnabled = true;
+                    YeniHareketButton.IsEnabled = false;
+                    SilHareketButton.IsEnabled = false;
+                    YazdırButton.IsEnabled = false;
                     DegistirIptalButton.Visibility = Visibility.Visible;
                     DegistirSayac++;
 
@@ -305,6 +335,7 @@ namespace Cari_kayıt_Programı
                 LogError(ex);
             }
         }
+
         private void DegistirIptalButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -328,6 +359,10 @@ namespace Cari_kayıt_Programı
                 }
                 DegistirSayac = 3;
                 Degistir(ID, selectedOdemeId, selectedOdemeDosya);
+
+                YeniHareketButton.IsEnabled = true;
+                SilHareketButton.IsEnabled = true;
+                YazdırButton.IsEnabled = true;
             }
             catch (Exception ex)
             {
@@ -477,6 +512,10 @@ namespace Cari_kayıt_Programı
                                 BorcRadioButton.IsChecked = true;
                                 DosyaIslem = "Saved";
                                 ChangeButtonContent("");
+
+                                YeniHareketButton.IsEnabled = true;
+                                SilHareketButton.IsEnabled = true;
+                                YazdırButton.IsEnabled = true;
                             }
                         }
                     }
@@ -598,7 +637,7 @@ namespace Cari_kayıt_Programı
                                             if (value.ToString() != null && value.ToString() != "")
                                             {
                                                 var cell = worksheet.Cell(row, colIndex);
-                                                string link = value.ToString();
+                                                string? link = value.ToString();
                                                 cell.Value = Path.GetFileName(link);
                                                 cell.SetHyperlink(new XLHyperlink(link));
                                             }
@@ -795,7 +834,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                Button button = sender as Button;
+                Button? button = sender as Button;
                 if (button != null)
                 {
                     var selectedOdeme = dataGrid.SelectedItem as Odeme;
@@ -821,7 +860,7 @@ namespace Cari_kayıt_Programı
 
         string DosyaIslem = "", selectedFilePath = "";
         bool DosyaSil = false;
-        private void ChangeButtonContent(string filename = "")
+        private void ChangeButtonContent(string? filename = "")
         {
             try
             {
@@ -877,17 +916,214 @@ namespace Cari_kayıt_Programı
             }
         }
 
+        private void CariKartButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenWindow(new CariKart());
+
+                Business? selectedBusiness = Degiskenler.selectedBusiness;
+                if (selectedBusiness != null)
+                {
+                    CariKodLabel.Content = selectedBusiness.ID;
+                    IsletmeAdiLabel.Content = selectedBusiness.Isletme_Adi;
+                    BorcTopTextbox.Clear();
+                    AlacakTopTextbox.Clear();
+                    BakiyeTopTextbox.Clear();
+                    LoadDataGrid();
+
+                    BorcRadioButton.IsChecked = true;
+                    TarihDatePicker.IsEnabled = true;
+                    EvrakNoTextbox.IsEnabled = true;
+                    AciklamaTextbox.IsEnabled = true;
+                    VadeDatePicker.IsEnabled = true;
+                    BAGroupBox.IsEnabled = true;
+                    YukleGroupBox.IsEnabled = true;
+                    TutarTextbox.IsEnabled = true;
+                    YeniHareketButton.IsEnabled = true;
+                    SilHareketButton.IsEnabled = true;
+                    DegistirHareketButton.IsEnabled = true;
+                    YazdırButton.IsEnabled = true;
+                    txtSearch.IsEnabled = true;
+
+                    TarihDatePicker.SelectedDate = DateTime.Now;
+                    EvrakNoTextbox.Clear();
+                    TutarTextbox.Clear();
+                    AciklamaTextbox.Clear();
+                    VadeDatePicker.SelectedDate = DateTime.Now;
+                    dataGrid.SelectedItems.Clear();
+                    txtSearch.Clear();
+                    DosyaPath = "";
+                    DegistirSayac = 0;
+                    DegistirIptalButton.Visibility = Visibility.Hidden;
+                    DegistirTextbox.Text = "Değiştir";
+                    DegistirIcon.Kind = PackIconKind.Pencil;
+                    DosyaIslem = "Saved";
+                    ChangeButtonContent("");
+
+                }
+                else
+                {
+                    IsletmeAdiLabel.Content = "-";
+                    CariKodLabel.Content = "-";
+                    BorcRadioButton.IsChecked = false;
+                    TarihDatePicker.IsEnabled = false;
+                    EvrakNoTextbox.IsEnabled = false;
+                    AciklamaTextbox.IsEnabled = false;
+                    VadeDatePicker.IsEnabled = false;
+                    BAGroupBox.IsEnabled = false;
+                    YukleGroupBox.IsEnabled = false;
+                    TutarTextbox.IsEnabled = false;
+                    YeniHareketButton.IsEnabled = false;
+                    SilHareketButton.IsEnabled = false;
+                    DegistirHareketButton.IsEnabled = false;
+                    YazdırButton.IsEnabled = false;
+                    txtSearch.IsEnabled = false;
+
+                    TarihDatePicker.SelectedDate = DateTime.Now;
+                    EvrakNoTextbox.Clear();
+                    TutarTextbox.Clear();
+                    AciklamaTextbox.Clear();
+                    VadeDatePicker.SelectedDate = DateTime.Now;
+                    dataGrid.SelectedItems.Clear();
+                    txtSearch.Clear();
+                    BorcTopTextbox.Clear();
+                    AlacakTopTextbox.Clear();
+                    BakiyeTopTextbox.Clear();
+                    BakiyeTopTextbox.Foreground = Brushes.Black;
+                    DosyaPath = "";
+                    DegistirSayac = 0;
+                    DegistirIptalButton.Visibility = Visibility.Hidden;
+                    DegistirTextbox.Text = "Değiştir";
+                    DegistirIcon.Kind = PackIconKind.Pencil;
+                    DosyaIslem = "Saved";
+                    ChangeButtonContent("");
+
+                    MainViewModel? viewModel = (MainViewModel)this.DataContext;
+                    viewModel.odemeler.Clear();
+                    BorcTopTextbox.Text = "";
+                    AlacakTopTextbox.Text = "";
+                    BakiyeTopTextbox.Text = "";
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+        }
+
+        private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                Business? selectedBusiness = Degiskenler.selectedBusiness;
+                if (selectedBusiness != null)
+                {
+                    string searchTerm = txtSearch.Text;
+                    SearchGetOdemeler(selectedBusiness.ID, searchTerm);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+        }
+
+        private void OpenWindow(Window window)
+        {
+            try
+            {
+                window.Owner = App.Current.MainWindow;
+                window.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+        }
+
         private void LoadDataGrid()
         {
             try
             {
                 Business? selectedBusiness = Degiskenler.selectedBusiness;
-                int ID = 0;
                 if (selectedBusiness != null)
                 {
-                    ID = selectedBusiness.ID;
+                    GetOdemeler(selectedBusiness.ID);
+
+                    // Her sütunun genişliğini içerdiği metne göre ayarla
+                    foreach (var column in dataGrid.Columns)
+                    {
+                        column.Width = DataGridLength.Auto;
+
+                        // Sütunu yeniden boyutlandırmak için
+                        column.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells);
+                    }
                 }
-                GetOdemeler(ID);
+                MainViewModel viewModel = (MainViewModel)this.DataContext;
+                if (viewModel.Odemeler.Count == 0)
+                {
+                    // Her sütunun genişliğini içerdiği Sütuna göre ayarla
+                    foreach (var column in dataGrid.Columns)
+                    {
+                        column.Width = DataGridLength.Auto;
+                        // Sütunu yeniden boyutlandırmak için
+                        column.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+        }
+
+        public void SearchGetOdemeler(int businessId, string searchTerm)
+        {
+            try
+            {
+                MainViewModel viewModel = (MainViewModel)this.DataContext;
+                viewModel.odemeler.Clear();
+
+                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                {
+                    connection.Open();
+
+                    string query = $@"SELECT * FROM Cari_{businessId} 
+                             WHERE LOWER(tarih) LIKE '%' || LOWER(@searchTerm) || '%' 
+                             OR ID LIKE '%' || LOWER(@searchTerm) || '%' 
+                             OR LOWER(tip) LIKE '%' || LOWER(@searchTerm) || '%' 
+                             OR LOWER(evrakno) LIKE '%' || LOWER(@searchTerm) || '%' 
+                             OR LOWER(aciklama) LIKE '%' || LOWER(@searchTerm) || '%' 
+                             OR LOWER(vadetarihi) LIKE '%' || LOWER(@searchTerm) || '%' 
+                             OR LOWER(borc) LIKE '%' || LOWER(@searchTerm) || '%' 
+                             OR LOWER(alacak) LIKE '%' || LOWER(@searchTerm) || '%'";
+
+                    using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@searchTerm", searchTerm);
+
+                        using (SQLiteDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Odeme odeme = new Odeme
+                                {
+                                    ID = reader.GetInt32(0),
+                                    Tarih = reader.GetString(1),
+                                    Tip = reader.GetString(2),
+                                    EvrakNo = reader.GetString(3),
+                                    Aciklama = reader.GetString(4),
+                                    VadeTarihi = reader.GetString(5),
+                                    Borc = reader.GetDouble(6),
+                                    Alacak = reader.GetDouble(7),
+                                    Dosya = reader.IsDBNull(8) ? null : reader.GetString(8),
+                                };
+                                viewModel.odemeler.Add(odeme);
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -979,6 +1215,12 @@ namespace Cari_kayıt_Programı
             public string? Dosya { get; set; }
         }
 
+        private void AdminButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Method intentionally left empty.
+        }
+
+
         private void Page_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             try
@@ -986,29 +1228,39 @@ namespace Cari_kayıt_Programı
                 // Eğer tıklanan öğe DataGrid değilse veya DataGrid'in bir çocuğu değilse seçimi temizle
                 if (!IsMouseOverDataGrid(e))
                 {
-                    LoadDataGrid();
-                    TarihDatePicker.SelectedDate = DateTime.Now;
-                    EvrakNoTextbox.Clear();
-                    TutarTextbox.Clear();
-                    AciklamaTextbox.Clear();
-                    VadeDatePicker.SelectedDate = DateTime.Now;
-                    dataGrid.SelectedItems.Clear();
-                    DosyaPath = "";
-                    DegistirSayac = 0;
-                    DegistirIptalButton.Visibility = Visibility.Hidden;
-                    DegistirTextbox.Text = "Değiştir";
-                    DegistirIcon.Kind = PackIconKind.Pencil;
-                    DosyaIslem = "Saved";
-                    ChangeButtonContent("");
+                    Business? selectedBusiness = Degiskenler.selectedBusiness;
+                    if (selectedBusiness != null)
+                    {
+                        LoadDataGrid();
+                        TarihDatePicker.SelectedDate = DateTime.Now;
+                        EvrakNoTextbox.Clear();
+                        TutarTextbox.Clear();
+                        AciklamaTextbox.Clear();
+                        VadeDatePicker.SelectedDate = DateTime.Now;
+                        dataGrid.SelectedItems.Clear();
+                        txtSearch.Clear();
+                        DosyaPath = "";
+                        DegistirSayac = 0;
+                        DegistirIptalButton.Visibility = Visibility.Hidden;
+                        DegistirTextbox.Text = "Değiştir";
+                        DegistirIcon.Kind = PackIconKind.Pencil;
+                        DosyaIslem = "Saved";
+                        ChangeButtonContent("");
 
-                    BorcRadioButton.IsChecked = true;
-                    TarihDatePicker.IsEnabled = true;
-                    EvrakNoTextbox.IsEnabled = true;
-                    AciklamaTextbox.IsEnabled = true;
-                    VadeDatePicker.IsEnabled = true;
-                    BAGroupBox.IsEnabled = true;
-                    YukleGroupBox.IsEnabled = true;
-                    TutarTextbox.IsEnabled = true;
+                        BorcRadioButton.IsChecked = true;
+                        TarihDatePicker.IsEnabled = true;
+                        EvrakNoTextbox.IsEnabled = true;
+                        AciklamaTextbox.IsEnabled = true;
+                        VadeDatePicker.IsEnabled = true;
+                        BAGroupBox.IsEnabled = true;
+                        YukleGroupBox.IsEnabled = true;
+                        TutarTextbox.IsEnabled = true;
+                        YeniHareketButton.IsEnabled = true;
+                        SilHareketButton.IsEnabled = true;
+                        YazdırButton.IsEnabled = true;
+
+                        Keyboard.ClearFocus();
+                    }
                 }
             }
             catch (Exception ex)
@@ -1021,7 +1273,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                DependencyObject originalSource = e.OriginalSource as DependencyObject;
+                DependencyObject? originalSource = e.OriginalSource as DependencyObject;
 
                 // Tıklanan öğenin DataGrid, Button, TextBox, RadioButton veya GroupBox olup olmadığını kontrol et
                 while (originalSource != null)

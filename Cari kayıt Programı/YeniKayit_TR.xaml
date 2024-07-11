@@ -35,8 +35,8 @@
         <TextBox x:Name="mail1TextBox" Margin="120,310,10,0" Height="26" VerticalAlignment="Top" TabIndex="7" MaxLength="40"/>
         <TextBox x:Name="mail2TextBox" Margin="120,352,10,0" Height="26" VerticalAlignment="Top" TabIndex="8" MaxLength="40"/>
         <TextBox x:Name="hesapnoTextBox" Margin="120,202,10,0" Height="26" VerticalAlignment="Top" TabIndex="5" MaxLength="40"/>
-        <Button x:Name="KaydetButton" Content="Kaydet" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="26" Width="100" Click="KaydetButton_Click" Margin="0,0,115,10"/>
-        <Button x:Name="VazgecButton" Content="Vazgeç" HorizontalAlignment="Right"  VerticalAlignment="Bottom" Height="26" Width="100" Click="VazgecButton_Click" Margin="0,0,10,10"/>
+        <Button x:Name="KaydetButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Kaydet" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="26" Width="100" Click="KaydetButton_Click" Margin="0,0,115,10"/>
+        <Button x:Name="VazgecButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Vazgeç" HorizontalAlignment="Right"  VerticalAlignment="Bottom" Height="26" Width="100" Click="VazgecButton_Click" Margin="0,0,10,10"/>
 
     </Grid>
 </Page>

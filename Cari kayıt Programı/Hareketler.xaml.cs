@@ -17,5 +17,10 @@ namespace Cari_kayıt_Programı
         {
             HareketlerFrame.Source = new Uri("Hareketler_TR.xaml", UriKind.RelativeOrAbsolute);
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Application.Current.MainWindow.Activate();
+        }
     }
 }

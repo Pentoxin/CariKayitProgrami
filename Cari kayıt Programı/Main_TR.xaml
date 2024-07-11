@@ -31,7 +31,7 @@
                 <DataGridTextColumn Header="E-Posta 1" Binding="{Binding EPosta1}" />
                 <DataGridTextColumn Header="E-Posta 2" Binding="{Binding EPosta2}" />
                 <DataGridTextColumn Header="Telefon 1" Binding="{Binding Telefon1}" />
-                <DataGridTextColumn Header="Telefon 2" Binding="{Binding Telefon21}" />
+                <DataGridTextColumn Header="Telefon 2" Binding="{Binding Telefon2}" />
             </DataGrid.Columns>
         </DataGrid>
         <Label Margin="10,45,0,0" Content="İşletme Adı:" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom"/>
@@ -40,7 +40,7 @@
         <TextBox x:Name="adresTextBox" Margin="95,174,120,0" Height="26" VerticalAlignment="Top" TabIndex="6" MaxLength="100" IsReadOnly="True"/>
         <Label Margin="10,258,0,0" Content="Telefon 1:" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom"/>
         <TextBox x:Name="telefon1TextBox" Margin="95,258,0,0" Height="26" VerticalAlignment="Top" TabIndex="9" MaxLength="20" HorizontalAlignment="Left" Width="310" IsReadOnly="True"/>
-        <Button x:Name="KaydetButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,76,10,0" Click="KaydetButton_Click" Height="26" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Right" Width="100" Padding="1,1,1,1">
+        <Button x:Name="KaydetButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,76,10,0" Click="KaydetButton_Click" Height="26" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Right" Width="100" Padding="1,1,1,1" IsDefault="True">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="PlusCircle" Foreground="#FF39B753" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>

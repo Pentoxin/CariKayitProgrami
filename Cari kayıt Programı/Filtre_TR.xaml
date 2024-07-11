@@ -28,11 +28,21 @@
             <CheckBox Content="Telefon 1" IsChecked="True"/>
             <CheckBox Content="Telefon 2" IsChecked="True"/>
         </ListBox>
-        <Button x:Name="HepsiniSecButton" Content="Hepsini Seç" Margin="10,450,0,0" HorizontalAlignment="Left" Width="140" Height="26" VerticalAlignment="Top" Click="HepsiniSecButton_Click"/>
-        <Button x:Name="HicbiriniSecmeButton" Content="Hiçbirini Seçme" Margin="155,450,0,0" HorizontalAlignment="Left" Width="140" Height="26" VerticalAlignment="Top" Click="HicbiriniSecmeButton_Click"/>
+        <Button x:Name="HepsiniSecButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="10,450,0,0" HorizontalAlignment="Left" Width="145" Height="26" VerticalAlignment="Top" Click="HepsiniSecButton_Click">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Kind="SelectAll" Foreground="#FFF" Width="21" Height="21" Margin="0,0,1,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Hepsini Seç" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+        <Button x:Name="HicbiriniSecmeButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="160,450,0,0" HorizontalAlignment="Left" Width="145" Height="26" VerticalAlignment="Top" Click="HicbiriniSecmeButton_Click" Padding="10,4,10,4">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Kind="SelectRemove" Foreground="#FFF" Width="21" Height="21" Margin="0,0,1,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Hiçbirini Seçme" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Button>
         <Label Content="Lütfen filtrelemek istediklerinizi seçiniz:" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="FiltreleButton" Content="Filtrele" HorizontalAlignment="Right" Margin="0,0,115,10" VerticalAlignment="Bottom" Height="26" Width="100" Click="FiltreleButton_Click"/>
-        <Button x:Name="VazgecButton" Content="Vazgeç" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="26" Width="100" Click="VazgecButton_Click"/>
+        <Button x:Name="FiltreleButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Filtrele" HorizontalAlignment="Right" Margin="0,0,115,10" VerticalAlignment="Bottom" Height="26" Width="100" Click="FiltreleButton_Click"/>
+        <Button x:Name="VazgecButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Vazgeç" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="26" Width="100" Click="VazgecButton_Click"/>
 
     </Grid>
 </Page>

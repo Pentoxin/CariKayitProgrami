@@ -39,8 +39,8 @@ namespace Cari_kayıt_Programı
             DataContext = ViewModel;
 
             _ = GuncellemeKontrol();
-            AppDataCreate();
-            InitializeDatabase();
+            Check.AppDataCreate();
+            Check.InitializeDatabase();
         }
 
         public static class Degiskenler
@@ -86,8 +86,8 @@ namespace Cari_kayıt_Programı
                     {
                         if (item is Business business)
                         {
-                            string isletmeAdi = business.Isletme_Adi; // Odeme sınıfında Isletme_Adi özelliği varsa kullanılabilir
-                            string isletmePath = Path.Combine(Config.IsletmePath, isletmeAdi);
+                            string? isletmeAdi = business.Isletme_Adi; // Odeme sınıfında Isletme_Adi özelliği varsa kullanılabilir
+                            string? isletmePath = Path.Combine(Config.IsletmePath, isletmeAdi);
 
                             // Klasörü kontrol et veya oluştur
                             if (!Directory.Exists(isletmePath))
@@ -152,8 +152,8 @@ namespace Cari_kayıt_Programı
                                 while (reader.Read())
                                 {
                                     int recordId = reader.GetInt32(0);
-                                    string tarihStr = reader.IsDBNull(1) ? null : reader.GetString(1);
-                                    string vadetarihiStr = reader.IsDBNull(2) ? null : reader.GetString(2);
+                                    string? tarihStr = reader.IsDBNull(1) ? null : reader.GetString(1);
+                                    string? vadetarihiStr = reader.IsDBNull(2) ? null : reader.GetString(2);
 
                                     DateTime tarih;
                                     DateTime vadetarihi;
@@ -358,13 +358,74 @@ namespace Cari_kayıt_Programı
                     return false;
                 }
             }
+
+            public static void AppDataCreate()
+            {
+                try
+                {
+                    //Klasör oluşturma
+                    if (!Directory.Exists(Config.AppDataPath))
+                    {
+                        Directory.CreateDirectory(Config.AppDataPath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                }
+            }
+
+            public static void InitializeDatabase()
+            {
+                try
+                {
+                    if (!File.Exists(Config.DatabaseFileName))
+                    {
+                        SQLiteConnection.CreateFile(Config.DatabaseFileName);
+                    }
+
+                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    {
+                        connection.Open();
+
+                        using (SQLiteCommand command = new SQLiteCommand(connection))
+                        {
+                            // Tablo var mı kontrol et
+                            command.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name='CariKayit'";
+                            var result = command.ExecuteScalar();
+
+                            if (result == null || result.ToString() != "CariKayit")
+                            {
+                                // Tablo yoksa oluştur
+                                command.CommandText = @"CREATE TABLE CariKayit (
+                                            ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                            isletmeadi TEXT NOT NULL UNIQUE,
+                                            vergidairesi TEXT,
+                                            vergino TEXT,
+                                            banka TEXT,
+                                            hesapno TEXT,
+                                            adres TEXT,
+                                            mail1 TEXT,
+                                            mail2 TEXT,
+                                            telefon1 TEXT,
+                                            telefon2 TEXT);";
+
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                }
+            }
         }
 
         public async Task GuncellemeKontrol()
         {
             try
             {
-                Check check = new Check(this);
                 UygulamayıGuncelle.Visibility = Visibility.Hidden;
 
                 if (Check.InternetErisimiKontrolEt())
@@ -390,7 +451,7 @@ namespace Cari_kayıt_Programı
 
                         if (File.Exists(Config.dosyaAdi))
                         {
-                            int productVersion;
+                            int productVersion = 0;
                             try
                             {
                                 FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(Config.dosyaAdi);
@@ -408,22 +469,6 @@ namespace Cari_kayıt_Programı
                         }
                         Degiskenler.guncel = true;
                     }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-            }
-        }
-
-        public static void AppDataCreate()
-        {
-            try
-            {
-                //Klasör oluşturma
-                if (!Directory.Exists(Config.AppDataPath))
-                {
-                    Directory.CreateDirectory(Config.AppDataPath);
                 }
             }
             catch (Exception ex)
@@ -463,58 +508,20 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        public static void InitializeDatabase()
+        private void OpenWindow(Window window, string openStatus)
         {
             try
             {
-                if (!File.Exists(Config.DatabaseFileName))
+                if (openStatus == "SD")
                 {
-                    SQLiteConnection.CreateFile(Config.DatabaseFileName);
+                    window.Owner = App.Current.MainWindow;
+                    window.ShowDialog();
                 }
-
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                else if (openStatus == "D")
                 {
-                    connection.Open();
-
-                    using (SQLiteCommand command = new SQLiteCommand(connection))
-                    {
-                        // Tablo var mı kontrol et
-                        command.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name='CariKayit'";
-                        var result = command.ExecuteScalar();
-
-                        if (result == null || result.ToString() != "CariKayit")
-                        {
-                            // Tablo yoksa oluştur
-                            command.CommandText = @"CREATE TABLE CariKayit (
-                                            ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                                            isletmeadi TEXT NOT NULL UNIQUE,
-                                            vergidairesi TEXT,
-                                            vergino TEXT,
-                                            banka TEXT,
-                                            hesapno TEXT,
-                                            adres TEXT,
-                                            mail1 TEXT,
-                                            mail2 TEXT,
-                                            telefon1 TEXT,
-                                            telefon2 TEXT);";
-
-                            command.ExecuteNonQuery();
-                        }
-                    }
+                    window.Owner = App.Current.MainWindow;
+                    window.Show();
                 }
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-            }
-        }
-
-        private void OpenWindow(Window window)
-        {
-            try
-            {
-                window.Owner = App.Current.MainWindow;
-                window.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -539,7 +546,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                OpenWindow(new YeniKayit());
+                OpenWindow(new YeniKayit(), "SD");
 
                 dataGrid.SelectedItem = null;
                 dataGrid.ItemsSource = GetBusinesses();
@@ -622,7 +629,7 @@ namespace Cari_kayıt_Programı
                     return;
                 }
 
-                OpenWindow(new Degistir());
+                OpenWindow(new Degistir(), "SD");
 
                 isletmeadiTextBox.Clear();
                 vergidairesiTextBox.Clear();
@@ -647,7 +654,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                OpenWindow(new Yazdir());
+                OpenWindow(new Yazdir(), "SD");
 
                 if (YazdirDegiskenler.olustur)
                 {
@@ -742,7 +749,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                OpenWindow(new Filtre());
+                OpenWindow(new Filtre(), "SD");
 
                 var SecilenSutunlar = Filtre_TR.GetSecilenSutunlar();
                 var SecilmeyenSutunlar = Filtre_TR.GetSecilmeyenSutunlar();
@@ -897,11 +904,11 @@ namespace Cari_kayıt_Programı
 
                 if (!Degiskenler.guncel)
                 {
-                    OpenWindow(new YuklemeEkrani());
+                    OpenWindow(new YuklemeEkrani(), "SD");
 
                     if (Degiskenler.guncellemeOnay)
                     {
-                        OpenWindow(new YuklemeEkrani());
+                        OpenWindow(new YuklemeEkrani(), "SD");
                     }
                 }
             }
@@ -917,13 +924,7 @@ namespace Cari_kayıt_Programı
             {
                 Degiskenler.selectedBusiness = (Business)dataGrid.SelectedItem;
 
-                if (Degiskenler.selectedBusiness == null)
-                {
-                    MessageBox.Show("Önce harektleri kontrol istediğiniz veriyi seçiniz", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                OpenWindow(new Hareketler());
+                OpenWindow(new Hareketler(), "D");
             }
             catch (Exception ex)
             {
@@ -931,7 +932,7 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        private ObservableCollection<Business> Businesses(string searchTerm)
+        public ObservableCollection<Business> Businesses(string searchTerm)
         {
             try
             {
@@ -1071,8 +1072,7 @@ namespace Cari_kayıt_Programı
 
         private void Admin_Click(object sender, RoutedEventArgs e)
         {
-
-
+            // Method intentionally left empty.
         }
 
         //public static int selectedValue;

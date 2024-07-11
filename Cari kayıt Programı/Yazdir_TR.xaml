@@ -27,11 +27,11 @@
             <CheckBox Content="Telefon 1" IsChecked="True"/>
             <CheckBox Content="Telefon 2"/>
         </ListBox>
-        <Button x:Name="HepsiniSecButton" Content="Hepsini Seç" Margin="10,450,0,0" HorizontalAlignment="Left" Width="140" Height="26" VerticalAlignment="Top" Click="HepsiniSecButton_Click"/>
-        <Button x:Name="HicbiriniSecmeButton" Content="Hiçbirini Seçme" Margin="155,450,0,0" HorizontalAlignment="Left" Width="140" Height="26" VerticalAlignment="Top" Click="HicbiriniSecmeButton_Click"/>
+        <Button x:Name="HepsiniSecButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Hepsini Seç" Margin="10,450,0,0" HorizontalAlignment="Left" Width="140" Height="26" VerticalAlignment="Top" Click="HepsiniSecButton_Click"/>
+        <Button x:Name="HicbiriniSecmeButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Hiçbirini Seçme" Margin="155,450,0,0" HorizontalAlignment="Left" Width="140" Height="26" VerticalAlignment="Top" Click="HicbiriniSecmeButton_Click"/>
         <Label Content="Lütfen yazdırmak istediklerinizi seçiniz:" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="OlusturButton" Content="Oluştur" HorizontalAlignment="Right" Margin="0,0,115,10" VerticalAlignment="Bottom" Height="26" Width="100" Click="OlusturButton_Click"/>
-        <Button x:Name="VazgecButton" Content="Vazgeç" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="26" Width="100" Click="VazgecButton_Click"/>
+        <Button x:Name="OlusturButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Oluştur" HorizontalAlignment="Right" Margin="0,0,115,10" VerticalAlignment="Bottom" Height="26" Width="100" Click="OlusturButton_Click"/>
+        <Button x:Name="VazgecButton" materialDesign:ButtonAssist.CornerRadius="8" Content="Vazgeç" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="26" Width="100" Click="VazgecButton_Click"/>
 
     </Grid>
 </Page>
