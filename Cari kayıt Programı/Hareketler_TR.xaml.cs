@@ -29,8 +29,17 @@ namespace Cari_kayıt_Programı
             DataContext = ViewModel;
         }
 
-        private string? DosyaPath = "";
+        public static class FiltreDegiskenler
+        {
+            public static DateTime? baslangicTarihi { get; set; }
+            public static DateTime? bitisTarihi { get; set; }
+            public static DateTime? enBuyukTarih { get; set; }
+            public static DateTime? enKucukTarih { get; set; }
+            public static string? tip { get; set; } = "";
+            public static bool filtrele { get; set; } = false;
+        }
 
+        private string? DosyaPath = "";
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
@@ -54,6 +63,7 @@ namespace Cari_kayıt_Programı
                 DegistirHareketButton.IsEnabled = true;
                 YazdırButton.IsEnabled = true;
                 txtSearch.IsEnabled = true;
+                FiltreleButton.IsEnabled = true;
             }
             else
             {
@@ -71,6 +81,7 @@ namespace Cari_kayıt_Programı
                 DegistirHareketButton.IsEnabled = false;
                 YazdırButton.IsEnabled = false;
                 txtSearch.IsEnabled = false;
+                FiltreleButton.IsEnabled = false;
             }
 
             DegistirIptalButton.Visibility = Visibility.Hidden;
@@ -126,54 +137,59 @@ namespace Cari_kayıt_Programı
                     {
                         connection.Open();
 
-                        string checkQuery = $"SELECT COUNT(*) FROM Cari_{ID} WHERE lower(EvrakNo) = lower(@EvrakNo)";
-                        using (SQLiteCommand checkCommand = new SQLiteCommand(checkQuery, connection))
+                        string evrakNo = EvrakNoTextbox.Text;
+
+                        if (!string.IsNullOrWhiteSpace(evrakNo))
                         {
-                            checkCommand.Parameters.AddWithValue("@EvrakNo", EvrakNoTextbox.Text);
-                            int count = Convert.ToInt32(checkCommand.ExecuteScalar());
+                            string checkQuery = $"SELECT COUNT(*) FROM Cari_{ID} WHERE lower(EvrakNo) = lower(@EvrakNo)";
+                            using (SQLiteCommand checkCommand = new SQLiteCommand(checkQuery, connection))
+                            {
+                                checkCommand.Parameters.AddWithValue("@EvrakNo", evrakNo);
+                                int count = Convert.ToInt32(checkCommand.ExecuteScalar());
 
-                            if (count > 0)
-                            {
-                                MessageBox.Show("Bu evrak numarası daha önce kaydedilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
-                                return;
-                            }
-                            else
-                            {
-                                if (MessageBox.Show("Veriyi kaydetmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                                if (count > 0)
                                 {
-                                    string query = $"INSERT INTO Cari_{ID} (Tarih, Tip, EvrakNo, Aciklama, VadeTarihi, Borc, Alacak, Dosya) " +
-                                           "VALUES (@Tarih, @Tip, @EvrakNo, @Aciklama, @VadeTarihi, @Borc, @Alacak, @Dosya)";
-
-                                    using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                                    {
-                                        command.Parameters.AddWithValue("@Tarih", yeniOdeme.Tarih);
-                                        command.Parameters.AddWithValue("@Tip", yeniOdeme.Tip);
-                                        command.Parameters.AddWithValue("@EvrakNo", yeniOdeme.EvrakNo);
-                                        command.Parameters.AddWithValue("@Aciklama", yeniOdeme.Aciklama);
-                                        command.Parameters.AddWithValue("@VadeTarihi", yeniOdeme.VadeTarihi);
-                                        command.Parameters.AddWithValue("@Borc", yeniOdeme.Borc);
-                                        command.Parameters.AddWithValue("@Alacak", yeniOdeme.Alacak);
-                                        command.Parameters.AddWithValue("@Dosya", yeniOdeme.Dosya);
-
-                                        command.ExecuteNonQuery();
-                                    }
-
-                                    if (selectedFilePath != "" && DosyaPath != "")
-                                    {
-                                        File.Copy(selectedFilePath, DosyaPath, true);
-                                    }
-                                    TarihDatePicker.SelectedDate = DateTime.Now;
-                                    EvrakNoTextbox.Clear();
-                                    TutarTextbox.Clear();
-                                    AciklamaTextbox.Clear();
-                                    VadeDatePicker.SelectedDate = DateTime.Now;
-                                    dataGrid.SelectedItems.Clear();
-                                    DosyaPath = "";
-                                    DosyaIslem = "Saved";
-                                    ChangeButtonContent("");
-                                    MessageBox.Show("İşletme hareket bilgileri veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    MessageBox.Show("Bu evrak numarası daha önce kaydedilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    return;
                                 }
                             }
+                        }
+
+                        if (MessageBox.Show("Veriyi kaydetmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            string query = $"INSERT INTO Cari_{ID} (Tarih, Tip, EvrakNo, Aciklama, VadeTarihi, Borc, Alacak, Dosya) " +
+                                           "VALUES (@Tarih, @Tip, @EvrakNo, @Aciklama, @VadeTarihi, @Borc, @Alacak, @Dosya)";
+
+                            using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                            {
+                                command.Parameters.AddWithValue("@Tarih", yeniOdeme.Tarih);
+                                command.Parameters.AddWithValue("@Tip", yeniOdeme.Tip);
+                                command.Parameters.AddWithValue("@EvrakNo", yeniOdeme.EvrakNo);
+                                command.Parameters.AddWithValue("@Aciklama", yeniOdeme.Aciklama);
+                                command.Parameters.AddWithValue("@VadeTarihi", yeniOdeme.VadeTarihi);
+                                command.Parameters.AddWithValue("@Borc", yeniOdeme.Borc);
+                                command.Parameters.AddWithValue("@Alacak", yeniOdeme.Alacak);
+                                command.Parameters.AddWithValue("@Dosya", yeniOdeme.Dosya);
+
+                                command.ExecuteNonQuery();
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(selectedFilePath) && !string.IsNullOrWhiteSpace(DosyaPath))
+                            {
+                                File.Copy(selectedFilePath, DosyaPath, true);
+                            }
+
+                            TarihDatePicker.SelectedDate = DateTime.Now;
+                            EvrakNoTextbox.Clear();
+                            TutarTextbox.Clear();
+                            AciklamaTextbox.Clear();
+                            VadeDatePicker.SelectedDate = DateTime.Now;
+                            dataGrid.SelectedItems.Clear();
+                            BorcRadioButton.IsChecked = true;
+                            DosyaPath = "";
+                            DosyaIslem = "Saved";
+                            ChangeButtonContent("");
+                            MessageBox.Show("İşletme hareket bilgileri veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     }
                     LoadDataGrid();
@@ -318,6 +334,7 @@ namespace Cari_kayıt_Programı
                     YeniHareketButton.IsEnabled = false;
                     SilHareketButton.IsEnabled = false;
                     YazdırButton.IsEnabled = false;
+                    FiltreleButton.IsEnabled = false;
                     DegistirIptalButton.Visibility = Visibility.Visible;
                     DegistirSayac++;
 
@@ -363,6 +380,7 @@ namespace Cari_kayıt_Programı
                 YeniHareketButton.IsEnabled = true;
                 SilHareketButton.IsEnabled = true;
                 YazdırButton.IsEnabled = true;
+                FiltreleButton.IsEnabled = true;
             }
             catch (Exception ex)
             {
@@ -516,6 +534,7 @@ namespace Cari_kayıt_Programı
                                 YeniHareketButton.IsEnabled = true;
                                 SilHareketButton.IsEnabled = true;
                                 YazdırButton.IsEnabled = true;
+                                FiltreleButton.IsEnabled = true;
                             }
                         }
                     }
@@ -838,6 +857,7 @@ namespace Cari_kayıt_Programı
                 if (button != null)
                 {
                     var selectedOdeme = dataGrid.SelectedItem as Odeme;
+
                     if (selectedOdeme != null && selectedOdeme.Dosya != null && selectedOdeme.Dosya != "")
                     {
                         MessageBoxResult result = MessageBox.Show("Dosyayı incelemek ister misiniz?", "Dosya İnceleme", MessageBoxButton.YesNo, MessageBoxImage.Asterisk);
@@ -945,6 +965,7 @@ namespace Cari_kayıt_Programı
                     DegistirHareketButton.IsEnabled = true;
                     YazdırButton.IsEnabled = true;
                     txtSearch.IsEnabled = true;
+                    FiltreleButton.IsEnabled = true;
 
                     TarihDatePicker.SelectedDate = DateTime.Now;
                     EvrakNoTextbox.Clear();
@@ -979,6 +1000,7 @@ namespace Cari_kayıt_Programı
                     DegistirHareketButton.IsEnabled = false;
                     YazdırButton.IsEnabled = false;
                     txtSearch.IsEnabled = false;
+                    FiltreleButton.IsEnabled = false;
 
                     TarihDatePicker.SelectedDate = DateTime.Now;
                     EvrakNoTextbox.Clear();
@@ -1000,7 +1022,7 @@ namespace Cari_kayıt_Programı
                     ChangeButtonContent("");
 
                     MainViewModel? viewModel = (MainViewModel)this.DataContext;
-                    viewModel.odemeler.Clear();
+                    viewModel.Odemeler.Clear();
                     BorcTopTextbox.Text = "";
                     AlacakTopTextbox.Text = "";
                     BakiyeTopTextbox.Text = "";
@@ -1029,6 +1051,123 @@ namespace Cari_kayıt_Programı
             }
         }
 
+        private void FiltreleButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                MainViewModel viewModel = (MainViewModel)this.DataContext;
+
+                FiltreDegiskenler.enKucukTarih = viewModel.Odemeler.Min(odeme => DateTime.Parse(odeme.Tarih));
+                FiltreDegiskenler.enBuyukTarih = viewModel.Odemeler.Max(odeme => DateTime.Parse(odeme.Tarih));
+                OpenWindow(new HareketlerFiltre());
+
+                if (FiltreDegiskenler.filtrele)
+                {
+                    DateTime? startDate = FiltreDegiskenler.baslangicTarihi;
+                    DateTime? endDate = FiltreDegiskenler.bitisTarihi;
+
+                    if (startDate.HasValue && endDate.HasValue)
+                    {
+                        LoadDataGrid();
+                        var filteredData = viewModel.Odemeler.Where(x => DateTime.TryParse(x.Tarih, out DateTime tarih) && tarih >= startDate.Value && tarih <= endDate.Value).ToList();
+
+                        if (FiltreDegiskenler.tip != "T")
+                        {
+                            filteredData = filteredData.Where(x => x.Tip.Equals(FiltreDegiskenler.tip, StringComparison.OrdinalIgnoreCase)).ToList();
+                        }
+
+                        double bakiye = 0, borcTop = 0, alacakTop = 0;
+                        int dosyaSayac = 0;
+                        foreach (var odeme in filteredData)
+                        {
+                            bakiye += odeme.Borc - odeme.Alacak;
+                            odeme.Bakiye = bakiye;
+                            borcTop += odeme.Borc;
+                            alacakTop += odeme.Alacak;
+                            if (!string.IsNullOrEmpty(odeme.Dosya))
+                            {
+                                dosyaSayac++;
+                            }
+                        }
+
+                        BorcTopTextbox.Text = borcTop.ToString("C");
+                        AlacakTopTextbox.Text = alacakTop.ToString("C");
+                        BakiyeTopTextbox.Text = bakiye.ToString("C");
+
+                        if (bakiye < 0)
+                        {
+                            BakiyeTopTextbox.Foreground = Brushes.Red;
+                        }
+                        else if (bakiye > 0)
+                        {
+                            BakiyeTopTextbox.Foreground = Brushes.Green;
+                        }
+                        else
+                        {
+                            BakiyeTopTextbox.Foreground = Brushes.Black;
+                        }
+
+                        if (dosyaSayac == 0)
+                        {
+                            DosyaColumn.Visibility = Visibility.Hidden;
+                        }
+                        else
+                        {
+                            DosyaColumn.Visibility = Visibility.Visible;
+                        }
+
+                        viewModel.Odemeler = new ObservableCollection<Odeme>(filteredData);
+                        viewModel.Odemeler = new ObservableCollection<Odeme>(viewModel.Odemeler.OrderBy(o => DateTime.Parse(o.Tarih)));
+
+                        TarihDatePicker.SelectedDate = DateTime.Now;
+                        EvrakNoTextbox.Clear();
+                        TutarTextbox.Clear();
+                        AciklamaTextbox.Clear();
+                        VadeDatePicker.SelectedDate = DateTime.Now;
+                        dataGrid.SelectedItems.Clear();
+                        txtSearch.Clear();
+                        DosyaPath = "";
+                        DegistirSayac = 0;
+                        DegistirIptalButton.Visibility = Visibility.Hidden;
+                        DegistirTextbox.Text = "Değiştir";
+                        DegistirIcon.Kind = PackIconKind.Pencil;
+                        DosyaIslem = "Saved";
+                        ChangeButtonContent("");
+
+                        BorcRadioButton.IsChecked = true;
+                        TarihDatePicker.IsEnabled = true;
+                        EvrakNoTextbox.IsEnabled = true;
+                        AciklamaTextbox.IsEnabled = true;
+                        VadeDatePicker.IsEnabled = true;
+                        BAGroupBox.IsEnabled = true;
+                        YukleGroupBox.IsEnabled = true;
+                        TutarTextbox.IsEnabled = true;
+                        YeniHareketButton.IsEnabled = true;
+                        SilHareketButton.IsEnabled = true;
+                        YazdırButton.IsEnabled = true;
+                        FiltreleButton.IsEnabled = true;
+
+                        Keyboard.ClearFocus();
+
+                        startDate = null;
+                        endDate = null;
+                        FiltreDegiskenler.filtrele = false;
+                        FiltreDegiskenler.baslangicTarihi = null;
+                        FiltreDegiskenler.bitisTarihi = null;
+                        FiltreDegiskenler.enKucukTarih = null;
+                        FiltreDegiskenler.enBuyukTarih = null;
+                        FiltreDegiskenler.tip = null;
+
+                        filteredData = null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+        }
+
         private void OpenWindow(Window window)
         {
             try
@@ -1042,7 +1181,7 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        private void LoadDataGrid()
+        public void LoadDataGrid()
         {
             try
             {
@@ -1083,7 +1222,7 @@ namespace Cari_kayıt_Programı
             try
             {
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
-                viewModel.odemeler.Clear();
+                viewModel.Odemeler.Clear();
 
                 using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
                 {
@@ -1119,9 +1258,50 @@ namespace Cari_kayıt_Programı
                                     Alacak = reader.GetDouble(7),
                                     Dosya = reader.IsDBNull(8) ? null : reader.GetString(8),
                                 };
-                                viewModel.odemeler.Add(odeme);
+                                viewModel.Odemeler.Add(odeme);
                             }
                         }
+                    }
+
+                    double bakiye = 0, borcTop = 0, alacakTop = 0;
+                    int dosyaSayac = 0;
+                    viewModel.Odemeler = new ObservableCollection<Odeme>(viewModel.Odemeler.OrderBy(o => DateTime.Parse(o.Tarih)));
+                    foreach (var odeme in viewModel.Odemeler)
+                    {
+                        bakiye += odeme.Borc - odeme.Alacak;
+                        odeme.Bakiye = bakiye;
+                        borcTop += odeme.Borc;
+                        alacakTop += odeme.Alacak;
+                        if (!string.IsNullOrEmpty(odeme.Dosya))
+                        {
+                            dosyaSayac++;
+                        }
+                    }
+
+                    BorcTopTextbox.Text = borcTop.ToString("C");
+                    AlacakTopTextbox.Text = alacakTop.ToString("C");
+                    BakiyeTopTextbox.Text = bakiye.ToString("C");
+
+                    if (bakiye < 0)
+                    {
+                        BakiyeTopTextbox.Foreground = Brushes.Red;
+                    }
+                    else if (bakiye > 0)
+                    {
+                        BakiyeTopTextbox.Foreground = Brushes.Green;
+                    }
+                    else
+                    {
+                        BakiyeTopTextbox.Foreground = Brushes.Black;
+                    }
+
+                    if (dosyaSayac == 0)
+                    {
+                        DosyaColumn.Visibility = Visibility.Hidden;
+                    }
+                    else
+                    {
+                        DosyaColumn.Visibility = Visibility.Visible;
                     }
                 }
             }
@@ -1136,7 +1316,7 @@ namespace Cari_kayıt_Programı
             try
             {
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
-                viewModel.odemeler.Clear();
+                viewModel.Odemeler.Clear();
                 using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
                 {
                     connection.Open();
@@ -1161,7 +1341,7 @@ namespace Cari_kayıt_Programı
                                     Alacak = reader.GetDouble(7),
                                     Dosya = reader.IsDBNull(8) ? null : reader.GetString(8),
                                 };
-                                viewModel.odemeler.Add(odeme);
+                                viewModel.Odemeler.Add(odeme);
                             }
                         }
                     }
@@ -1169,13 +1349,18 @@ namespace Cari_kayıt_Programı
 
                 // Bakiye hesaplama
                 double bakiye = 0, borcTop = 0, alacakTop = 0;
+                int dosyaSayac = 0;
                 viewModel.Odemeler = new ObservableCollection<Odeme>(viewModel.Odemeler.OrderBy(o => DateTime.Parse(o.Tarih)));
-                foreach (var odeme in viewModel.odemeler)
+                foreach (var odeme in viewModel.Odemeler)
                 {
                     bakiye += odeme.Borc - odeme.Alacak;
                     odeme.Bakiye = bakiye;
                     borcTop += odeme.Borc;
                     alacakTop += odeme.Alacak;
+                    if(!string.IsNullOrEmpty(odeme.Dosya))
+                    {
+                        dosyaSayac++;
+                    }
                 }
 
                 BorcTopTextbox.Text = borcTop.ToString("C");
@@ -1193,6 +1378,15 @@ namespace Cari_kayıt_Programı
                 else
                 {
                     BakiyeTopTextbox.Foreground = Brushes.Black;
+                }
+
+                if (dosyaSayac == 0)
+                {
+                    DosyaColumn.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    DosyaColumn.Visibility = Visibility.Visible;
                 }
             }
             catch (Exception ex)
@@ -1219,7 +1413,6 @@ namespace Cari_kayıt_Programı
         {
             // Method intentionally left empty.
         }
-
 
         private void Page_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -1258,6 +1451,7 @@ namespace Cari_kayıt_Programı
                         YeniHareketButton.IsEnabled = true;
                         SilHareketButton.IsEnabled = true;
                         YazdırButton.IsEnabled = true;
+                        FiltreleButton.IsEnabled = true;
 
                         Keyboard.ClearFocus();
                     }
@@ -1339,33 +1533,6 @@ namespace Cari_kayıt_Programı
         {
             Regex regex = new Regex("[^0-9,]+"); // Sadece sayısal karakterlere izin ver
             return !regex.IsMatch(text);
-        }
-
-        private void AddButtonToDataGrid()
-        {
-            try
-            {
-                // DataGrid'e yeni bir sütun ekle
-                DataGridTemplateColumn buttonColumn = new DataGridTemplateColumn();
-                buttonColumn.Header = "İşlem";
-
-                // Düğme için hücre şablonu oluştur
-                FrameworkElementFactory buttonFactory = new FrameworkElementFactory(typeof(Button));
-                buttonFactory.SetValue(Button.ContentProperty, "İşlem Yap");
-                buttonFactory.AddHandler(Button.ClickEvent, new RoutedEventHandler(Button_Click));
-
-                DataTemplate buttonTemplate = new DataTemplate();
-                buttonTemplate.VisualTree = buttonFactory;
-
-                buttonColumn.CellTemplate = buttonTemplate;
-
-                // DataGrid'e sütunu ekle
-                dataGrid.Columns.Add(buttonColumn);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-            }
         }
     }
 }

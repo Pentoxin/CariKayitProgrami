@@ -11,9 +11,14 @@ namespace Cari_kayıt_Programı
     /// </summary>
     public partial class CariKart : Window
     {
+        public MainViewModel ViewModel { get; set; }
+
         public CariKart()
         {
             InitializeComponent();
+
+            ViewModel = new MainViewModel();
+            DataContext = ViewModel;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -24,14 +29,21 @@ namespace Cari_kayıt_Programı
 
         private void SecButton_Click(object sender, RoutedEventArgs e)
         {
-            Degiskenler.selectedBusiness = (Business)dataGrid.SelectedItem;
-
-            Window mainWindow = Window.GetWindow(this);
-
-            if (mainWindow != null)
+            try
             {
-                // Ana pencereyi kapat
-                mainWindow.Close();
+                Degiskenler.selectedBusiness = (Business)dataGrid.SelectedItem;
+
+                Window mainWindow = Window.GetWindow(this);
+
+                if (mainWindow != null)
+                {
+                    // Ana pencereyi kapat
+                    mainWindow.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
             }
         }
 
@@ -41,7 +53,7 @@ namespace Cari_kayıt_Programı
             {
                 Main_TR main_TR = new Main_TR();
                 string searchTerm = txtSearch.Text;
-                dataGrid.ItemsSource = main_TR.Businesses(searchTerm);
+                main_TR.Businesses(searchTerm);
             }
             catch (Exception ex)
             {
@@ -51,20 +63,27 @@ namespace Cari_kayıt_Programı
 
         private void dataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is DataGrid grid)
+            try
             {
-                if (grid.SelectedItem != null)
+                if (sender is DataGrid grid)
                 {
-                    Degiskenler.selectedBusiness = (Business)dataGrid.SelectedItem;
-
-                    Window mainWindow = Window.GetWindow(this);
-
-                    if (mainWindow != null)
+                    if (grid.SelectedItem != null)
                     {
-                        // Ana pencereyi kapat
-                        mainWindow.Close();
+                        Degiskenler.selectedBusiness = (Business)dataGrid.SelectedItem;
+
+                        Window mainWindow = Window.GetWindow(this);
+
+                        if (mainWindow != null)
+                        {
+                            // Ana pencereyi kapat
+                            mainWindow.Close();
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
             }
         }
 
@@ -90,14 +109,21 @@ namespace Cari_kayıt_Programı
 
         private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Business? selectedBusiness = (Business)dataGrid.SelectedItem;
-            if (selectedBusiness != null)
+            try
             {
-                CariAdLabel.Content = selectedBusiness.Isletme_Adi;
+                Business? selectedBusiness = (Business)dataGrid.SelectedItem;
+                if (selectedBusiness != null)
+                {
+                    CariAdLabel.Content = selectedBusiness.Isletme_Adi;
+                }
+                else
+                {
+                    CariAdLabel.Content = "-";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                CariAdLabel.Content = "-";
+                LogError(ex);
             }
         }
     }

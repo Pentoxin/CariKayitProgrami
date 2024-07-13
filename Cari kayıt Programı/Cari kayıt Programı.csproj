@@ -10,8 +10,8 @@
     <PackageIcon>Notebook_icon.png</PackageIcon>
     <Company>Gökmen Ali Üngör</Company>
     <ApplicationManifest></ApplicationManifest>
-    <AssemblyVersion>1.6.0</AssemblyVersion>
-    <FileVersion>1.6.0</FileVersion>
+    <AssemblyVersion>1.7.0</AssemblyVersion>
+    <FileVersion>1.7.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

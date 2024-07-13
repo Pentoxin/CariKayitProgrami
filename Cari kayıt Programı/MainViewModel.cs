@@ -10,10 +10,10 @@ namespace Cari_kayıt_Programı
     public partial class MainViewModel : ObservableObject
     {
         [ObservableProperty]
-        public ObservableCollection<Odeme> odemeler;
+        private ObservableCollection<Odeme> odemeler;
 
         [ObservableProperty]
-        public ObservableCollection<Business> businesses;
+        private ObservableCollection<Business> businesses;
 
         private DateTime _tarihDate;
 

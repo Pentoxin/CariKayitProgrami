@@ -16,15 +16,11 @@
       mc:Ignorable="d" d:DesignHeight="622" d:DesignWidth="966" Title="Hareketler_TR" Loaded="Page_Loaded" PreviewMouseDown="Page_PreviewMouseDown">
 
     <Page.Resources>
-        <Style x:Key="CustomMaterialDesignTextBox" 
-               BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" 
-               TargetType="TextBox">
+        <Style x:Key="CustomMaterialDesignTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" TargetType="TextBox">
             <Setter Property="Padding" Value="12"/>
             <Setter Property="FontSize" Value="12"/>
         </Style>
-        <Style x:Key="CustomMaterialDesignOutlinedDatePicker" 
-       BasedOn="{StaticResource MaterialDesignOutlinedDatePicker}" 
-       TargetType="DatePicker">
+        <Style x:Key="CustomMaterialDesignOutlinedDatePicker" BasedOn="{StaticResource MaterialDesignOutlinedDatePicker}" TargetType="DatePicker">
             <Setter Property="Padding" Value="12"/>
             <Setter Property="FontSize" Value="12"/>
         </Style>
@@ -69,6 +65,7 @@
         </DataTemplate>
         <local:PositiveToColorConverter x:Key="PositiveToColorConverter"/>
     </Page.Resources>
+    
     <Page.DataContext>
         <local:MainViewModel />
     </Page.DataContext>
@@ -78,14 +75,14 @@
         <DataGrid x:Name="dataGrid" BorderThickness="1" Language="tr-TR" materialDesign:DataGridAssist.CornerRadius="8" ItemsSource="{Binding Odemeler}" AutoGenerateColumns="False" Margin="30,228,30,57" IsReadOnly="True" SelectionChanged="dataGrid_SelectionChanged">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding ID}" Visibility="Hidden" />
-                <DataGridTextColumn Header="Tarih" Binding="{Binding Tarih}" />
+                <DataGridTextColumn Header="Tarih" Binding="{Binding Tarih}" MinWidth="61" />
                 <DataGridTextColumn Header="Tip" Binding="{Binding Tip}" MinWidth="51" />
-                <DataGridTextColumn Header="Evrak No" Binding="{Binding EvrakNo}" />
-                <DataGridTextColumn Header="Açıklama" Binding="{Binding Aciklama}" />
-                <DataGridTextColumn Header="Vade Tarihi" Binding="{Binding VadeTarihi}" />
-                <DataGridTextColumn Header="Borç" Binding="{Binding Borc, StringFormat={}{0:C}}" />
-                <DataGridTextColumn Header="Alacak" Binding="{Binding Alacak, StringFormat={}{0:C}}" />
-                <DataGridTextColumn Header="Bakiye" Binding="{Binding Bakiye, StringFormat={}{0:C}}" >
+                <DataGridTextColumn Header="Evrak No" Binding="{Binding EvrakNo}" MinWidth="84" />
+                <DataGridTextColumn Header="Açıklama" Binding="{Binding Aciklama}" MinWidth="87" />
+                <DataGridTextColumn Header="Vade Tarihi" Binding="{Binding VadeTarihi}" MinWidth="97" />
+                <DataGridTextColumn Header="Borç" Binding="{Binding Borc, StringFormat={}{0:C}}" MinWidth="59" />
+                <DataGridTextColumn Header="Alacak" Binding="{Binding Alacak, StringFormat={}{0:C}}" MinWidth="72" />
+                <DataGridTextColumn Header="Bakiye" Binding="{Binding Bakiye, StringFormat={}{0:C}}" MinWidth="71" >
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="Foreground" 
@@ -93,7 +90,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTemplateColumn Header="Dosya"  MinWidth="68" >
+                <DataGridTemplateColumn x:Name="DosyaColumn" Header="Dosya" MinWidth="68" >
                     <DataGridTemplateColumn.CellStyle>
                         <Style TargetType="DataGridCell">
                             <Setter Property="Padding" Value="5"/>
@@ -103,15 +100,23 @@
                     </DataGridTemplateColumn.CellStyle>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Click="Button_Click" BorderThickness="0" Background="#E5FAFAFA" HorizontalAlignment="Center" VerticalAlignment="Center" Height="26" Width="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <Button x:Name="PART_Button" Click="Button_Click" BorderThickness="0" Background="#E5FAFAFA" HorizontalAlignment="Center" VerticalAlignment="Center" Height="26" Width="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                                 <materialDesign:PackIcon Kind="Magnify" Foreground="#FF3F51B5" Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                             </Button>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Dosya}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed" TargetName="PART_Button"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Dosya}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" TargetName="PART_Button"/>
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Button x:Name="YeniHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,166,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="9" Click="YeniHareketButton_Click" Padding="16,4,16,4" IsDefault="True">
+        <Button x:Name="YeniHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,135,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="10" Click="YeniHareketButton_Click" Padding="16,4,16,4" IsDefault="True">
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon Kind="ContentSave" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 <TextBlock Text="Kaydet" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -128,19 +133,19 @@
             </Grid>
         </GroupBox>
         <TextBox x:Name="TutarTextbox" HorizontalAlignment="Left" materialDesign:TextFieldAssist.PrefixText="₺" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Tutar*" DataObject.Pasting="TutarTextBox_Pasting"  Margin="190,134,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="150" Height="NaN" TabIndex="7" PreviewTextInput="TutarTextBox_PreviewTextInput"  />
-        <Button x:Name="SilHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,197,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="10" Click="SilHareketButton_Click" Padding="10,4,10,4">
+        <Button x:Name="SilHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,166,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="11" Click="SilHareketButton_Click" Padding="10,4,10,4">
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon Kind="Delete" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 <TextBlock Text="Kaydı Sil" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </StackPanel>
         </Button>
-        <Button x:Name="DegistirHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,166,30,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="11" Click="DegistirHareketButton_Click" Padding="10,4,10,4">
+        <Button x:Name="DegistirHareketButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,166,30,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="13" Click="DegistirHareketButton_Click" Padding="10,4,10,4">
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon x:Name="DegistirIcon" Kind="pencil" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,1,0"/>
                 <TextBlock x:Name="DegistirTextbox" Text="Değiştir" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </StackPanel>
         </Button>
-        <Button x:Name="YazdırButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,197,30,0" Click="YazdırButton_Click" Height="26" VerticalAlignment="Top" TabIndex="12" HorizontalAlignment="Right" Width="100">
+        <Button x:Name="YazdırButton" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,197,30,0" Click="YazdırButton_Click" Height="26" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Right" Width="100">
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon Kind="Printer" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
                 <TextBlock Text="Yazdır" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -148,7 +153,7 @@
         </Button>
         <GroupBox x:Name="YukleGroupBox" Header="GroupBox" Margin="350,134,0,0" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" Height="42" VerticalAlignment="Top" HorizontalAlignment="Left" Width="280" >
             <Grid Margin="-10,-10, 0,-10" Width="270">
-                <Button x:Name="YukleButton" BorderThickness="0.5" materialDesign:ButtonAssist.CornerRadius="4" BorderBrush="Gray" Style="{StaticResource CustomDisabledButtonStyle}" Background="#E5FAFAFA" Click="YukleButton_Click" Padding="10,4,10,4" Margin="7,0,0,0" Height="26" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120">
+                <Button x:Name="YukleButton" BorderThickness="0.5" materialDesign:ButtonAssist.CornerRadius="4" BorderBrush="Gray" Style="{StaticResource CustomDisabledButtonStyle}" Background="#E5FAFAFA" Click="YukleButton_Click" Padding="10,4,10,4" Margin="7,0,0,0" Height="26" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" TabIndex="8">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="FileUpload" Foreground="Black" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
                         <TextBlock Text="Dosya Yükle" Height="18"  Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="8"/>
@@ -170,20 +175,26 @@
         <TextBox x:Name="BorcTopTextbox" HorizontalAlignment="Left" Text="" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Borç Bakiyesi" IsReadOnly="True" Margin="30,0,0,10" TextWrapping="NoWrap" VerticalAlignment="Bottom" Width="150" Height="NaN"/>
         <TextBox x:Name="AlacakTopTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Alacak Bakiyesi" IsReadOnly="True" Margin="190,0,0,10" TextWrapping="NoWrap" VerticalAlignment="Bottom" Width="150" Height="NaN"/>
         <TextBox x:Name="BakiyeTopTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Toplam Bakiye" IsReadOnly="True" Margin="351,0,0,10" TextWrapping="NoWrap" VerticalAlignment="Bottom" Width="150" Height="NaN"/>
-        <Button x:Name="DegistirIptalButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,135,30,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Click="DegistirIptalButton_Click" Padding="10,4,10,4">
+        <Button x:Name="DegistirIptalButton" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,135,30,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="14" Click="DegistirIptalButton_Click" Padding="10,4,10,4">
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon Kind="CancelThick" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
                 <TextBlock Text="İptal" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </StackPanel>
         </Button>
-        <Button x:Name="AdminButton" Content="Admin" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,135,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="1" Padding="16,4,16,4" IsDefault="True" Click="AdminButton_Click"/>
+        <Button x:Name="AdminButton" Content="Admin" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,10,30,0" VerticalAlignment="Top" Height="26" Width="100" Click="AdminButton_Click" IsTabStop="False"/>
         <Label Content="Cari Kod :" HorizontalAlignment="Left" Margin="30,10,0,0" VerticalAlignment="Top" Height="22" Width="62"/>
         <Label x:Name="CariKodLabel" Content="-" HorizontalAlignment="Left" Margin="97,10,0,0" VerticalAlignment="Top" Height="22" Width="50" MaxWidth="50"/>
-        <Button x:Name="CariKartButton" HorizontalAlignment="Left" Margin="152,10,0,0" VerticalAlignment="Top" Height="22" Width="22" Padding="0,0,0,0" Click="CariKartButton_Click" >
+        <Button x:Name="CariKartButton" HorizontalAlignment="Left" Margin="152,10,0,0" VerticalAlignment="Top" Height="22" Width="22" Padding="0,0,0,0" Click="CariKartButton_Click" IsTabStop="False" >
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon Kind="Book" Width="19" Height="19" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </StackPanel>
         </Button>
-        <TextBox x:Name="txtSearch" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Arama" materialDesign:TextFieldAssist.HasClearButton="True" Margin="30,181,0,0" VerticalAlignment="Top" TabIndex="11" TextChanged="txtSearch_TextChanged" Padding="12,12,12,12" HorizontalAlignment="Left" Width="600" />
+        <TextBox x:Name="txtSearch" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Arama" materialDesign:TextFieldAssist.HasClearButton="True" Margin="30,181,0,0" VerticalAlignment="Top" TabIndex="9" TextChanged="txtSearch_TextChanged" Padding="12,12,12,12" HorizontalAlignment="Left" Width="600" />
+        <Button x:Name="FiltreleButton" HorizontalAlignment="Right" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,197,140,0" VerticalAlignment="Top" Height="26" Width="100" TabIndex="12" Click="FiltreleButton_Click">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Kind="Filter" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
+                <TextBlock Text="Filtrele" Height="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Button>
     </Grid>
 </Page>

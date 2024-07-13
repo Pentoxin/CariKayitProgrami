@@ -158,19 +158,28 @@ namespace Cari_kayıt_Programı
                                     DateTime tarih;
                                     DateTime vadetarihi;
 
+                                    bool tarihGuncelle = false;
+                                    bool vadetarihiGuncelle = false;
+
                                     // Tarih formatlarını değiştir
                                     if (DateTime.TryParseExact(tarihStr, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out tarih))
                                     {
                                         tarihStr = tarih.ToString("dd.MM.yyyy");
+                                        tarihGuncelle = true;
                                     }
 
                                     if (DateTime.TryParseExact(vadetarihiStr, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out vadetarihi))
                                     {
                                         vadetarihiStr = vadetarihi.ToString("dd.MM.yyyy");
+                                        vadetarihiGuncelle = true;
                                     }
 
-                                    // Güncelleme sorgularını listeye ekle
-                                    updateQueries.Add($"UPDATE {tableName} SET tarih = '{tarihStr}', vadetarihi = '{vadetarihiStr}' WHERE ID = {recordId}");
+                                    // Güncelleme sorgularını sadece gerekli olduğunda ekle
+                                    if (tarihGuncelle || vadetarihiGuncelle)
+                                    {
+                                        // Güncelleme sorgularını listeye ekle
+                                        updateQueries.Add($"UPDATE {tableName} SET tarih = '{tarihStr}', vadetarihi = '{vadetarihiStr}' WHERE ID = {recordId}");
+                                    }
                                 }
 
                                 // Güncelleme sorgularını çalıştır
@@ -277,10 +286,6 @@ namespace Cari_kayıt_Programı
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Tüm gerekli sütunlar zaten mevcut.");
                     }
                 }
                 catch (Exception ex)
@@ -937,7 +942,7 @@ namespace Cari_kayıt_Programı
             try
             {
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
-                viewModel.businesses.Clear();
+                viewModel.Businesses.Clear();
 
                 using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
                 {
@@ -979,12 +984,12 @@ namespace Cari_kayıt_Programı
                                     Telefon1 = phone1,
                                     Telefon2 = phone2
                                 };
-                                viewModel.businesses.Add(b);
+                                viewModel.Businesses.Add(b);
                             }
                         }
                     }
                 }
-                return viewModel.businesses;
+                return viewModel.Businesses;
             }
             catch (Exception ex)
             {
@@ -999,7 +1004,7 @@ namespace Cari_kayıt_Programı
             try
             {
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
-                viewModel.businesses.Clear();
+                viewModel.Businesses.Clear();
 
                 using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
                 {
@@ -1039,12 +1044,12 @@ namespace Cari_kayıt_Programı
                                     Telefon1 = phone1,
                                     Telefon2 = phone2
                                 };
-                                viewModel.businesses.Add(b);
+                                viewModel.Businesses.Add(b);
                             }
                         }
                     }
                 }
-                return viewModel.businesses;
+                return viewModel.Businesses;
             }
             catch (Exception ex)
             {
