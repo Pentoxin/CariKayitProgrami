@@ -15,6 +15,6 @@ Bu proje, şirketlerin cari ve finansal bilgilerini kaydedip takip etmelerine ol
 
 ## Kurulum
 
-1. Projeyi GitHub’dan en son sürüm olarak indirin.
-2. İndirilen dosyadaki `setup.exe` dosyasını çalıştırarak yüklemeyi başlatın.
+1. Projeyi GitHub’dan [en son sürüm](github.com/Pentoxin/CariKayitProgrami/releases/latest) olarak indirin.
+2. İndirilen dosyadaki `cari_kayit_programi_setup.exe` dosyasını çalıştırarak yüklemeyi başlatın.
 3. Gereken tüm bağımlılıklar otomatik olarak kurulacaktır.
