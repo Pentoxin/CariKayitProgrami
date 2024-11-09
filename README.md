@@ -13,6 +13,10 @@ Bu proje, şirketlerin cari ve finansal bilgilerini kaydedip takip etmelerine ol
 - **C# WPF**: Modern ve kullanıcı dostu bir arayüz sağlamak için.
 - **SQLite**: Uygulamanın verilerini güvenilir ve hafif bir veritabanında saklamak için.
 
+## Görüntüler
+![Cari Kayıtlar](https://github.com/user-attachments/assets/f6df7a88-ace5-47fd-9838-d4828853aa05)
+![Cari Hareketler](https://github.com/user-attachments/assets/37186d89-a6f2-472c-aa67-1ba20689da65)
+
 ## Kurulum
 
 1. Projeyi GitHub’dan [en son sürüm](https://github.com/Pentoxin/CariKayitProgrami/releases/latest) olarak indirin.
