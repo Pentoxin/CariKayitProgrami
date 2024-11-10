@@ -3,6 +3,7 @@ using System;
 using System.Collections.ObjectModel;
 using static Cari_kayıt_Programı.Hareketler_TR;
 using static Cari_kayıt_Programı.Main_TR;
+using static Cari_kayıt_Programı.Stok;
 
 namespace Cari_kayıt_Programı
 {
@@ -14,6 +15,9 @@ namespace Cari_kayıt_Programı
 
         [ObservableProperty]
         private ObservableCollection<Business> businesses;
+
+        [ObservableProperty]
+        private ObservableCollection<Stoklar> stoklar;
 
         private DateTime _tarihDate;
 
@@ -36,6 +40,7 @@ namespace Cari_kayıt_Programı
         {
             Odemeler = new ObservableCollection<Odeme>();
             Businesses = new ObservableCollection<Business>();
+            Stoklar = new ObservableCollection<Stoklar>();
             TarihDate = DateTime.Now;
             VadeDate = TarihDate;
         }

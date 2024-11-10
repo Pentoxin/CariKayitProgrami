@@ -12,7 +12,7 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}" 
-        mc:Ignorable="d" Title="CariKart" Height="580" Width="426" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        mc:Ignorable="d" Title="Cari Kartlar" Height="580" Width="426" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
 
     <Window.Resources>
         <Style x:Key="CustomMaterialDesignTextBox" 
@@ -32,17 +32,9 @@
         <TextBox x:Name="txtSearch" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Arama" materialDesign:TextFieldAssist.HasClearButton="True" Margin="10,83,10,0" VerticalAlignment="Top" TabIndex="11" Tag="" MaxLength="100" TextChanged="txtSearch_TextChanged" Padding="6,6,6,6" />
         <DataGrid x:Name="dataGrid" BorderThickness="1" Language="tr-TR" ItemsSource="{Binding Businesses}" materialDesign:DataGridAssist.CornerRadius="8" AutoGenerateColumns="False" IsReadOnly="True" Margin="10,129,10,56" MouseDoubleClick="dataGrid_MouseDoubleClick" SelectionChanged="dataGrid_SelectionChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding ID}"/>
-                <DataGridTextColumn Header="İşletme Adı" Binding="{Binding Isletme_Adi}" />
-                <DataGridTextColumn Header="Vergi Dairesi" Binding="{Binding VergiDairesi}" Visibility="Hidden" />
+                <DataGridTextColumn Header="Cari Kod" Binding="{Binding CariKod}"/>
+                <DataGridTextColumn Header="Cari İsim" Binding="{Binding CariIsim}" />
                 <DataGridTextColumn Header="Vergi No" Binding="{Binding VergiNo}" />
-                <DataGridTextColumn Header="Banka" Binding="{Binding Banka}" Visibility="Hidden" />
-                <DataGridTextColumn Header="Hesap No" Binding="{Binding HesapNo}" Visibility="Hidden" />
-                <DataGridTextColumn Header="Adres" Binding="{Binding Adres}" Visibility="Hidden" />
-                <DataGridTextColumn Header="E-Posta 1" Binding="{Binding EPosta1}" Visibility="Hidden" />
-                <DataGridTextColumn Header="E-Posta 2" Binding="{Binding EPosta2}" Visibility="Hidden" />
-                <DataGridTextColumn Header="Telefon 1" Binding="{Binding Telefon1}" Visibility="Hidden" />
-                <DataGridTextColumn Header="Telefon 2" Binding="{Binding Telefon2}" Visibility="Hidden" />
             </DataGrid.Columns>
         </DataGrid>
         <Label Content="Seçili cari kayıt : " HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Height="23" Width="103"/>

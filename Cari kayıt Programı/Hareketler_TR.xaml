@@ -72,7 +72,7 @@
 
     <Grid>
         <Label x:Name="IsletmeAdiLabel" Content="Label" ContentTemplate="{StaticResource WrappedLabelTemplate}" HorizontalAlignment="Left" Margin="30,37,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold" MaxWidth="600" Height="42"/>
-        <DataGrid x:Name="dataGrid" BorderThickness="1" Language="tr-TR" materialDesign:DataGridAssist.CornerRadius="8" ItemsSource="{Binding Odemeler}" AutoGenerateColumns="False" Margin="30,228,30,57" IsReadOnly="True" SelectionChanged="dataGrid_SelectionChanged">
+        <DataGrid x:Name="dataGrid" BorderBrush="Black" BorderThickness="1" Language="tr-TR" materialDesign:DataGridAssist.CornerRadius="8" ItemsSource="{Binding Odemeler}" AutoGenerateColumns="False" Margin="30,228,30,57" IsReadOnly="True" SelectionChanged="dataGrid_SelectionChanged" GridLinesVisibility="All" AlternationCount="1" AlternatingRowBackground="LightGray" HorizontalGridLinesBrush="Black">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding ID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Tarih" Binding="{Binding Tarih}" MinWidth="61" />
@@ -127,9 +127,9 @@
         <TextBox x:Name="AciklamaTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Açıklama*" Margin="320,89,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="180" Height="NaN" TabIndex="3"/>
         <DatePicker x:Name="VadeDatePicker" DisplayDateStart="{Binding TarihDate, Mode=TwoWay}" materialDesign:HintAssist.Hint="Vade Tarihi*" Language="tr-TR" Style="{StaticResource CustomMaterialDesignOutlinedDatePicker}" SelectedDate="{Binding VadeDate, Mode=TwoWay}" HorizontalAlignment="Left" Margin="510,89,0,0" VerticalAlignment="Top" SelectedDateFormat="Short"  Width="120" TabIndex="4"/>
         <GroupBox x:Name="BAGroupBox" Header="GroupBox" Margin="30,134,0,0" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" Height="42" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150">
-            <Grid>
-                <RadioButton x:Name="BorcRadioButton" Content="Borç" GroupName="TipGroup" IsChecked="True" TabIndex="5"/>
-                <RadioButton x:Name="AlacakRadioButton" Content="Alacak" GroupName="TipGroup" Margin="60,0,0,0" TabIndex="6" />
+            <Grid Margin="-10,-11,-10,0" Height="42">
+                <RadioButton x:Name="BorcRadioButton" Content="Borç" GroupName="TipGroup" IsChecked="True" TabIndex="5" HorizontalAlignment="Left" VerticalAlignment="Center" Height="39" Margin="10,0,0,0" Width="59" Padding="4,2,0,0"/>
+                <RadioButton x:Name="AlacakRadioButton" Content="Alacak" GroupName="TipGroup" Margin="70,0,0,0" TabIndex="6" Height="39" VerticalAlignment="Center" />
             </Grid>
         </GroupBox>
         <TextBox x:Name="TutarTextbox" HorizontalAlignment="Left" materialDesign:TextFieldAssist.PrefixText="₺" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Tutar*" DataObject.Pasting="TutarTextBox_Pasting"  Margin="190,134,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="150" Height="NaN" TabIndex="7" PreviewTextInput="TutarTextBox_PreviewTextInput"  />
@@ -183,8 +183,8 @@
         </Button>
         <Button x:Name="AdminButton" Content="Admin" materialDesign:ButtonAssist.CornerRadius="8" HorizontalAlignment="Right" Margin="0,10,30,0" VerticalAlignment="Top" Height="26" Width="100" Click="AdminButton_Click" IsTabStop="False"/>
         <Label Content="Cari Kod :" HorizontalAlignment="Left" Margin="30,10,0,0" VerticalAlignment="Top" Height="22" Width="62"/>
-        <Label x:Name="CariKodLabel" Content="-" HorizontalAlignment="Left" Margin="97,10,0,0" VerticalAlignment="Top" Height="22" Width="50" MaxWidth="50"/>
-        <Button x:Name="CariKartButton" HorizontalAlignment="Left" Margin="152,10,0,0" VerticalAlignment="Top" Height="22" Width="22" Padding="0,0,0,0" Click="CariKartButton_Click" IsTabStop="False" >
+        <Label x:Name="CariKodLabel" Content="-" HorizontalAlignment="Left" Margin="97,10,0,0" VerticalAlignment="Top" Height="22" Width="80" MaxWidth="80"/>
+        <Button x:Name="CariKartButton" HorizontalAlignment="Left" Margin="182,10,0,0" VerticalAlignment="Top" Height="22" Width="22" Padding="0,0,0,0" Click="CariKartButton_Click" IsTabStop="False" >
             <StackPanel Orientation="Horizontal">
                 <materialDesign:PackIcon Kind="Book" Width="19" Height="19" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </StackPanel>

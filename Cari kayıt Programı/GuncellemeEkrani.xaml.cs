@@ -21,7 +21,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                var releaseInfo = await Main_TR.Check.GetLatestReleaseInfoAsync();
+                var releaseInfo = await Anasayfa.Check.GetLatestReleaseInfoAsync();
                 TitleLabel.Content = releaseInfo.title;
                 ContentTextbox.Text = releaseInfo.notes;
             }

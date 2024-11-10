@@ -44,28 +44,7 @@ namespace Cari_kayıt_Programı
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             Business? selectedBusiness = Degiskenler.selectedBusiness;
-            if (selectedBusiness != null)
-            {
-                CariKodLabel.Content = selectedBusiness.ID;
-                IsletmeAdiLabel.Content = selectedBusiness.Isletme_Adi;
-                LoadDataGrid();
-
-                BorcRadioButton.IsChecked = true;
-                TarihDatePicker.IsEnabled = true;
-                EvrakNoTextbox.IsEnabled = true;
-                AciklamaTextbox.IsEnabled = true;
-                VadeDatePicker.IsEnabled = true;
-                BAGroupBox.IsEnabled = true;
-                YukleGroupBox.IsEnabled = true;
-                TutarTextbox.IsEnabled = true;
-                YeniHareketButton.IsEnabled = true;
-                SilHareketButton.IsEnabled = true;
-                DegistirHareketButton.IsEnabled = true;
-                YazdırButton.IsEnabled = true;
-                txtSearch.IsEnabled = true;
-                FiltreleButton.IsEnabled = true;
-            }
-            else
+            if (selectedBusiness == null)
             {
                 IsletmeAdiLabel.Content = "-";
                 BorcRadioButton.IsChecked = false;
@@ -95,10 +74,10 @@ namespace Cari_kayıt_Programı
                 if (!string.IsNullOrWhiteSpace(AciklamaTextbox.Text) && !string.IsNullOrWhiteSpace(TutarTextbox.Text) && (AlacakRadioButton.IsChecked == true || BorcRadioButton.IsChecked == true) && TarihDatePicker.SelectedDate.HasValue && VadeDatePicker.SelectedDate.HasValue)
                 {
                     Business? selectedBusiness = Degiskenler.selectedBusiness;
-                    int ID = 0;
+                    string? kod = "";
                     if (selectedBusiness != null)
                     {
-                        ID = selectedBusiness.ID;
+                        kod = selectedBusiness.CariKod;
                     }
 
                     DateTime selectedDate = TarihDatePicker.SelectedDate.HasValue ? TarihDatePicker.SelectedDate.Value : DateTime.Now;
@@ -141,7 +120,7 @@ namespace Cari_kayıt_Programı
 
                         if (!string.IsNullOrWhiteSpace(evrakNo))
                         {
-                            string checkQuery = $"SELECT COUNT(*) FROM Cari_{ID} WHERE lower(EvrakNo) = lower(@EvrakNo)";
+                            string checkQuery = $"SELECT COUNT(*) FROM Cari_{kod} WHERE lower(EvrakNo) = lower(@EvrakNo)";
                             using (SQLiteCommand checkCommand = new SQLiteCommand(checkQuery, connection))
                             {
                                 checkCommand.Parameters.AddWithValue("@EvrakNo", evrakNo);
@@ -157,7 +136,7 @@ namespace Cari_kayıt_Programı
 
                         if (MessageBox.Show("Veriyi kaydetmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                         {
-                            string query = $"INSERT INTO Cari_{ID} (Tarih, Tip, EvrakNo, Aciklama, VadeTarihi, Borc, Alacak, Dosya) " +
+                            string query = $"INSERT INTO Cari_{kod} (Tarih, Tip, EvrakNo, Aciklama, VadeTarihi, Borc, Alacak, Dosya) " +
                                            "VALUES (@Tarih, @Tip, @EvrakNo, @Aciklama, @VadeTarihi, @Borc, @Alacak, @Dosya)";
 
                             using (SQLiteCommand command = new SQLiteCommand(query, connection))
@@ -210,10 +189,10 @@ namespace Cari_kayıt_Programı
             try
             {
                 Business? selectedBusiness = Degiskenler.selectedBusiness;
-                int ID = 0;
+                string? kod = "";
                 if (selectedBusiness != null)
                 {
-                    ID = selectedBusiness.ID;
+                    kod = selectedBusiness.CariKod;
                 }
 
                 // Seçilen öğenin ID'sini alın
@@ -239,7 +218,7 @@ namespace Cari_kayıt_Programı
                         {
                             connection.Open();
 
-                            string deleteQuery = $"DELETE FROM Cari_{ID} WHERE ID = @OdemeId";
+                            string deleteQuery = $"DELETE FROM Cari_{kod} WHERE ID = @OdemeId";
                             using (SQLiteCommand deleteCommand = new SQLiteCommand(deleteQuery, connection))
                             {
                                 deleteCommand.Parameters.AddWithValue("@OdemeId", selectedOdemeId);
@@ -301,9 +280,11 @@ namespace Cari_kayıt_Programı
             {
                 Business? selectedBusiness = Degiskenler.selectedBusiness;
                 int ID = 0;
+                string? kod = "";
                 if (selectedBusiness != null)
                 {
                     ID = selectedBusiness.ID;
+                    kod = selectedBusiness.CariKod;
                 }
 
                 int selectedOdemeId = 0;
@@ -343,7 +324,7 @@ namespace Cari_kayıt_Programı
                 }
                 else if (DegistirSayac == 1)
                 {
-                    Degistir(ID, selectedOdemeId, selectedOdemeDosya);
+                    Degistir(ID, selectedOdemeId, selectedOdemeDosya, kod);
                 }
 
             }
@@ -359,9 +340,11 @@ namespace Cari_kayıt_Programı
             {
                 Business? selectedBusiness = Degiskenler.selectedBusiness;
                 int ID = 0;
+                string? kod = "";
                 if (selectedBusiness != null)
                 {
                     ID = selectedBusiness.ID;
+                    kod = selectedBusiness.CariKod;
                 }
 
                 int selectedOdemeId = 0;
@@ -375,7 +358,7 @@ namespace Cari_kayıt_Programı
                     }
                 }
                 DegistirSayac = 3;
-                Degistir(ID, selectedOdemeId, selectedOdemeDosya);
+                Degistir(ID, selectedOdemeId, selectedOdemeDosya, kod);
 
                 YeniHareketButton.IsEnabled = true;
                 SilHareketButton.IsEnabled = true;
@@ -388,7 +371,7 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        public void Degistir(int ID = 0, int selectedOdemeId = 0, string selectedOdemeDosya = "")
+        public void Degistir(int ID = 0, int selectedOdemeId = 0, string selectedOdemeDosya = "", string selectedBusinessKod = "")
         {
             try
             {
@@ -451,7 +434,7 @@ namespace Cari_kayıt_Programı
                         {
                             connection.Open();
 
-                            string checkQuery = $"SELECT COUNT(*) FROM Cari_{ID} WHERE EvrakNo = @EvrakNo AND ID != @ID";
+                            string checkQuery = $"SELECT COUNT(*) FROM Cari_{selectedBusinessKod} WHERE EvrakNo = @EvrakNo AND ID != @ID";
                             using (SQLiteCommand checkCommand = new SQLiteCommand(checkQuery, connection))
                             {
                                 checkCommand.Parameters.AddWithValue("@EvrakNo", EvrakNoTextbox.Text);
@@ -467,7 +450,7 @@ namespace Cari_kayıt_Programı
                                 {
                                     if (MessageBox.Show("Veriyi değiştirmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                                     {
-                                        string query = $"UPDATE Cari_{ID} " +
+                                        string query = $"UPDATE Cari_{selectedBusinessKod} " +
                                                "SET Tarih = @Tarih, " +
                                                "    Tip = @Tip, " +
                                                "    EvrakNo = @EvrakNo, " +
@@ -551,10 +534,11 @@ namespace Cari_kayıt_Programı
             try
             {
                 Business? selectedBusiness = Degiskenler.selectedBusiness;
-                string? isletmeAdi = "", telefonNo1 = "", telefonNo2 = "", adres = "", vergiNo = "", vergiDairesi = "";
+                string? carikod = "", cariisim = "", telefonNo1 = "", telefonNo2 = "", adres = "", vergiNo = "", vergiDairesi = "";
                 if (selectedBusiness != null)
                 {
-                    isletmeAdi = selectedBusiness.Isletme_Adi != "" ? selectedBusiness.Isletme_Adi : "-";
+                    carikod = selectedBusiness.CariKod != "" ? selectedBusiness.CariKod : "-";
+                    cariisim = selectedBusiness.CariIsim != "" ? selectedBusiness.CariIsim : "-";
                     telefonNo1 = selectedBusiness.Telefon1 != "" ? selectedBusiness.Telefon1 : "-";
                     telefonNo2 = selectedBusiness.Telefon2 != "" ? selectedBusiness.Telefon2 : "-";
                     adres = selectedBusiness.Adres != "" ? selectedBusiness.Adres : "-";
@@ -564,7 +548,7 @@ namespace Cari_kayıt_Programı
 
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "Excel Dosyası|*.xlsx";
-                saveFileDialog.FileName = $"{isletmeAdi} Hareketleri.xlsx";
+                saveFileDialog.FileName = $"{cariisim} Hareketleri.xlsx";
                 saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
                 if (saveFileDialog.ShowDialog() == true)
@@ -581,12 +565,14 @@ namespace Cari_kayıt_Programı
                         var worksheet = workbook.Worksheets.Add("Odemeler");
 
 
-                        worksheet.Cell(1, 1).Value = "İşletme Bilgileri";
-                        worksheet.Cell(1, 2).Value = isletmeAdi;
-                        worksheet.Cell(2, 2).Value = $"Telefon 1: {telefonNo1} | Telefon 2: {telefonNo2}";
-                        worksheet.Cell(3, 2).Value = $"Adres: {adres}";
-                        worksheet.Cell(4, 2).Value = $"V.No: {vergiNo}";
-                        worksheet.Cell(4, 3).Value = $"V.Dairesi: {vergiDairesi}";
+                        worksheet.Cell(1, 1).Value = "Cari Kod";
+                        worksheet.Cell(1, 2).Value = carikod;
+                        worksheet.Cell(1, 3).Value = "İşletme Bilgileri";
+                        worksheet.Cell(1, 4).Value = cariisim;
+                        worksheet.Cell(2, 3).Value = $"Telefon 1: {telefonNo1} | Telefon 2: {telefonNo2}";
+                        worksheet.Cell(3, 3).Value = $"Adres: {adres}";
+                        worksheet.Cell(4, 3).Value = $"V.No: {vergiNo}";
+                        worksheet.Cell(4, 4).Value = $"V.Dairesi: {vergiDairesi}";
 
                         // Başlık satırını ekle
                         var properties = typeof(Odeme).GetProperties();
@@ -742,19 +728,16 @@ namespace Cari_kayıt_Programı
             try
             {
                 Business? selectedBusiness = Degiskenler.selectedBusiness;
-                string? isletmeAdi = "";
+                string? kod = "";
                 if (selectedBusiness != null)
                 {
-                    isletmeAdi = selectedBusiness.Isletme_Adi;
+                    kod = selectedBusiness.CariKod;
                 }
 
                 var selectedOdeme = dataGrid.SelectedItem as Odeme;
-                if (selectedOdeme != null)
+                if (selectedOdeme != null && !string.IsNullOrEmpty(selectedOdeme.Dosya))
                 {
-                    if (!string.IsNullOrEmpty(selectedOdeme.Dosya))
-                    {
-                        DosyaIslem = "Uploaded";
-                    }
+                    DosyaIslem = "Uploaded";
                 }
 
                 if (DosyaIslem != "Uploaded")
@@ -768,7 +751,7 @@ namespace Cari_kayıt_Programı
                         selectedFilePath = openFileDialog.FileName;
                         string fileName = Path.GetFileName(selectedFilePath);
 
-                        DosyaPath = Path.Combine(Config.IsletmePath, isletmeAdi, fileName);
+                        DosyaPath = Path.Combine(Config.IsletmePath, kod, fileName);
 
                         DosyaIslem = "Uploaded";
                         ChangeButtonContent(fileName);
@@ -945,8 +928,8 @@ namespace Cari_kayıt_Programı
                 Business? selectedBusiness = Degiskenler.selectedBusiness;
                 if (selectedBusiness != null)
                 {
-                    CariKodLabel.Content = selectedBusiness.ID;
-                    IsletmeAdiLabel.Content = selectedBusiness.Isletme_Adi;
+                    CariKodLabel.Content = selectedBusiness.CariKod;
+                    IsletmeAdiLabel.Content = selectedBusiness.CariIsim;
                     BorcTopTextbox.Clear();
                     AlacakTopTextbox.Clear();
                     BakiyeTopTextbox.Clear();
@@ -1042,7 +1025,7 @@ namespace Cari_kayıt_Programı
                 if (selectedBusiness != null)
                 {
                     string searchTerm = txtSearch.Text;
-                    SearchGetOdemeler(selectedBusiness.ID, searchTerm);
+                    SearchGetOdemeler(selectedBusiness.CariKod, searchTerm);
                 }
             }
             catch (Exception ex)
@@ -1188,7 +1171,7 @@ namespace Cari_kayıt_Programı
                 Business? selectedBusiness = Degiskenler.selectedBusiness;
                 if (selectedBusiness != null)
                 {
-                    GetOdemeler(selectedBusiness.ID);
+                    GetOdemeler(selectedBusiness.CariKod);
 
                     // Her sütunun genişliğini içerdiği metne göre ayarla
                     foreach (var column in dataGrid.Columns)
@@ -1217,7 +1200,7 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        public void SearchGetOdemeler(int businessId, string searchTerm)
+        public void SearchGetOdemeler(string? businessKod, string? searchTerm)
         {
             try
             {
@@ -1228,7 +1211,7 @@ namespace Cari_kayıt_Programı
                 {
                     connection.Open();
 
-                    string query = $@"SELECT * FROM Cari_{businessId} 
+                    string query = $@"SELECT * FROM Cari_{businessKod} 
                              WHERE LOWER(tarih) LIKE '%' || LOWER(@searchTerm) || '%' 
                              OR ID LIKE '%' || LOWER(@searchTerm) || '%' 
                              OR LOWER(tip) LIKE '%' || LOWER(@searchTerm) || '%' 
@@ -1311,7 +1294,7 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        public void GetOdemeler(int businessId)
+        public void GetOdemeler(string? businessKod)
         {
             try
             {
@@ -1321,7 +1304,7 @@ namespace Cari_kayıt_Programı
                 {
                     connection.Open();
 
-                    string query = $"SELECT * FROM Cari_{businessId}";
+                    string query = $"SELECT * FROM Cari_{businessKod}";
 
                     using (SQLiteCommand command = new SQLiteCommand(query, connection))
                     {
@@ -1357,7 +1340,7 @@ namespace Cari_kayıt_Programı
                     odeme.Bakiye = bakiye;
                     borcTop += odeme.Borc;
                     alacakTop += odeme.Alacak;
-                    if(!string.IsNullOrEmpty(odeme.Dosya))
+                    if (!string.IsNullOrEmpty(odeme.Dosya))
                     {
                         dosyaSayac++;
                     }
@@ -1422,7 +1405,8 @@ namespace Cari_kayıt_Programı
                 if (!IsMouseOverDataGrid(e))
                 {
                     Business? selectedBusiness = Degiskenler.selectedBusiness;
-                    if (selectedBusiness != null)
+                    var selectedOdeme = dataGrid.SelectedItem as Odeme;
+                    if (selectedBusiness != null && selectedOdeme != null && DegistirSayac <= 0)
                     {
                         LoadDataGrid();
                         TarihDatePicker.SelectedDate = DateTime.Now;
@@ -1477,10 +1461,7 @@ namespace Cari_kayıt_Programı
                         return true;
                     }
 
-                    if (originalSource is Button ||
-                        originalSource is TextBox ||
-                        originalSource is RadioButton ||
-                        originalSource is GroupBox)
+                    if (originalSource is Button || originalSource is TextBox || originalSource is RadioButton || originalSource is GroupBox)
                     {
                         return true;
                     }

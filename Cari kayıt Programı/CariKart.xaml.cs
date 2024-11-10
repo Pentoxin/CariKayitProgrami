@@ -53,7 +53,7 @@ namespace Cari_kayıt_Programı
             {
                 Main_TR main_TR = new Main_TR();
                 string searchTerm = txtSearch.Text;
-                main_TR.Businesses(searchTerm);
+                dataGrid.ItemsSource = main_TR.Businesses(searchTerm);
             }
             catch (Exception ex)
             {
@@ -114,7 +114,7 @@ namespace Cari_kayıt_Programı
                 Business? selectedBusiness = (Business)dataGrid.SelectedItem;
                 if (selectedBusiness != null)
                 {
-                    CariAdLabel.Content = selectedBusiness.Isletme_Adi;
+                    CariAdLabel.Content = selectedBusiness.CariIsim;
                 }
                 else
                 {

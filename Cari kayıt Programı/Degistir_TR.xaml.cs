@@ -32,14 +32,13 @@ namespace Cari_kayıt_Programı
 
             if (selectedBusiness != null)
             {
-                isletmeadiTextBox.Text = selectedBusiness.Isletme_Adi;
+                isletmeadiTextBox.Text = selectedBusiness.CariIsim;
                 vergidairesiTextBox.Text = selectedBusiness.VergiDairesi;
                 verginoTextBox.Text = selectedBusiness.VergiNo;
                 bankaTextBox.Text = selectedBusiness.Banka;
                 hesapnoTextBox.Text = selectedBusiness.HesapNo;
                 adresTextBox.Text = selectedBusiness.Adres;
-                mail1TextBox.Text = selectedBusiness.EPosta1;
-                mail2TextBox.Text = selectedBusiness.EPosta2;
+                mail1TextBox.Text = selectedBusiness.EPosta;
                 telefon1TextBox.Text = selectedBusiness.Telefon1;
                 telefon2TextBox.Text = selectedBusiness.Telefon2;
             }
@@ -61,7 +60,7 @@ namespace Cari_kayıt_Programı
                 if (selectedBusiness == null)
                     return;
 
-                string firstBusiness = selectedBusiness.Isletme_Adi;
+                string firstBusiness = selectedBusiness.CariIsim;
 
 
                 using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))

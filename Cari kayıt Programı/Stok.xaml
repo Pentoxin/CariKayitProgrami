@@ -1,0 +1,114 @@
+﻿<Window x:Class="Cari_kayıt_Programı.Stok"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Cari_kayıt_Programı"
+        xmlns:local2="clr-namespace:CariKayitProgrami"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}" 
+        mc:Ignorable="d" Title="Stok" Height="600" Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <Style x:Key="CustomMaterialDesignTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" TargetType="TextBox">
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style x:Key="DefaultGroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Border Name="PART_Border" BorderBrush="#FF494949" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5" Padding="10">
+                            <DockPanel>
+                                <ContentPresenter Margin="{TemplateBinding Padding}" />
+                            </DockPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="PART_Border" Property="BorderBrush" Value="#FFc1c1c1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Window.DataContext>
+        <local:MainViewModel />
+    </Window.DataContext>
+    <Grid>
+        <DataGrid x:Name="dataGrid" BorderBrush="Black" BorderThickness="1" Language="tr-TR" ItemsSource="{Binding Stoklar}" materialDesign:DataGridAssist.CornerRadius="8" AutoGenerateColumns="False" Margin="10,240,10,10" SelectionChanged="dataGrid_SelectionChanged" IsReadOnly="True" Loaded="dataGrid_Loaded" GridLinesVisibility="All" AlternationCount="1" AlternatingRowBackground="LightGray" HorizontalGridLinesBrush="Black">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding ID}" Visibility="Hidden" />
+                <DataGridTextColumn Header="Stok Kod" Binding="{Binding StokKod}" />
+                <DataGridTextColumn Header="Stok Adı" Binding="{Binding StokAdi}" />
+                <DataGridTextColumn Header="KDV S. O." Binding="{Binding KdvSatis}" />
+                <DataGridTextColumn Header="KDV A. O." Binding="{Binding KdvAlis}" />
+                <DataGridTextColumn Header="Ölçü Birimi 1" Binding="{Binding OlcuBirimi1}" />
+                <DataGridTextColumn Header="Ölçü Birimi 2" Binding="{Binding OlcuBirimi2}" />
+                <DataGridTextColumn Header="Ölçü Birimi 2 Oran" Binding="{Binding OlcuBirimi2Oran}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="KaydetButton" ToolTip="Kaydet" materialDesign:ButtonAssist.CornerRadius="5" Margin="10,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Left" Width="30" Padding="1,1,1,1" IsDefault="True" IsTabStop="False" Click="KaydetButton_Click">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="TrayArrowDown" Foreground="#FFFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button x:Name="DeleteButton" ToolTip="Kaydı Sil" materialDesign:ButtonAssist.CornerRadius="5" Margin="50,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="17" HorizontalAlignment="Left" Width="30" Padding="4,4,4,4" IsTabStop="False" Click="DeleteButton_Click">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Delete" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button x:Name="Updatebutton" ToolTip="Kaydı Güncelle" materialDesign:ButtonAssist.CornerRadius="5" Margin="90,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="18" HorizontalAlignment="Left" Width="30" Padding="4,4,4,4" IsTabStop="False" Click="Updatebutton_Click">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Pencil" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <Button x:Name="YazdırButton" ToolTip="Yazdır" materialDesign:ButtonAssist.CornerRadius="5" Margin="130,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Left" Width="30" Padding="4,4,4,4" IsTabStop="False" Click="YazdırButton_Click">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Printer" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>
+        <TextBox x:Name="StokKodTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Stok Kodu*" Margin="10,50,0,0" TabIndex="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" TextChanged="StokKodTextBox_TextChanged"/>
+        <TextBox x:Name="StokAdTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Stok Adı*" Margin="10,90,0,0" TabIndex="2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300"/>
+        <StackPanel Margin="10,130,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="210">
+            <Label Content="KDV" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,0,0,0" Height="22" Background="#FFF1F1F1" Panel.ZIndex="1"/>
+            <GroupBox Header="Deneme" Height="90" Style="{StaticResource DefaultGroupBoxStyle}" Margin="0,-11,0,0" >
+                <Grid>
+                    <Label Content="Satış KDV Oranı" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,5,0,0" />
+                    <Label Content="Alış KDV Oranı" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,3" />
+
+                    <TextBox x:Name="SatisKDVOranTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:TextFieldAssist.PrefixText="%" Width="58" HorizontalAlignment="Right" VerticalAlignment="Top" TabIndex="3"/>
+                    <TextBox x:Name="AlisKDVOranTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:TextFieldAssist.PrefixText="%" Width="58" HorizontalAlignment="Right" VerticalAlignment="Bottom" TabIndex="4"/>
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+        <StackPanel Margin="350,44,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="421">
+            <Label Content="Ölçü Birimleri" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,0,0,0" Height="22" Background="#FFF1F1F1" Panel.ZIndex="1"/>
+            <GroupBox Header="Deneme" Height="90" Style="{StaticResource DefaultGroupBoxStyle}" Margin="0,-11,0,0" >
+                <Grid>
+                    <ComboBox x:Name="OlcuBirimi1ComboBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Ölçü Birimi 1" materialDesign:TextFieldAssist.HasClearButton="True" Width="120" Padding="6,6,6,6" IsEditable="True" TabIndex="5"/>
+                    <ComboBox x:Name="OlcuBirimi2ComboBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Ölçü Birimi 2" materialDesign:TextFieldAssist.HasClearButton="True" Width="120" Padding="6,6,6,6" IsEditable="True" Margin="130,0,0,0" TabIndex="6"/>
+                    <TextBox x:Name="OlcuBirimiOran1" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Pay" Width="58" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="260,0,0,0" Text="1" TabIndex="7"/>
+                    <Label Content="/" HorizontalAlignment="Left" Margin="323,0,0,0" VerticalAlignment="Center" Width="13"/>
+                    <TextBox x:Name="OlcuBirimiOran2" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Payda" VerticalAlignment="Center" Margin="341,0,0,0" HorizontalAlignment="Left" Width="58" Text="1" TabIndex="8"/>
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</Window>
