@@ -1,4 +1,6 @@
-# Cari kayıt Programı
+# Cari Kayıt Programı
+
+[![GitHub Release](https://img.shields.io/github/v/release/Pentoxin/CariKayitProgrami?display_name=release&logo=Github&label=Release)](https://github.com/Pentoxin/CariKayitProgrami/releases/latest)
 
 Bu proje, şirketlerin cari ve finansal bilgilerini kaydedip takip etmelerine olanak tanıyan bir **C# WPF** uygulamasıdır. Uygulama, borç-alacak hesaplamalarını yönetmeyi, gelir-gider takibini yapmayı ve cari bilgileri kolayca güncellemeyi sağlar. Geliştirme aşamasında olan stok yönetimi özelliği de gelecekte eklenerek daha kapsamlı bir takip çözümü sunulacaktır.
 
