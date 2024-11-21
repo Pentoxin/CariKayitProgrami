@@ -9,13 +9,10 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static Cari_kayıt_Programı.Main_TR;
+using static Cari_kayıt_Programı.CariHesapKayitlari;
 
 namespace Cari_kayıt_Programı
 {
-    /// <summary>
-    /// Stok.xaml etkileşim mantığı
-    /// </summary>
     public partial class Stok : Window
     {
         public Stok()
@@ -46,7 +43,7 @@ namespace Cari_kayıt_Programı
                 }
                 else
                 {
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -157,7 +154,7 @@ namespace Cari_kayıt_Programı
                 {
                     if (MessageBox.Show("Seçilen veriyi silmek istediğinize emin misiniz?", "Uyarı", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                     {
-                        using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                        using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                         {
                             connection.Open();
                             string query = "DELETE FROM Stok WHERE ID=@Id";
@@ -201,7 +198,7 @@ namespace Cari_kayıt_Programı
                     return;
                 }
 
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                 {
                     connection.Open();
 
@@ -237,7 +234,7 @@ namespace Cari_kayıt_Programı
                             string normalizedStokAdi = StokAdTextBox.Text.ToLower(new CultureInfo("tr-TR"));
                             string StokKodLower = StokKod.ToLower(new CultureInfo("tr-TR"));
                             string normalizedStokKod = StokKodTextBox.Text.ToLower(new CultureInfo("tr-TR"));
-                            if (StokAdiLower == normalizedStokAdi || StokKodLower == normalizedStokKod )
+                            if (StokAdiLower == normalizedStokAdi || StokKodLower == normalizedStokKod)
                             {
                                 MessageBox.Show("Bu stok adı veya stok kodu daha önce girilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
                                 return;
@@ -503,7 +500,7 @@ namespace Cari_kayıt_Programı
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
                 viewModel.Stoklar.Clear();
 
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                 {
                     connection.Open();
 

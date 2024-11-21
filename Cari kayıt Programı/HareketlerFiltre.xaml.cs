@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Windows;
-using static Cari_kayıt_Programı.Hareketler_TR;
-using static Cari_kayıt_Programı.Main_TR;
+using static Cari_kayıt_Programı.CariHareketKayitlari;
+using static Cari_kayıt_Programı.CariHesapKayitlari;
 
 namespace Cari_kayıt_Programı
 {
-    /// <summary>
-    /// HareketlerFiltre.xaml etkileşim mantığı
-    /// </summary>
     public partial class HareketlerFiltre : Window
     {
         public HareketlerFiltre()

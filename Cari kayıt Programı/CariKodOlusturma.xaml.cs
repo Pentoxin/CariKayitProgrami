@@ -3,13 +3,10 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Windows;
 using static Cari_kayıt_Programı.Anasayfa;
-using static Cari_kayıt_Programı.Main_TR;
+using static Cari_kayıt_Programı.CariHesapKayitlari;
 
 namespace Cari_kayıt_Programı
 {
-    /// <summary>
-    /// CariKodOlusturma.xaml etkileşim mantığı
-    /// </summary>
     public partial class CariKodOlusturma : Window
     {
         public MainViewModel ViewModel { get; set; }
@@ -76,7 +73,7 @@ namespace Cari_kayıt_Programı
 
                 if (missingCariKodBusinesses.Count > 0)
                 {
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 

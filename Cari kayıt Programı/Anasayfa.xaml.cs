@@ -1,5 +1,4 @@
-﻿using CariKayitProgrami;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +12,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-using static Cari_kayıt_Programı.Main_TR;
+using static Cari_kayıt_Programı.CariHesapKayitlari;
 
 namespace Cari_kayıt_Programı
 {
@@ -129,7 +128,7 @@ namespace Cari_kayıt_Programı
             {
                 try
                 {
-                    using (var connection = new SQLiteConnection(Config.ConnectionString))
+                    using (var connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -175,7 +174,7 @@ namespace Cari_kayıt_Programı
             {
                 try
                 {
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -317,7 +316,7 @@ namespace Cari_kayıt_Programı
                 try
                 {
                     string? tip = "D";
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
                         string updateSql = "UPDATE CariKayit SET CariKod = @CariKod, tip = @tip WHERE ID = @ID";
@@ -340,7 +339,7 @@ namespace Cari_kayıt_Programı
             {
                 try
                 {
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -408,7 +407,7 @@ namespace Cari_kayıt_Programı
                 List<string> missingColumns = new List<string>();
                 try
                 {
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -452,7 +451,7 @@ namespace Cari_kayıt_Programı
                 {
                     if (missingColumns.Count > 0)
                     {
-                        using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                        using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                         {
                             connection.Open();
 
@@ -506,7 +505,7 @@ namespace Cari_kayıt_Programı
             {
                 try
                 {
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -525,7 +524,7 @@ namespace Cari_kayıt_Programı
                         columns.Insert(position - 1, (newColumnName, newColumnType));
 
                         // Geçici tablo oluşturma sorgusu
-                        string temptableName = $"{tableName}_temp\"".Replace("\"","");
+                        string temptableName = $"{tableName}_temp\"".Replace("\"", "");
 
                         string escapedTempTableName = $"\"{temptableName}\"";
 
@@ -578,7 +577,7 @@ namespace Cari_kayıt_Programı
             {
                 try
                 {
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -667,7 +666,7 @@ namespace Cari_kayıt_Programı
                 List<string> missingColumns = new List<string>();
                 try
                 {
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -711,7 +710,7 @@ namespace Cari_kayıt_Programı
                 {
                     if (missingColumns.Count > 0)
                     {
-                        using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                        using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                         {
                             connection.Open();
 
@@ -768,7 +767,7 @@ namespace Cari_kayıt_Programı
                         {
                             if (item is Business business)
                             {
-                                string? baseDir = Config.IsletmePath;
+                                string? baseDir = ConfigManager.IsletmePath;
 
                                 string? oldDirName = Path.Combine(baseDir, business.CariIsim);
                                 string? newDirName = Path.Combine(baseDir, business.CariKod);
@@ -781,7 +780,7 @@ namespace Cari_kayıt_Programı
                                 }
 
                                 string? isletmeKod = business.CariKod;
-                                string? isletmePath = Path.Combine(Config.IsletmePath, isletmeKod);
+                                string? isletmePath = Path.Combine(ConfigManager.IsletmePath, isletmeKod);
 
                                 // Klasörü kontrol et yoksa oluştur
                                 if (!Directory.Exists(isletmePath))
@@ -873,9 +872,9 @@ namespace Cari_kayıt_Programı
                 try
                 {
                     //Klasör oluşturma
-                    if (!Directory.Exists(Config.AppDataPath))
+                    if (!Directory.Exists(ConfigManager.AppDataPath))
                     {
-                        Directory.CreateDirectory(Config.AppDataPath);
+                        Directory.CreateDirectory(ConfigManager.AppDataPath);
                     }
                 }
                 catch (Exception ex)
@@ -888,12 +887,12 @@ namespace Cari_kayıt_Programı
             {
                 try
                 {
-                    if (!File.Exists(Config.DatabaseFileName))
+                    if (!File.Exists(ConfigManager.DatabaseFileName))
                     {
-                        SQLiteConnection.CreateFile(Config.DatabaseFileName);
+                        SQLiteConnection.CreateFile(ConfigManager.DatabaseFileName);
                     }
 
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -977,21 +976,21 @@ namespace Cari_kayıt_Programı
                     }
                     else if (v >= guncelVersiyon)
                     {
-                        if (File.Exists(Config.dosyaAdi))
+                        if (File.Exists(ConfigManager.ExecutableFileName))
                         {
                             int productVersion = 0;
                             try
                             {
-                                FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(Config.dosyaAdi);
+                                FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(ConfigManager.ExecutableFileName);
                                 productVersion = Convert.ToInt32(fileInfo.ProductVersion.Replace(".", ""));
                                 if (v >= productVersion)
                                 {
-                                    File.Delete(Config.dosyaAdi);
+                                    File.Delete(ConfigManager.ExecutableFileName);
                                 }
                             }
                             catch (Exception)
                             {
-                                File.Delete(Config.dosyaAdi);
+                                File.Delete(ConfigManager.ExecutableFileName);
                             }
 
                         }
@@ -1022,7 +1021,7 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                Main_TR.LogError(ex);
+                LogError(ex);
             }
         }
 
@@ -1042,7 +1041,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                OpenWindow(new MainWindow(), "S");
+                OpenWindow(new CariHesapKayitlari(), "S");
             }
             catch (Exception ex)
             {
@@ -1055,7 +1054,7 @@ namespace Cari_kayıt_Programı
             try
             {
                 Degiskenler.selectedBusiness = null;
-                OpenWindow(new Hareketler(), "S");
+                OpenWindow(new CariHareketKayitlari(), "S");
             }
             catch (Exception ex)
             {
@@ -1096,7 +1095,11 @@ namespace Cari_kayıt_Programı
             {
                 string owner = "Pentoxin";
                 string repo = "CariKayitProgrami";
-                string url = $"https://github.com/{owner}/{repo}/releases";
+                Assembly? assembly = Assembly.GetExecutingAssembly();
+                Version? version = assembly.GetName().Version;
+                string? versionString = $"{version.Major}.{version.Minor}.{version.Build}";
+
+                string url = $"https://github.com/{owner}/{repo}/releases/tag/v{versionString}";
 
                 Process.Start(new ProcessStartInfo
                 {
@@ -1117,7 +1120,7 @@ namespace Cari_kayıt_Programı
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
                 viewModel.Businesses.Clear();
 
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                 {
                     connection.Open();
 

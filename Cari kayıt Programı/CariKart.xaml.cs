@@ -2,13 +2,10 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static Cari_kayıt_Programı.Main_TR;
+using static Cari_kayıt_Programı.CariHesapKayitlari;
 
 namespace Cari_kayıt_Programı
 {
-    /// <summary>
-    /// CariKart.xaml etkileşim mantığı
-    /// </summary>
     public partial class CariKart : Window
     {
         public MainViewModel ViewModel { get; set; }
@@ -23,8 +20,8 @@ namespace Cari_kayıt_Programı
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Main_TR main_TR = new Main_TR();
-            dataGrid.ItemsSource = main_TR.GetBusinesses();
+            CariHesapKayitlari cariHesapKayitlari = new CariHesapKayitlari();
+            dataGrid.ItemsSource = cariHesapKayitlari.GetBusinesses();
         }
 
         private void SecButton_Click(object sender, RoutedEventArgs e)
@@ -51,9 +48,9 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                Main_TR main_TR = new Main_TR();
+                CariHesapKayitlari cariHesapKayitlari = new CariHesapKayitlari();
                 string searchTerm = txtSearch.Text;
-                dataGrid.ItemsSource = main_TR.Businesses(searchTerm);
+                dataGrid.ItemsSource = cariHesapKayitlari.Businesses(searchTerm);
             }
             catch (Exception ex)
             {

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using static Cari_kayıt_Programı.CariHesapKayitlari;
 
 namespace Cari_kayıt_Programı
 {
@@ -27,13 +28,13 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                Main_TR.LogError(ex);
+                LogError(ex);
             }
         }
 
         private static void SetGuncellemeOnay()
         {
-            Main_TR.Degiskenler.guncellemeOnay = true;
+            Degiskenler.guncellemeOnay = true;
         }
 
         private void GuncelleButton_Click(object sender, RoutedEventArgs e)
@@ -52,7 +53,7 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                Main_TR.LogError(ex);
+                LogError(ex);
             }
         }
 
@@ -70,7 +71,7 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                Main_TR.LogError(ex);
+                LogError(ex);
             }
         }
     }

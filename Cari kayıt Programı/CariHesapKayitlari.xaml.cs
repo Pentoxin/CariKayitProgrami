@@ -13,16 +13,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using static Cari_kayıt_Programı.Hareketler_TR;
-
 
 namespace Cari_kayıt_Programı
 {
-    public partial class Main_TR : Page
+    public partial class CariHesapKayitlari : Window
     {
         public MainViewModel ViewModel { get; set; }
 
-        public Main_TR()
+        public CariHesapKayitlari()
         {
             InitializeComponent();
 
@@ -47,9 +45,9 @@ namespace Cari_kayıt_Programı
             try
             {
                 // Log dosyasının varlığını kontrol et, yoksa oluştur
-                if (!File.Exists(Config.LogFilePath))
+                if (!File.Exists(ConfigManager.LogFilePath))
                 {
-                    using (StreamWriter createFile = File.CreateText(Config.LogFilePath))
+                    using (StreamWriter createFile = File.CreateText(ConfigManager.LogFilePath))
                     {
                         createFile.Close();
                     }
@@ -58,7 +56,7 @@ namespace Cari_kayıt_Programı
                 string errorMessage = $"{DateTime.Now}: {ex.Message}";
 
                 // Hata mesajını log dosyasına yaz
-                using (StreamWriter writer = new StreamWriter(Config.LogFilePath, true))
+                using (StreamWriter writer = new StreamWriter(ConfigManager.LogFilePath, true))
                 {
                     writer.WriteLine(errorMessage);
                     writer.WriteLine();
@@ -83,7 +81,7 @@ namespace Cari_kayıt_Programı
                 }
                 else
                 {
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -195,7 +193,7 @@ namespace Cari_kayıt_Programı
                                 {
                                     createTableCommand.ExecuteNonQuery();
                                 }
-                                Directory.CreateDirectory(Path.Combine(Config.IsletmePath, kod));
+                                Directory.CreateDirectory(Path.Combine(ConfigManager.IsletmePath, kod));
 
                                 MessageBox.Show("Cari bilgiler veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
@@ -244,7 +242,7 @@ namespace Cari_kayıt_Programı
                 {
                     if (MessageBox.Show("Seçilen veriyi silmek istediğinize emin misiniz?", "Uyarı", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                     {
-                        using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                        using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                         {
                             connection.Open();
                             string query = "DELETE FROM CariKayit WHERE ID=@Id";
@@ -267,9 +265,9 @@ namespace Cari_kayıt_Programı
                         }
                         dataGrid.ItemsSource = GetBusinesses();
 
-                        if (Directory.Exists(Path.Combine(Config.IsletmePath, selectedBusinessItem.CariKod)))
+                        if (Directory.Exists(Path.Combine(ConfigManager.IsletmePath, selectedBusinessItem.CariKod)))
                         {
-                            Directory.Delete(Path.Combine(Config.IsletmePath, selectedBusinessItem.CariKod));
+                            Directory.Delete(Path.Combine(ConfigManager.IsletmePath, selectedBusinessItem.CariKod));
                         }
                     }
                 }
@@ -302,7 +300,7 @@ namespace Cari_kayıt_Programı
                     return;
                 }
 
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                 {
                     connection.Open();
 
@@ -436,7 +434,6 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "Excel Dosyası|*.xlsx";
                 saveFileDialog.FileName = $"Cari Hesap Kayıtları.xlsx";
@@ -586,12 +583,12 @@ namespace Cari_kayıt_Programı
 
                     string selectedFilePath = openFileDialog.FileName;
 
-                    if (Directory.Exists(Config.IsletmePath))
+                    if (Directory.Exists(ConfigManager.IsletmePath))
                     {
-                        Directory.Delete(Config.IsletmePath, true);
+                        Directory.Delete(ConfigManager.IsletmePath, true);
                     }
 
-                    ZipFile.ExtractToDirectory(selectedFilePath, Config.AppDataPath, true);
+                    ZipFile.ExtractToDirectory(selectedFilePath, ConfigManager.AppDataPath, true);
 
                     anasayfa.CheckAtImport();
                     MessageBox.Show("Veritabanı başarıyla içe aktarıldı.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -621,17 +618,17 @@ namespace Cari_kayıt_Programı
                     {
                         File.Delete(destinationFilePath);
                     }
-                    if (Directory.Exists(Config.IsletmePath))
+                    if (Directory.Exists(ConfigManager.IsletmePath))
                     {
-                        ZipFile.CreateFromDirectory(Config.IsletmePath, destinationFilePath, CompressionLevel.Optimal, true);
+                        ZipFile.CreateFromDirectory(ConfigManager.IsletmePath, destinationFilePath, CompressionLevel.Optimal, true);
                     }
 
                     // CariKayitDB dosyasını ekleme
-                    if (File.Exists(Config.DatabaseFileName))
+                    if (File.Exists(ConfigManager.DatabaseFileName))
                     {
                         using (var zipArchive = ZipFile.Open(destinationFilePath, ZipArchiveMode.Update))
                         {
-                            zipArchive.CreateEntryFromFile(Config.DatabaseFileName, Path.GetFileName(Config.DatabaseFileName), CompressionLevel.Optimal);
+                            zipArchive.CreateEntryFromFile(ConfigManager.DatabaseFileName, Path.GetFileName(ConfigManager.DatabaseFileName), CompressionLevel.Optimal);
                         }
                     }
 
@@ -749,7 +746,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                 {
                     connection.Open();
 
@@ -829,7 +826,6 @@ namespace Cari_kayıt_Programı
             }
         }
 
-
         public ObservableCollection<Business> Businesses(string searchTerm)
         {
             try
@@ -837,7 +833,7 @@ namespace Cari_kayıt_Programı
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
                 viewModel.Businesses.Clear();
 
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                 {
                     connection.Open();
 
@@ -893,7 +889,7 @@ namespace Cari_kayıt_Programı
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
                 viewModel.Businesses.Clear();
 
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                 {
                     connection.Open();
 

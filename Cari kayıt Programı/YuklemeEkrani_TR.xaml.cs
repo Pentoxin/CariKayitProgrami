@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using static Cari_kayıt_Programı.CariHesapKayitlari;
 
 namespace Cari_kayıt_Programı
 {
@@ -35,12 +36,12 @@ namespace Cari_kayıt_Programı
 
                 int v = Convert.ToInt32(versionString);
 
-                if (File.Exists(Config.dosyaAdi))
+                if (File.Exists(ConfigManager.ExecutableFileName))
                 {
                     int productVersion;
                     try
                     {
-                        FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(Config.dosyaAdi);
+                        FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(ConfigManager.ExecutableFileName);
                         productVersion = Convert.ToInt32(fileInfo.ProductVersion.Replace(".", ""));
 
                         if (v < productVersion)
@@ -48,7 +49,7 @@ namespace Cari_kayıt_Programı
                             statusLabel.Content = "İndirme tamamlandı, dosya açılıyor...";
                             await Task.Delay(1000); // İşlemi tamamlamadan önce bekleme
 
-                            Process.Start(Config.dosyaAdi);
+                            Process.Start(ConfigManager.ExecutableFileName);
                         }
                     }
                     catch (Exception)
@@ -72,7 +73,7 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                Main_TR.LogError(ex);
+                LogError(ex);
             }
         }
 
@@ -81,7 +82,7 @@ namespace Cari_kayıt_Programı
             HttpClient client = new HttpClient();
             try
             {
-                if (!Main_TR.Degiskenler.guncel)
+                if (!Degiskenler.guncel)
                 {
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/octet-stream"));
@@ -95,7 +96,7 @@ namespace Cari_kayıt_Programı
 
                         using (var stream = await response.Content.ReadAsStreamAsync())
                         {
-                            using (var fileStream = new FileStream(Config.dosyaAdi, FileMode.Create, FileAccess.Write, FileShare.None))
+                            using (var fileStream = new FileStream(ConfigManager.ExecutableFileName, FileMode.Create, FileAccess.Write, FileShare.None))
                             {
                                 long totalBytes = contentLength ?? -1;
                                 long totalBytesRead = 0;
@@ -123,12 +124,12 @@ namespace Cari_kayıt_Programı
 
                     try
                     {
-                        Process.Start(Config.dosyaAdi);
+                        Process.Start(ConfigManager.ExecutableFileName);
                     }
                     catch (Exception ex)
                     {
                         statusLabel.Content = "Dosya çalıştırılamadı, tekrar indiriliyor...";
-                        Main_TR.LogError(ex);
+                        LogError(ex);
                         await DownloadAndStartFile(urlP); // İndirme işlemini tekrar dene
                     }
                     client.Dispose();
@@ -136,7 +137,7 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                Main_TR.LogError(ex);
+                LogError(ex);
             }
         }
     }

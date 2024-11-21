@@ -1,21 +1,21 @@
-﻿<Page x:Class="Cari_kayıt_Programı.Hareketler_TR"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:sys="clr-namespace:System;assembly=mscorlib"
-      xmlns:local="clr-namespace:Cari_kayıt_Programı"
-      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-      TextElement.FontWeight="Regular"
-      TextElement.FontSize="13"
-      TextOptions.TextFormattingMode="Ideal"
-      TextOptions.TextRenderingMode="Auto"
-      Background="{DynamicResource MaterialDesignPaper}"
-      FontFamily="{DynamicResource MaterialDesignFont}"
-      mc:Ignorable="d" d:DesignHeight="622" d:DesignWidth="966" Title="Hareketler_TR" Loaded="Page_Loaded" PreviewMouseDown="Page_PreviewMouseDown">
+﻿<Window x:Class="Cari_kayıt_Programı.CariHareketKayitlari"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Cari_kayıt_Programı"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        mc:Ignorable="d"
+        Title="CariHareketKayitlari" Height="622" Width="966" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded" PreviewMouseDown="Page_PreviewMouseDown">
 
-    <Page.Resources>
+    <Window.Resources>
         <Style x:Key="CustomMaterialDesignTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" TargetType="TextBox">
             <Setter Property="Padding" Value="12"/>
             <Setter Property="FontSize" Value="12"/>
@@ -64,11 +64,11 @@
             <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
         </DataTemplate>
         <local:PositiveToColorConverter x:Key="PositiveToColorConverter"/>
-    </Page.Resources>
+    </Window.Resources>
 
-    <Page.DataContext>
+    <Window.DataContext>
         <local:MainViewModel />
-    </Page.DataContext>
+    </Window.DataContext>
 
     <Grid>
         <Label x:Name="IsletmeAdiLabel" Content="Label" ContentTemplate="{StaticResource WrappedLabelTemplate}" HorizontalAlignment="Left" Margin="210,50,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold" MaxWidth="729" Height="42"/>
@@ -87,7 +87,7 @@
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="Foreground" 
-                                Value="{Binding Bakiye, Converter={StaticResource PositiveToColorConverter}}" />
+                        Value="{Binding Bakiye, Converter={StaticResource PositiveToColorConverter}}" />
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
@@ -209,4 +209,4 @@
             <TextBox x:Name="txtSearch" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Arama" materialDesign:TextFieldAssist.HasClearButton="True" TabIndex="9" TextChanged="txtSearch_TextChanged" Padding="12,12,12,12" Width="399" Margin="0,0,10,10" />
         </WrapPanel>
     </Grid>
-</Page>
+</Window>

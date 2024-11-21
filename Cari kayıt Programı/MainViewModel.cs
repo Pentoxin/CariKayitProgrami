@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.ObjectModel;
-using static Cari_kayıt_Programı.Hareketler_TR;
-using static Cari_kayıt_Programı.Main_TR;
+using static Cari_kayıt_Programı.CariHareketKayitlari;
+using static Cari_kayıt_Programı.CariHesapKayitlari;
 using static Cari_kayıt_Programı.Stok;
 
 namespace Cari_kayıt_Programı

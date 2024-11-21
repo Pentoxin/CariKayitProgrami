@@ -13,15 +13,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using static Cari_kayıt_Programı.Main_TR;
+using static Cari_kayıt_Programı.CariHesapKayitlari;
 
 namespace Cari_kayıt_Programı
 {
-    public partial class Hareketler_TR : Page
+    public partial class CariHareketKayitlari : Window
     {
         public MainViewModel ViewModel { get; set; }
 
-        public Hareketler_TR()
+        public CariHareketKayitlari()
         {
             InitializeComponent();
 
@@ -39,7 +39,7 @@ namespace Cari_kayıt_Programı
 
         private string? DosyaPath = "";
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Business? selectedBusiness = Degiskenler.selectedBusiness;
             if (selectedBusiness == null)
@@ -109,7 +109,7 @@ namespace Cari_kayıt_Programı
                         Dosya = DosyaPath
                     };
 
-                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                     {
                         connection.Open();
 
@@ -236,7 +236,7 @@ namespace Cari_kayıt_Programı
                     if (MessageBox.Show("Veriyi silmek istediğinize emin misiniz?", "Sil", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         // Veritabanı bağlantısını açın ve silme işlemini gerçekleştirin
-                        using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                        using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                         {
                             connection.Open();
 
@@ -366,7 +366,7 @@ namespace Cari_kayıt_Programı
                     if (selectedOdemeId > 0)
                     {
 
-                        using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                        using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                         {
                             connection.Open();
 
@@ -712,7 +712,7 @@ namespace Cari_kayıt_Programı
                         selectedFilePath = openFileDialog.FileName;
                         string fileName = Path.GetFileName(selectedFilePath);
 
-                        DosyaPath = Path.Combine(Config.IsletmePath, kod, fileName);
+                        DosyaPath = Path.Combine(ConfigManager.IsletmePath, kod, fileName);
 
                         DosyaIslem = "Uploaded";
                         ChangeButtonContent(fileName);
@@ -1256,7 +1256,7 @@ namespace Cari_kayıt_Programı
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
                 viewModel.Odemeler.Clear();
 
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                 {
                     connection.Open();
 
@@ -1351,7 +1351,8 @@ namespace Cari_kayıt_Programı
             {
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
                 viewModel.Odemeler.Clear();
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+
+                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                 {
                     connection.Open();
 
@@ -1560,7 +1561,7 @@ namespace Cari_kayıt_Programı
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
                 viewModel.Businesses.Clear();
 
-                using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
                 {
                     connection.Open();
 

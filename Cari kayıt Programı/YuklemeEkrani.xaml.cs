@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using static Cari_kayıt_Programı.CariHesapKayitlari;
 
 namespace Cari_kayıt_Programı
 {
@@ -10,7 +11,7 @@ namespace Cari_kayıt_Programı
         {
             InitializeComponent();
 
-            if (Main_TR.Degiskenler.guncellemeOnay)
+            if (Degiskenler.guncellemeOnay)
             {
                 this.Width = 330;
                 this.Height = 150;
@@ -19,7 +20,7 @@ namespace Cari_kayıt_Programı
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!Main_TR.Degiskenler.guncellemeOnay)
+            if (!Degiskenler.guncellemeOnay)
             {
                 YuklemeEkraniFrame.Source = new Uri("GuncellemeEkrani.xaml", UriKind.RelativeOrAbsolute);
             }

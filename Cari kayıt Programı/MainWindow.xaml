@@ -1,8 +1,0 @@
-﻿<Window x:Class="CariKayitProgrami.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Cari Hesap Kayıtları" Height="705" Width="980" WindowStartupLocation="CenterScreen" MinWidth="660" MinHeight="470" Loaded="Window_Loaded">
-
-    <Frame x:Name="Main" Content="Frame" NavigationUIVisibility="Hidden"/>
-
-</Window>
