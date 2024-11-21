@@ -99,7 +99,7 @@ namespace Cari_kayıt_Programı
                                 {
                                     maxNumber++;
                                     string newCariKod = $"D{maxNumber.ToString("D3")}";
-                                    check.UpdateCariKodInDatabase(business.ID, newCariKod);
+                                    Check.UpdateCariKodInDatabase(business.ID, newCariKod);
                                     business.CariKod = newCariKod;  // Güncellenmiş veriyi ViewModel'de de güncelle
                                     business.Tip = "D";
                                 }

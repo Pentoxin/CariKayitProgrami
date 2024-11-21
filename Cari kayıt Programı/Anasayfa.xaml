@@ -39,46 +39,78 @@
     </Window.Resources>
 
     <Grid>
-        <GroupBox Margin="100,100,100,100" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" MaxHeight="180" MinWidth="431" MinHeight="180" MaxWidth="431">
+        <GroupBox BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Grid>
-                <Button x:Name="SatisFaturasıButton" Width="50" Height="50" HorizontalAlignment="Left" Margin="30,30,0,0" VerticalAlignment="Top" Padding="6,6,6,6" IsEnabled="False" >
-                    <StackPanel Orientation="Horizontal" >
-                        <materialDesign:PackIcon Kind="FileDocumentArrowRight" Foreground="#FFF" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="35"/>
+                <WrapPanel Margin="20,30,20,25">
+                    <StackPanel Width="90" HorizontalAlignment="Left" VerticalAlignment="Top" Height="100">
+                        <Button x:Name="AlisFaturasiButton" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="6,6,6,6" IsEnabled="False" Cursor="Hand" >
+                            <StackPanel Orientation="Horizontal" >
+                                <Viewbox Width="33" Height="33" RenderTransformOrigin="0.5,0.5">
+                                    <Viewbox.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleY="-1"/>
+                                            <SkewTransform/>
+                                            <RotateTransform/>
+                                            <TranslateTransform/>
+                                        </TransformGroup>
+                                    </Viewbox.RenderTransform>
+                                    <Path Fill="White" Data="M683 2340 c-115 -5 -124 -7 -164 -35 -23 -16 -52 -48 -63 -70 -21 -40 -21 -49 -24 -938 -1 -569 1 -912 8 -935 11 -44 70 -108 117 -127 27 -11 119 -14 464 -15 237 -1 432 0 435 2 2 2 -8 31 -21 64 -33 83 -56 221 -48 294 l6 60 -379 2 -379 3 0 105 0 105 405 0 c223 1 412 2 421 3 9 1 35 28 57 60 23 33 61 76 87 96 25 21 45 41 45 46 0 5 -224 6 -499 3 l-499 -6 -11 22 c-7 13 -11 56 -9 109 l3 87 643 3 642 2 0 -54 0 -55 105 0 105 0 0 267 0 267 -318 318 -318 318 -344 2 c-190 1 -400 0 -467 -3z m993 -441 c154 -154 281 -284 282 -290 2 -5 -110 -9 -287 -9 l-292 0 2 290 c1 160 5 290 9 290 4 0 133 -126 286 -281z M1846 676 c-80 -84 -146 -157 -146 -162 0 -4 51 -60 113 -123 62 -64 124 -129 138 -146 13 -16 33 -37 43 -44 17 -14 18 -12 16 30 -1 24 -1 74 -1 112 l1 67 210 0 210 0 0 110 0 110 -207 -2 -208 -3 -3 103 c-1 56 -7 102 -11 102 -5 0 -75 -69 -155 -154z" />
+                                </Viewbox>
+                            </StackPanel>
+                        </Button>
+                        <Label Content="Alış Faturası" HorizontalAlignment="Center" VerticalAlignment="Top" IsEnabled="False" Margin="0,10,0,0"/>
                     </StackPanel>
-                </Button>
-                <Label Content="Satış Faturası" HorizontalAlignment="Left" Margin="15,90,0,0" VerticalAlignment="Top" IsEnabled="False"/>
-                <Button x:Name="CariHesapKayitlariButton" Width="50" Height="50" HorizontalAlignment="Left" Margin="130,30,0,0" VerticalAlignment="Top" Padding="6,6,6,6" Click="CariHesapKayitlariButton_Click" >
-                    <StackPanel Orientation="Horizontal" >
-                        <materialDesign:PackIcon Kind="CardAccountDetails" Foreground="#FFF" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="35" Height="40"/>
+
+                    <StackPanel Width="90" HorizontalAlignment="Left" VerticalAlignment="Top" Height="100">
+                        <Button x:Name="SatisFaturasiButton" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="6,6,6,6" IsEnabled="False" >
+                            <StackPanel Orientation="Horizontal" >
+                                <materialDesign:PackIcon Kind="FileDocumentArrowRight" Foreground="#FFF" Height="35" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="35"/>
+                            </StackPanel>
+                        </Button>
+                        <Label Content="Satış Faturası" HorizontalAlignment="Center" VerticalAlignment="Top" IsEnabled="False" Margin="0,10,0,0"/>
                     </StackPanel>
-                </Button>
-                <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="115,90,0,0" Width="80" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                    <TextBlock Text="Cari Hesap Kayıtları" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Label>
-                <Button x:Name="CariHareketKayitlariButton" Width="50" Height="50" HorizontalAlignment="Left" Margin="230,30,0,0" VerticalAlignment="Top" Padding="6,6,6,6" Click="CariHareketKayitlariButton_Click" >
-                    <StackPanel Orientation="Horizontal" >
-                        <materialDesign:PackIcon Kind="CardMultiple" Foreground="#FFF" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="35" Height="40"/>
+
+                    <StackPanel Width="90" HorizontalAlignment="Left" VerticalAlignment="Top" Height="100">
+                        <Button x:Name="CariHesapKayitlariButton" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="6,6,6,6" Click="CariHesapKayitlariButton_Click" >
+                            <StackPanel Orientation="Horizontal" >
+                                <materialDesign:PackIcon Kind="CardAccountDetails" Foreground="#FFF" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="35" Height="35"/>
+                            </StackPanel>
+                        </Button>
+                        <Label HorizontalAlignment="Center" VerticalAlignment="Top" Width="80" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,10,0,0">
+                            <TextBlock Text="Cari Hesap Kayıtları" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Label>
                     </StackPanel>
-                </Button>
-                <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="215,90,0,0" Width="80" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                    <TextBlock Text="Cari Hareket Kayıtları" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Label>
-                <Button x:Name="StokButton" Width="50" Height="50" HorizontalAlignment="Left" Margin="330,30,0,0" VerticalAlignment="Top" Padding="6,6,6,6" Click="StokButton_Click" >
-                    <StackPanel Orientation="Horizontal" >
-                        <materialDesign:PackIcon Kind="Warehouse" Foreground="#FFF" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="35" Height="40"/>
+
+                    <StackPanel Width="90" HorizontalAlignment="Left" VerticalAlignment="Top" Height="100">
+                        <Button x:Name="CariHareketKayitlariButton" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="6,6,6,6" Click="CariHareketKayitlariButton_Click" >
+                            <StackPanel Orientation="Horizontal" >
+                                <materialDesign:PackIcon Kind="CardMultiple" Foreground="#FFF" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="35" Height="35"/>
+                            </StackPanel>
+                        </Button>
+                        <Label HorizontalAlignment="Center" VerticalAlignment="Top" Width="80" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,10,0,0">
+                            <TextBlock Text="Cari Hareket Kayıtları" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Label>
                     </StackPanel>
-                </Button>
-                <Label Content="Stok" HorizontalAlignment="Left" Margin="339,90,0,0" VerticalAlignment="Top"/>
+
+                    <StackPanel Width="90" HorizontalAlignment="Left" VerticalAlignment="Top" Height="100">
+                        <Button x:Name="StokButton" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="6,6,6,6" Click="StokButton_Click" >
+                            <StackPanel Orientation="Horizontal" >
+                                <materialDesign:PackIcon Kind="Warehouse" Foreground="#FFF" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="35" Height="35"/>
+                            </StackPanel>
+                        </Button>
+                        <Label Content="Stok" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
+                    </StackPanel>
+                </WrapPanel>
             </Grid>
         </GroupBox>
         <Separator Height="1" Margin="0,48,0,0" VerticalAlignment="Top" />
         <Menu VerticalAlignment="Top">
             <MenuItem IsHitTestVisible="False" Focusable="False" StaysOpenOnClick="True">
                 <MenuItem.Header>
-                    <Label Content="Cari Kayıt Programı" HorizontalAlignment="Left"  VerticalAlignment="Top" FontWeight="Bold" FontSize="17" FontStyle="Italic"/>
+                    <Label Content="Cari Kayıt Programı" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" FontSize="17" FontStyle="Italic"/>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem Header="Yardım" Padding="12,0,12,0">
+            <MenuItem Header="Yardım" Padding="12,0,12,0" >
                 <MenuItem Header="Güncelleştirmeleri Denetle" Click="UygulamayıGuncelle_Click" Icon="{materialDesign:PackIcon Kind=Update}"/>
                 <MenuItem Header="Sürüm Notları" Click="SurumNotlariButton_Click"/>
             </MenuItem>

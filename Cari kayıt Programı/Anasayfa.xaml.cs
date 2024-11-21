@@ -46,7 +46,7 @@ namespace Cari_kayıt_Programı
             check.CheckAndUpdateTables();
             check.CheckAndCreateOrRenameIsletmeFolders();
 
-            check.CheckAndCreateStokTable();
+            Check.CheckAndCreateStokTable();
         }
 
         public void CheckAtImport()
@@ -60,7 +60,7 @@ namespace Cari_kayıt_Programı
             check.CheckAndUpdateTables();
             check.CheckAndCreateOrRenameIsletmeFolders();
 
-            check.CheckAndCreateStokTable();
+            Check.CheckAndCreateStokTable();
         }
 
         public class Check
@@ -106,7 +106,8 @@ namespace Cari_kayıt_Programı
                     foreach (string? kod in cariKodList)
                     {
                         string tableName = $"Cari_{kod}";
-                        AddHareketlerMissingColumns(tableName);
+                        string escapedTableName = $"\"{tableName}\"";
+                        AddHareketlerMissingColumns(escapedTableName);
                     }
 
                     AddCariMissingColumns();
@@ -114,7 +115,8 @@ namespace Cari_kayıt_Programı
                     foreach (string? kod in cariKodList)
                     {
                         string tableName = $"Cari_{kod}";
-                        UpdateDateFormatInTable(tableName);
+                        string escapedTableName = $"\"{tableName}\"";
+                        UpdateDateFormatInTable(escapedTableName);
                     }
                 }
                 catch (Exception ex)
@@ -123,7 +125,7 @@ namespace Cari_kayıt_Programı
                 }
             }
 
-            public void CheckAndCreateStokTable()
+            public static void CheckAndCreateStokTable()
             {
                 try
                 {
@@ -201,7 +203,8 @@ namespace Cari_kayıt_Programı
                                 if (!string.IsNullOrEmpty(newCariKod))
                                 {
                                     string newTableName = $"Cari_{newCariKod}";
-                                    RenameTable(connection, oldTableName, newTableName);
+                                    string escapedTableName = $"\"{newTableName}\"";
+                                    RenameTable(connection, oldTableName, escapedTableName);
                                 }
                             }
                         }
@@ -213,6 +216,9 @@ namespace Cari_kayıt_Programı
                             {
                                 string tableName = $"Cari_{b.CariKod}";
 
+                                // Tablo adını çift tırnak içine alarak SQL için güvenli hale getirme
+                                string escapedTableName = $"\"{tableName}\"";
+
                                 // Tablo var mı kontrol et
                                 string checkTableQuery = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
                                 using (SQLiteCommand checkCommand = new SQLiteCommand(checkTableQuery, connection))
@@ -223,7 +229,7 @@ namespace Cari_kayıt_Programı
                                     if (result == null)
                                     {
                                         string createTableQuery = $@"
-                                            CREATE TABLE {tableName} (
+                                            CREATE TABLE {escapedTableName} (
                                                 ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                                 tarih TEXT,
                                                 tip TEXT,
@@ -258,7 +264,7 @@ namespace Cari_kayıt_Programı
                 return business?.CariKod;
             }
 
-            private void RenameTable(SQLiteConnection connection, string oldTableName, string newTableName)
+            private static void RenameTable(SQLiteConnection connection, string oldTableName, string newTableName)
             {
                 string renameTableQuery = $"ALTER TABLE {oldTableName} RENAME TO {newTableName};";
                 using (SQLiteCommand renameCommand = new SQLiteCommand(renameTableQuery, connection))
@@ -306,7 +312,7 @@ namespace Cari_kayıt_Programı
                 }
             }
 
-            public void UpdateCariKodInDatabase(int businessId, string? newCariKod)
+            public static void UpdateCariKodInDatabase(int businessId, string? newCariKod)
             {
                 try
                 {
@@ -330,7 +336,7 @@ namespace Cari_kayıt_Programı
                 }
             }
 
-            public void UpdateDateFormatInTable(string tableName)
+            public static void UpdateDateFormatInTable(string tableName)
             {
                 try
                 {
@@ -398,7 +404,7 @@ namespace Cari_kayıt_Programı
 
             public static List<string> HareketlerMissingColumns(string tableName)
             {
-                List<string> requiredColumns = new List<string> { "ID", "tarih", "tip", "evrakno", "aciklama", "vadetarihi", "borc", "alacak", "dosya" };
+                List<string> requiredColumns = new List<string> { "ID", "tarih", "tip", "durum", "evrakno", "aciklama", "vadetarihi", "borc", "alacak", "dosya" };
                 List<string> missingColumns = new List<string>();
                 try
                 {
@@ -452,9 +458,15 @@ namespace Cari_kayıt_Programı
 
                             foreach (string columnName in missingColumns)
                             {
-                                string columnType = "TEXT";
+                                string columnType;
 
                                 // Sütun adlarına göre sütun tiplerini belirleyin
+                                if (columnName.ToLower() == "durum")
+                                {
+                                    AddColumnAtSpecificPosition(tableName, "durum", "TEXT", 4, "Açık");
+                                    break;
+                                }
+
                                 switch (columnName.ToLower())
                                 {
                                     case "ID":
@@ -481,6 +493,78 @@ namespace Cari_kayıt_Programı
                                     command.ExecuteNonQuery();
                                 }
                             }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                }
+            }
+
+            public static void AddColumnAtSpecificPosition(string tableName, string newColumnName, string newColumnType, int position, string? defaultValue = null)
+            {
+                try
+                {
+                    using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
+                    {
+                        connection.Open();
+
+                        // Mevcut sütunları al
+                        List<(string Name, string Type)> columns = new List<(string, string)>();
+                        using (SQLiteCommand command = new SQLiteCommand($"PRAGMA table_info({tableName})", connection))
+                        using (SQLiteDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                columns.Add((reader.GetString(1), reader.GetString(2))); // Sütun adı ve tipi
+                            }
+                        }
+
+                        // Yeni sütunu belirtilen pozisyona ekle
+                        columns.Insert(position - 1, (newColumnName, newColumnType));
+
+                        // Geçici tablo oluşturma sorgusu
+                        string temptableName = $"{tableName}_temp\"".Replace("\"","");
+
+                        string escapedTempTableName = $"\"{temptableName}\"";
+
+                        string createTempTableQuery = $@" CREATE TABLE {escapedTempTableName} ({string.Join(", ", columns.Select((c, index) => index == 0 && c.Name.Equals("ID", StringComparison.OrdinalIgnoreCase)
+                                        ? $"{c.Name} {c.Type} PRIMARY KEY AUTOINCREMENT" // İlk sütun ID ise PRIMARY KEY AUTOINCREMENT yap
+                                        : $"{c.Name} {c.Type}"))})";
+
+                        using (SQLiteCommand command = new SQLiteCommand(createTempTableQuery, connection))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+
+                        // Verileri geçici tabloya kopyalama
+                        string existingColumnNames = string.Join(", ", columns.Where(c => c.Name != newColumnName).Select(c => c.Name));
+                        string newColumnDefaultValue = defaultValue != null ? $"'{defaultValue}'" : "NULL";
+
+                        // Yeni sütunun pozisyonuna göre verileri sıralayın
+                        var orderedColumnValues = columns.Select(c =>
+                        {
+                            if (c.Name == newColumnName)
+                                return newColumnDefaultValue; // Yeni sütun için varsayılan değer ekle
+                            return c.Name; // Mevcut sütunlar için orijinal sütun adı
+                        });
+
+                        string copyDataQuery = $@"INSERT INTO {escapedTempTableName} ({string.Join(", ", columns.Select(c => c.Name))}) SELECT {string.Join(", ", orderedColumnValues)} FROM {tableName}";
+                        using (SQLiteCommand command = new SQLiteCommand(copyDataQuery, connection))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+
+                        // Eski tabloyu sil ve geçici tabloyu yeniden adlandır
+                        using (SQLiteCommand command = new SQLiteCommand($"DROP TABLE {tableName}", connection))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+
+                        using (SQLiteCommand command = new SQLiteCommand($"ALTER TABLE {escapedTempTableName} RENAME TO {tableName}", connection))
+                        {
+                            command.ExecuteNonQuery();
                         }
                     }
                 }
@@ -1045,43 +1129,25 @@ namespace Cari_kayıt_Programı
                         {
                             while (reader.Read())
                             {
-                                int id = reader.GetInt32(0);
-                                string? carikod = reader.IsDBNull(1) ? null : reader.GetString(1);
-                                string cariisim = reader.GetString(2);
-                                string adres = reader.GetString(3);
-                                string? il = reader.IsDBNull(4) ? null : reader.GetString(4);
-                                string? ilce = reader.IsDBNull(5) ? null : reader.GetString(5);
-                                string telefon1 = reader.GetString(6);
-                                string telefon2 = reader.GetString(7);
-                                string? postakodu = reader.IsDBNull(8) ? null : reader.GetString(8);
-                                string? ulkekodu = reader.IsDBNull(9) ? null : reader.GetString(9);
-                                string vergidairesi = reader.GetString(10);
-                                string vergino = reader.GetString(11);
-                                string? tcno = reader.IsDBNull(12) ? null : reader.GetString(12);
-                                string? tip = reader.IsDBNull(13) ? null : reader.GetString(13);
-                                string mail = reader.GetString(14);
-                                string banka = reader.GetString(15);
-                                string hesapno = reader.GetString(16);
-
                                 Business b = new Business
                                 {
-                                    ID = id,
-                                    CariKod = carikod,
-                                    CariIsim = cariisim,
-                                    Adres = adres,
-                                    Il = il,
-                                    Ilce = ilce,
-                                    Telefon1 = telefon1,
-                                    Telefon2 = telefon2,
-                                    PostaKodu = postakodu,
-                                    UlkeKodu = ulkekodu,
-                                    VergiDairesi = vergidairesi,
-                                    VergiNo = vergino,
-                                    TcNo = tcno,
-                                    Tip = tip,
-                                    EPosta = mail,
-                                    Banka = banka,
-                                    HesapNo = hesapno
+                                    ID = reader.GetInt32(0),
+                                    CariKod = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                    CariIsim = reader.GetString(2),
+                                    Adres = reader.GetString(3),
+                                    Il = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                    Ilce = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                    Telefon1 = reader.GetString(6),
+                                    Telefon2 = reader.GetString(7),
+                                    PostaKodu = reader.IsDBNull(8) ? null : reader.GetString(8),
+                                    UlkeKodu = reader.IsDBNull(9) ? null : reader.GetString(9),
+                                    VergiDairesi = reader.GetString(10),
+                                    VergiNo = reader.GetString(11),
+                                    TcNo = reader.IsDBNull(12) ? null : reader.GetString(12),
+                                    Tip = reader.IsDBNull(13) ? null : reader.GetString(13),
+                                    EPosta = reader.GetString(14),
+                                    Banka = reader.GetString(15),
+                                    HesapNo = reader.GetString(16),
                                 };
                                 viewModel.Businesses.Add(b);
                             }

@@ -17,8 +17,14 @@ namespace Cari_kayıt_Programı
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            BaslangicTarihDatePicker.SelectedDate = FiltreDegiskenler.enKucukTarih;
-            BitisTarihDatePicker.SelectedDate = FiltreDegiskenler.enBuyukTarih;
+            // Bulunduğumuz yılın ilk ve son gününü hesapla
+            DateTime yilBasi = new DateTime(DateTime.Now.Year, 1, 1); // Yılın ilk günü
+            DateTime yilSonu = new DateTime(DateTime.Now.Year, 12, 31); // Yılın son günü
+
+            // DatePicker'lara atama yap
+            BaslangicTarihDatePicker.SelectedDate = yilBasi;
+            BitisTarihDatePicker.SelectedDate = yilSonu;
+
         }
 
         private void FiltreleButton_Click(object sender, RoutedEventArgs e)

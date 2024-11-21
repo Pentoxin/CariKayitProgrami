@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -49,63 +50,88 @@ namespace Cari_kayıt_Programı
                     {
                         connection.Open();
 
-                        string selectSql = "SELECT COUNT(*) FROM Stok WHERE lower(stokadi) = lower(@stokadi) OR lower(stokkodu) = lower(@stokkodu)";
-                        using (SQLiteCommand command = new SQLiteCommand(selectSql, connection))
+                        List<Stoklar> stokList = new List<Stoklar>();
+
+                        string query = "SELECT * FROM Stok";
+
+                        using (SQLiteCommand command = new SQLiteCommand(query, connection))
                         {
-                            command.Parameters.AddWithValue("@stokadi", StokAdTextBox.Text);
-                            command.Parameters.AddWithValue("@stokkodu", StokKodTextBox.Text);
-                            int count = Convert.ToInt32(command.ExecuteScalar());
-                            if (count > 0)
+                            using (SQLiteDataReader reader = command.ExecuteReader())
                             {
-                                MessageBox.Show("Bu stok adı veya atok kodu daha önce girilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                while (reader.Read())
+                                {
+                                    Stoklar b = new Stoklar
+                                    {
+                                        StokKod = reader.GetString(2),
+                                        StokAdi = reader.GetString(3),
+                                    };
+                                    stokList.Add(b);
+                                }
+                            }
+                        }
+
+                        foreach (var item in stokList)
+                        {
+                            if (item is Stoklar stok)
+                            {
+                                string? StokAdi = stok.StokAdi;
+                                string? StokKod = stok.StokKod;
+
+                                string StokAdiLower = StokAdi.ToLower(new CultureInfo("tr-TR"));
+                                string normalizedStokAdi = StokAdTextBox.Text.ToLower(new CultureInfo("tr-TR"));
+                                string StokKodLower = StokKod.ToLower(new CultureInfo("tr-TR"));
+                                string normalizedStokKod = StokKodTextBox.Text.ToLower(new CultureInfo("tr-TR"));
+                                if (StokAdiLower == normalizedStokAdi || StokKodLower == normalizedStokKod)
+                                {
+                                    MessageBox.Show("Bu stok adı veya stok kodu daha önce girilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    return;
+                                }
+                            }
+                        }
+
+                        if (MessageBox.Show("Seçilen veriyi kaydetmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
+                        {
+                            string? olcubirimi2oran;
+                            if (string.IsNullOrEmpty(OlcuBirimiOran1.Text))
+                            {
+                                olcubirimi2oran = $"1/{OlcuBirimiOran2.Text}";
+                            }
+                            else if (string.IsNullOrEmpty(OlcuBirimiOran2.Text))
+                            {
+                                olcubirimi2oran = $"{OlcuBirimiOran1.Text}/1";
                             }
                             else
                             {
-                                if (MessageBox.Show("Seçilen veriyi kaydetmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
-                                {
-                                    string? olcubirimi2oran;
-                                    if (string.IsNullOrEmpty(OlcuBirimiOran1.Text))
-                                    {
-                                        olcubirimi2oran = $"1/{OlcuBirimiOran2.Text}";
-                                    }
-                                    else if (string.IsNullOrEmpty(OlcuBirimiOran2.Text))
-                                    {
-                                        olcubirimi2oran = $"{OlcuBirimiOran1.Text}/1";
-                                    }
-                                    else
-                                    {
-                                        olcubirimi2oran = $"{OlcuBirimiOran1.Text}/{OlcuBirimiOran2.Text}";
-                                    }
-
-                                    string insertSql = "INSERT INTO Stok (stokkodu, stokadi, kdvsatis, kdvalis, olcubirimi1, olcubirimi2, olcubirimi2oran) VALUES (@stokkodu, @stokadi, @kdvsatis, @kdvalis, @olcubirimi1, @olcubirimi2, @olcubirimi2oran)";
-                                    using (SQLiteCommand insertCommand = new SQLiteCommand(insertSql, connection))
-                                    {
-                                        insertCommand.Parameters.AddWithValue("@stokkodu", StokKodTextBox.Text);
-                                        insertCommand.Parameters.AddWithValue("@stokadi", StokAdTextBox.Text);
-                                        insertCommand.Parameters.AddWithValue("@kdvsatis", SatisKDVOranTextBox.Text);
-                                        insertCommand.Parameters.AddWithValue("@kdvalis", AlisKDVOranTextBox.Text);
-                                        insertCommand.Parameters.AddWithValue("@olcubirimi1", OlcuBirimi1ComboBox.Text);
-                                        insertCommand.Parameters.AddWithValue("@olcubirimi2", OlcuBirimi2ComboBox.Text);
-                                        insertCommand.Parameters.AddWithValue("@olcubirimi2oran", olcubirimi2oran);
-                                        insertCommand.ExecuteNonQuery();
-
-                                        MessageBox.Show("Stok bilgileri veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Information);
-                                    }
-
-                                    StokKodTextBox.Clear();
-                                    StokAdTextBox.Clear();
-                                    SatisKDVOranTextBox.Clear();
-                                    AlisKDVOranTextBox.Clear();
-                                    OlcuBirimi1ComboBox.Text = null;
-                                    OlcuBirimi2ComboBox.Text = null;
-                                    OlcuBirimiOran1.Text = "1";
-                                    OlcuBirimiOran2.Text = "1";
-                                    olcubirimi2oran = null;
-                                    dataGrid.ItemsSource = GetStoklar();
-
-                                    Keyboard.ClearFocus();
-                                }
+                                olcubirimi2oran = $"{OlcuBirimiOran1.Text}/{OlcuBirimiOran2.Text}";
                             }
+
+                            string insertSql = "INSERT INTO Stok (stokkodu, stokadi, kdvsatis, kdvalis, olcubirimi1, olcubirimi2, olcubirimi2oran) VALUES (@stokkodu, @stokadi, @kdvsatis, @kdvalis, @olcubirimi1, @olcubirimi2, @olcubirimi2oran)";
+                            using (SQLiteCommand insertCommand = new SQLiteCommand(insertSql, connection))
+                            {
+                                insertCommand.Parameters.AddWithValue("@stokkodu", StokKodTextBox.Text);
+                                insertCommand.Parameters.AddWithValue("@stokadi", StokAdTextBox.Text);
+                                insertCommand.Parameters.AddWithValue("@kdvsatis", SatisKDVOranTextBox.Text);
+                                insertCommand.Parameters.AddWithValue("@kdvalis", AlisKDVOranTextBox.Text);
+                                insertCommand.Parameters.AddWithValue("@olcubirimi1", OlcuBirimi1ComboBox.Text);
+                                insertCommand.Parameters.AddWithValue("@olcubirimi2", OlcuBirimi2ComboBox.Text);
+                                insertCommand.Parameters.AddWithValue("@olcubirimi2oran", olcubirimi2oran);
+                                insertCommand.ExecuteNonQuery();
+
+                                MessageBox.Show("Stok bilgileri veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
+
+                            StokKodTextBox.Clear();
+                            StokAdTextBox.Clear();
+                            SatisKDVOranTextBox.Clear();
+                            AlisKDVOranTextBox.Clear();
+                            OlcuBirimi1ComboBox.Text = null;
+                            OlcuBirimi2ComboBox.Text = null;
+                            OlcuBirimiOran1.Text = "1";
+                            OlcuBirimiOran2.Text = "1";
+                            olcubirimi2oran = null;
+                            dataGrid.ItemsSource = GetStoklar();
+
+                            Keyboard.ClearFocus();
                         }
                     }
                 }
@@ -171,13 +197,53 @@ namespace Cari_kayıt_Programı
 
                 if (selectedStokItem == null)
                 {
-                    MessageBox.Show("Önce silmek istediğiniz veriyi seçiniz", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Önce değiştirmek istediğiniz veriyi seçiniz", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 using (SQLiteConnection connection = new SQLiteConnection(Config.ConnectionString))
                 {
                     connection.Open();
+
+                    List<Stoklar> stokList = new List<Stoklar>();
+
+                    string query = "SELECT * FROM Stok";
+
+                    using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                    {
+                        using (SQLiteDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Stoklar b = new Stoklar
+                                {
+                                    ID = reader.GetInt32(0),
+                                    StokKod = reader.GetString(1),
+                                    StokAdi = reader.GetString(2),
+                                };
+                                stokList.Add(b);
+                            }
+                        }
+                    }
+
+                    foreach (var item in stokList)
+                    {
+                        if (item is Stoklar stok && selectedStokItem.ID != stok.ID)
+                        {
+                            string? StokAdi = stok.StokAdi;
+                            string? StokKod = stok.StokKod;
+
+                            string StokAdiLower = StokAdi.ToLower(new CultureInfo("tr-TR"));
+                            string normalizedStokAdi = StokAdTextBox.Text.ToLower(new CultureInfo("tr-TR"));
+                            string StokKodLower = StokKod.ToLower(new CultureInfo("tr-TR"));
+                            string normalizedStokKod = StokKodTextBox.Text.ToLower(new CultureInfo("tr-TR"));
+                            if (StokAdiLower == normalizedStokAdi || StokKodLower == normalizedStokKod )
+                            {
+                                MessageBox.Show("Bu stok adı veya stok kodu daha önce girilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                        }
+                    }
 
                     if (MessageBox.Show("Seçili veriyi değiştirmek istediğinize emin misiniz?", "Veri Güncelleme", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {

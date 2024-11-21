@@ -12,7 +12,7 @@
       TextOptions.TextRenderingMode="Auto"
       Background="{DynamicResource MaterialDesignPaper}"
       FontFamily="{DynamicResource MaterialDesignFont}"      
-      mc:Ignorable="d" d:DesignHeight="700" d:DesignWidth="980" Title="Main_TR" Loaded="Window_Loaded" MinWidth="650" MinHeight="460" PreviewMouseDown="Page_PreviewMouseDown" >
+      mc:Ignorable="d" d:DesignHeight="705" d:DesignWidth="980" Title="Main_TR" Loaded="Window_Loaded" MinWidth="650" MinHeight="460" PreviewMouseDown="Page_PreviewMouseDown" >
 
     <Page.Resources>
         <Style x:Key="CustomMaterialDesignTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" TargetType="TextBox">
@@ -66,23 +66,23 @@
             </DataGrid.Columns>
         </DataGrid>
         <TextBox x:Name="CariIsimTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Cari İsim*" Margin="10,90,0,0" TabIndex="2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="400"/>
-        <TextBox x:Name="AdresTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Adres" Margin="10,130,0,0" VerticalAlignment="Top" TabIndex="3" HorizontalAlignment="Left" Width="400"/>
+        <TextBox x:Name="AdresTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Adres" Margin="10,130,0,0" VerticalAlignment="Top" TabIndex="3" HorizontalAlignment="Left" Width="400" ToolTip="Sil"/>
         <TextBox x:Name="Telefon1TextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Telefon 1" Margin="10,250,0,0" VerticalAlignment="Top" TabIndex="8" HorizontalAlignment="Left" Width="195" />
-        <Button x:Name="KaydetButton" ToolTip="Kaydet" materialDesign:ButtonAssist.CornerRadius="5" Margin="90,10,0,0" Click="KaydetButton_Click" Height="30" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Left" Width="30" Padding="1,1,1,1" IsDefault="True" IsTabStop="False">
+        <Button x:Name="KaydetButton" ToolTip="Kaydet" materialDesign:ButtonAssist.CornerRadius="5" Margin="90,10,0,0" Click="KaydetButton_Click" Height="30" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Left" Width="30" Padding="0,0,0,0" IsDefault="True" IsTabStop="False">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="TrayArrowDown" Foreground="#FFFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button x:Name="DeleteButton" ToolTip="Kaydı Sil" materialDesign:ButtonAssist.CornerRadius="5" Margin="130,10,0,0" Click="DeleteButton_Click" Height="30" VerticalAlignment="Top" TabIndex="17" HorizontalAlignment="Left" Width="30" Padding="4,4,4,4" IsTabStop="False">
+        <Button x:Name="DeleteButton" ToolTip="Kaydı Sil" materialDesign:ButtonAssist.CornerRadius="5" Margin="130,10,0,0" Click="DeleteButton_Click" Height="30" VerticalAlignment="Top" TabIndex="17" HorizontalAlignment="Left" Width="30" Padding="0,0,0,0" IsTabStop="False">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Delete" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button x:Name="Updatebutton" ToolTip="Kaydı Güncelle" materialDesign:ButtonAssist.CornerRadius="5" Margin="170,10,0,0" Click="Updatebutton_Click" Height="30" VerticalAlignment="Top" TabIndex="18" HorizontalAlignment="Left" Width="30" Padding="4,4,4,4" IsEnabled="False" IsTabStop="False">
+        <Button x:Name="Updatebutton" ToolTip="Kaydı Güncelle" materialDesign:ButtonAssist.CornerRadius="5" Margin="170,10,0,0" Click="Updatebutton_Click" Height="30" VerticalAlignment="Top" TabIndex="18" HorizontalAlignment="Left" Width="30" Padding="0,0,0,0" IsEnabled="False" IsTabStop="False">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Pencil" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -92,7 +92,7 @@
         <TextBox x:Name="VergiDairesiTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Vergi Dairesi" Margin="10,290,0,0" VerticalAlignment="Top" TabIndex="10" HorizontalAlignment="Left" Width="195"/>
         <TextBox x:Name="VergiNoTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Vergi No" Margin="215,290,0,0" VerticalAlignment="Top" TabIndex="11" HorizontalAlignment="Left" Width="195"/>
         <TextBox x:Name="Telefon2TextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Telefon 2" Margin="215,250,0,0" VerticalAlignment="Top" TabIndex="9" HorizontalAlignment="Left" Width="195"/>
-        <Button x:Name="YazdırButton" ToolTip="Yazdır" materialDesign:ButtonAssist.CornerRadius="5" Margin="210,10,0,0" Click="YazdırButton_Click" Height="30" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Left" Width="30" Padding="4,4,4,4" IsTabStop="False">
+        <Button x:Name="YazdırButton" ToolTip="Yazdır" materialDesign:ButtonAssist.CornerRadius="5" Margin="210,10,0,0" Click="YazdırButton_Click" Height="30" VerticalAlignment="Top" TabIndex="19" HorizontalAlignment="Left" Width="30" IsTabStop="False" Padding="0,0,0,0">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Printer" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -102,21 +102,32 @@
         <TextBox x:Name="BankaTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Banka" Margin="450,186,0,0" VerticalAlignment="Top" TabIndex="14" HorizontalAlignment="Left" Width="210"/>
         <TextBox x:Name="MailTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="E-Posta" Margin="450,146,0,0" VerticalAlignment="Top" TabIndex="13" HorizontalAlignment="Left" Width="210"/>
         <TextBox x:Name="HesapNoTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Hesap No / IBAN" Margin="450,226,0,0" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Left" Width="210"/>
-        <Button x:Name="IceriAktarButton" ToolTip="Veri Tabanını İçeri Aktar" materialDesign:ButtonAssist.CornerRadius="5" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="30" Height="30" Click="IceriAktarButton_Click" Padding="4,4,4,4" Cursor="Hand" IsTabStop="False">
+        <Button x:Name="IceriAktarButton" ToolTip="Veri Tabanını İçeri Aktar" materialDesign:ButtonAssist.CornerRadius="5" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="30" Height="30" Click="IceriAktarButton_Click" Cursor="Hand" IsTabStop="False" Padding="0,0,0,0">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Databaseimport" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button x:Name="DışarıAktarButton" ToolTip="Veri Tabanını Dışarı Aktar" materialDesign:ButtonAssist.CornerRadius="5" HorizontalAlignment="Left" Margin="50,10,0,0" VerticalAlignment="Top" Width="30" Height="30" Click="DışarıAktarButton_Click" Padding="4,4,4,4" Cursor="Hand" IsTabStop="False">
+        <Button x:Name="DisariAktarButton" ToolTip="Veri Tabanını Dışarı Aktar" materialDesign:ButtonAssist.CornerRadius="5" HorizontalAlignment="Left" Margin="50,10,0,0" VerticalAlignment="Top" Width="30" Height="30" Click="DisariAktarButton_Click" Cursor="Hand" IsTabStop="False" Padding="0,0,0,0">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="DatabaseExport" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button.Content>
         </Button>
-        <TextBox x:Name="CariKodTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Cari Kod*" Margin="10,50,0,0" TabIndex="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" TextChanged="CariKodTextBox_TextChanged"/>
+        <TextBox x:Name="CariKodTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" ContextMenuOpening="OnContextMenuOpening" materialDesign:HintAssist.Hint="Cari Kod*" Margin="10,50,0,0" TabIndex="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" TextChanged="CariKodTextBox_TextChanged" >
+            <TextBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Command="Cut" Header="_Kes" Icon="{materialDesign:PackIcon Kind=ContentCut}" />
+                    <MenuItem Command="Copy" Header="_Kopyala" Icon="{materialDesign:PackIcon Kind=ContentCopy}" />
+                    <MenuItem Command="Paste" Header="_Yapıştır" Icon="{materialDesign:PackIcon Kind=ContentPaste}" />
+                    <Separator />
+                    <MenuItem Command="SelectAll" Header="_Tümünü Seç" Icon="{materialDesign:PackIcon Kind=SelectAll}" />
+                    <MenuItem x:Name="DynamicMenuItem" Click="OnCariKodSuggestionClick" />
+                </ContextMenu>
+            </TextBox.ContextMenu>
+        </TextBox>
         <TextBox x:Name="ilTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="İl" Margin="10,170,0,0" TabIndex="4" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195"/>
         <TextBox x:Name="ilceTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="İlçe" Margin="215,170,0,0" TabIndex="5" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195"/>
         <TextBox x:Name="UlkeKoduTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Ülke Kodu" Margin="10,210,0,0" TabIndex="6" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195"/>
