@@ -9,24 +9,40 @@ namespace Cari_kayıt_Programı
 
         public YuklemeEkrani()
         {
-            InitializeComponent();
-
-            if (Degiskenler.guncellemeOnay)
+            try
             {
-                this.Width = 330;
-                this.Height = 150;
+                InitializeComponent();
+
+                if (Degiskenler.guncellemeOnay)
+                {
+                    this.Width = 330;
+                    this.Height = 150;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "YuklemeEkrani", methodName: "Main()", stackTrace: ex.StackTrace);
+                MessageBox.Show("Beklenmeyen bir hata oluştu. Lütfen destek ekibiyle iletişime geçin.", "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!Degiskenler.guncellemeOnay)
+            try
             {
-                YuklemeEkraniFrame.Source = new Uri("GuncellemeEkrani.xaml", UriKind.RelativeOrAbsolute);
+                if (!Degiskenler.guncellemeOnay)
+                {
+                    YuklemeEkraniFrame.Source = new Uri("GuncellemeEkrani.xaml", UriKind.RelativeOrAbsolute);
+                }
+                else
+                {
+                    YuklemeEkraniFrame.Source = new Uri("YuklemeEkrani_TR.xaml", UriKind.RelativeOrAbsolute);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                YuklemeEkraniFrame.Source = new Uri("YuklemeEkrani_TR.xaml", UriKind.RelativeOrAbsolute);
+                LogManager.LogError(ex, className: "YuklemeEkrani", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
     }

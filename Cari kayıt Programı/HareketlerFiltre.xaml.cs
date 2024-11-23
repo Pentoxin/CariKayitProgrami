@@ -9,19 +9,34 @@ namespace Cari_kayıt_Programı
     {
         public HareketlerFiltre()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "HareketlerFiltre", methodName: "Main()", stackTrace: ex.StackTrace);
+                MessageBox.Show("Beklenmeyen bir hata oluştu. Lütfen destek ekibiyle iletişime geçin.", "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // Bulunduğumuz yılın ilk ve son gününü hesapla
-            DateTime yilBasi = new DateTime(DateTime.Now.Year, 1, 1); // Yılın ilk günü
-            DateTime yilSonu = new DateTime(DateTime.Now.Year, 12, 31); // Yılın son günü
+            try
+            {
+                // Bulunduğumuz yılın ilk ve son gününü hesapla
+                DateTime yilBasi = new DateTime(DateTime.Now.Year, 1, 1); // Yılın ilk günü
+                DateTime yilSonu = new DateTime(DateTime.Now.Year, 12, 31); // Yılın son günü
 
-            // DatePicker'lara atama yap
-            BaslangicTarihDatePicker.SelectedDate = yilBasi;
-            BitisTarihDatePicker.SelectedDate = yilSonu;
-
+                // DatePicker'lara atama yap
+                BaslangicTarihDatePicker.SelectedDate = yilBasi;
+                BitisTarihDatePicker.SelectedDate = yilSonu;
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "HareketlerFiltre", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
+                throw;
+            }
         }
 
         private void FiltreleButton_Click(object sender, RoutedEventArgs e)
@@ -58,18 +73,28 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "HareketlerFiltre", methodName: "FiltreleButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void VazgecButton_Click(object sender, RoutedEventArgs e)
         {
-            Window mainWindow = Window.GetWindow(this);
-
-            if (mainWindow != null)
+            try
             {
-                // Ana pencereyi kapat
-                mainWindow.Close();
+                Window mainWindow = Window.GetWindow(this);
+
+                if (mainWindow != null)
+                {
+                    // Ana pencereyi kapat
+                    mainWindow.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "HareketlerFiltre", methodName: "VazgecButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
             }
         }
     }

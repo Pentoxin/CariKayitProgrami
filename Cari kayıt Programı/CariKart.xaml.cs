@@ -12,16 +12,32 @@ namespace Cari_kayıt_Programı
 
         public CariKart()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
 
-            ViewModel = new MainViewModel();
-            DataContext = ViewModel;
+                ViewModel = new MainViewModel();
+                DataContext = ViewModel;
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "CariKart", methodName: "Main()", stackTrace: ex.StackTrace);
+                MessageBox.Show("Beklenmeyen bir hata oluştu. Lütfen destek ekibiyle iletişime geçin.", "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            CariHesapKayitlari cariHesapKayitlari = new CariHesapKayitlari();
-            dataGrid.ItemsSource = cariHesapKayitlari.GetBusinesses();
+            try
+            {
+                CariHesapKayitlari cariHesapKayitlari = new CariHesapKayitlari();
+                dataGrid.ItemsSource = cariHesapKayitlari.GetBusinesses();
+            }
+            catch (Exception ex) 
+            {
+                LogManager.LogError(ex, className: "CariKart", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
+                throw;
+            }
         }
 
         private void SecButton_Click(object sender, RoutedEventArgs e)
@@ -40,7 +56,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariKart", methodName: "SecButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -54,7 +71,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariKart", methodName: "txtSearch_TextChanged()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -80,7 +98,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariKart", methodName: "dataGrid_MouseDoubleClick()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -100,7 +119,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariKart", methodName: "VazgecButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -120,7 +140,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariKart", methodName: "dataGrid_SelectionChanged()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

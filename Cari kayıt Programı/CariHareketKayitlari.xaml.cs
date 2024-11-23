@@ -23,10 +23,18 @@ namespace Cari_kayıt_Programı
 
         public CariHareketKayitlari()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
 
-            ViewModel = new MainViewModel();
-            DataContext = ViewModel;
+                ViewModel = new MainViewModel();
+                DataContext = ViewModel;
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "Main()", stackTrace: ex.StackTrace);
+                MessageBox.Show("Beklenmeyen bir hata oluştu. Lütfen destek ekibiyle iletişime geçin.", "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public static class FiltreDegiskenler
@@ -41,24 +49,32 @@ namespace Cari_kayıt_Programı
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Business? selectedBusiness = Degiskenler.selectedBusiness;
-            if (selectedBusiness == null)
+            try
             {
-                IsletmeAdiLabel.Content = "-";
-                TarihDatePicker.IsEnabled = false;
-                EvrakNoTextbox.IsEnabled = false;
-                AciklamaTextbox.IsEnabled = false;
-                VadeDatePicker.IsEnabled = false;
-                BAGroupBox.IsEnabled = false;
-                AKGroupBox.IsEnabled = false;
-                YukleGroupBox.IsEnabled = false;
-                TutarTextbox.IsEnabled = false;
-                YeniHareketButton.IsEnabled = false;
-                SilHareketButton.IsEnabled = false;
-                DegistirHareketButton.IsEnabled = false;
-                YazdırButton.IsEnabled = false;
-                txtSearch.IsEnabled = false;
-                FiltreleButton.IsEnabled = false;
+                Business? selectedBusiness = Degiskenler.selectedBusiness;
+                if (selectedBusiness == null)
+                {
+                    IsletmeAdiLabel.Content = "-";
+                    TarihDatePicker.IsEnabled = false;
+                    EvrakNoTextbox.IsEnabled = false;
+                    AciklamaTextbox.IsEnabled = false;
+                    VadeDatePicker.IsEnabled = false;
+                    BAGroupBox.IsEnabled = false;
+                    AKGroupBox.IsEnabled = false;
+                    YukleGroupBox.IsEnabled = false;
+                    TutarTextbox.IsEnabled = false;
+                    YeniHareketButton.IsEnabled = false;
+                    SilHareketButton.IsEnabled = false;
+                    DegistirHareketButton.IsEnabled = false;
+                    YazdırButton.IsEnabled = false;
+                    txtSearch.IsEnabled = false;
+                    FiltreleButton.IsEnabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
 
@@ -202,7 +218,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -294,7 +311,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "SilHareketButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -486,7 +504,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "DegistirHareketButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -680,7 +699,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "YazdırButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -731,7 +751,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "YukleButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -782,7 +803,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "dataGrid_SelectionChanged()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -811,7 +833,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "Button_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -869,7 +892,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "ChangeButtonContent()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
 
@@ -959,7 +983,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "CariKartButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -976,7 +1001,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "txtSearch_TextChanged()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1084,7 +1110,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "FiltreleButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1196,7 +1223,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "CariKodTextbox_TextChanged()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1209,7 +1237,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "OpenWindow()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1245,7 +1274,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "LoadDataGrid()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1341,7 +1371,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "SearchGetOdemeler()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
 
@@ -1430,7 +1461,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "GetOdemeler()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
 
@@ -1481,7 +1513,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "Page_PreviewMouseDown()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
 
@@ -1511,47 +1544,82 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
-
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "IsMouseOverDataGrid()", stackTrace: ex.StackTrace);
                 return false;
+                throw;
             }
         }
 
         // Yardımcı metot: Bir ebeveyni belirli bir türde bulmak için
         private T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
-            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
-            if (parentObject == null) return null;
+            try
+            {
+                DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+                if (parentObject == null) return null;
 
-            T parent = parentObject as T;
-            return parent ?? FindParent<T>(parentObject);
+                T parent = parentObject as T;
+                return parent ?? FindParent<T>(parentObject);
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "FindParent()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+                throw;
+            }
         }
 
         private void TutarTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !IsTextAllowed(e.Text);
+            try
+            {
+                e.Handled = !IsTextAllowed(e.Text);
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "TutarTextBox_PreviewTextInput()", stackTrace: ex.StackTrace);
+                throw;
+            }
         }
 
         private void TutarTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
         {
-            if (e.DataObject.GetDataPresent(typeof(string)))
+            try
             {
-                string text = (string)e.DataObject.GetData(typeof(string));
-                if (!IsTextAllowed(text))
+                if (e.DataObject.GetDataPresent(typeof(string)))
+                {
+                    string text = (string)e.DataObject.GetData(typeof(string));
+                    if (!IsTextAllowed(text))
+                    {
+                        e.CancelCommand();
+                    }
+                }
+                else
                 {
                     e.CancelCommand();
                 }
             }
-            else
+            catch (Exception ex)
             {
-                e.CancelCommand();
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "TutarTextBox_Pasting()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
 
         private static bool IsTextAllowed(string text)
         {
-            Regex regex = new Regex("[^0-9,]+"); // Sadece sayısal karakterlere izin ver
-            return !regex.IsMatch(text);
+            try
+            {
+                Regex regex = new Regex("[^0-9,]+"); // Sadece sayısal karakterlere izin ver
+                return !regex.IsMatch(text);
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "IsTextAllowed()", stackTrace: ex.StackTrace);
+                return false;
+                throw;
+            }
         }
 
         public void GetBusinesses()
@@ -1601,7 +1669,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "GetBusinesses()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
     }

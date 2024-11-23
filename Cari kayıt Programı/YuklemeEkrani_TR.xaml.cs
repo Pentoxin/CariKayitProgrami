@@ -14,12 +14,28 @@ namespace Cari_kayıt_Programı
     {
         public YuklemeEkrani_TR()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "YuklemeEkrani_TR", methodName: "Main()", stackTrace: ex.StackTrace);
+                MessageBox.Show("Beklenmeyen bir hata oluştu. Lütfen destek ekibiyle iletişime geçin.", "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            _ = StartDownload();
+            try
+            {
+                _ = StartDownload();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "YuklemeEkrani_TR", methodName: "Page_Loaded()", stackTrace: ex.StackTrace);
+                throw;
+            }
         }
 
         private async Task StartDownload()
@@ -73,7 +89,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "YuklemeEkrani_TR", methodName: "StartDownload()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
 
@@ -129,7 +146,7 @@ namespace Cari_kayıt_Programı
                     catch (Exception ex)
                     {
                         statusLabel.Content = "Dosya çalıştırılamadı, tekrar indiriliyor...";
-                        LogError(ex);
+                        LogManager.LogError(ex, className: "YuklemeEkrani_TR", methodName: "DownloadAndStartFile() / File Open Process", stackTrace: ex.StackTrace);
                         await DownloadAndStartFile(urlP); // İndirme işlemini tekrar dene
                     }
                     client.Dispose();
@@ -137,7 +154,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "YuklemeEkrani_TR", methodName: "DownloadAndStartFile()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
     }

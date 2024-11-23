@@ -16,32 +16,64 @@ namespace Cari_kayıt_Programı
 
         public CariKodOlusturma(Anasayfa anasayfa)
         {
-            InitializeComponent();
-            ViewModel = new MainViewModel();
-            DataContext = ViewModel;
-            _anasayfa = anasayfa;
+            try
+            {
+                InitializeComponent();
+                ViewModel = new MainViewModel();
+                DataContext = ViewModel;
+                _anasayfa = anasayfa;
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "CariKodOlusturma", methodName: "Main()", stackTrace: ex.StackTrace);
+                MessageBox.Show("Beklenmeyen bir hata oluştu. Lütfen destek ekibiyle iletişime geçin.", "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void KaydetButton_Click(object sender, RoutedEventArgs e)
         {
-            NewCariKod = CariKodTextbox.Text;
-            DialogResult = true;
-            Close();
+            try
+            {
+                NewCariKod = CariKodTextbox.Text;
+                DialogResult = true;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "CariKodOlusturma", methodName: "KaydetButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            CariIDLabel.Content = Business.ID;
-            CariIsimLabel.Content = Business.CariIsim;
+            try
+            {
+                CariIDLabel.Content = Business.ID;
+                CariIsimLabel.Content = Business.CariIsim;
 
-            CariKodTextbox.Focus();
+                CariKodTextbox.Focus();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "CariKodOlusturma", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
+                throw;
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (DialogResult != true)
+            try
             {
-                Environment.Exit(1);
+                if (DialogResult != true)
+                {
+                    Environment.Exit(1);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "CariKodOlusturma", methodName: "Window_Closing()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
 
@@ -56,7 +88,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariKodOlusturma", methodName: "TumunuGirButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -109,7 +142,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariKodOlusturma", methodName: "GenerateAndAssignCariKodForAll()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -128,7 +162,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariKodOlusturma", methodName: "CariKodTextbox_TextChanged()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -143,7 +178,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "CariKodOlusturma", methodName: "CıkButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

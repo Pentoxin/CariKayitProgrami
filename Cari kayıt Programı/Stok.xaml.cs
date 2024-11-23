@@ -17,19 +17,35 @@ namespace Cari_kayıt_Programı
     {
         public Stok()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Stok", methodName: "Main()", stackTrace: ex.StackTrace);
+                MessageBox.Show("Beklenmeyen bir hata oluştu. Lütfen destek ekibiyle iletişime geçin.", "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            dataGrid.ItemsSource = GetStoklar();
-
-            List<string> comboBoxItems = new List<string> { "Adet", "Kasa", "Kilogram", "Koli", "Paket" };
-
-            foreach (string item in comboBoxItems)
+            try
             {
-                OlcuBirimi1ComboBox.Items.Add(item);
-                OlcuBirimi2ComboBox.Items.Add(item);
+                dataGrid.ItemsSource = GetStoklar();
+
+                List<string> comboBoxItems = new List<string> { "Adet", "Kasa", "Kilogram", "Koli", "Paket" };
+
+                foreach (string item in comboBoxItems)
+                {
+                    OlcuBirimi1ComboBox.Items.Add(item);
+                    OlcuBirimi2ComboBox.Items.Add(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Stok", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
 
@@ -135,7 +151,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Stok", methodName: "KaydetButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -182,7 +199,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Stok", methodName: "DeleteButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -299,7 +317,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Stok", methodName: "Updatebutton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -371,7 +390,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Stok", methodName: "YazdırButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -406,7 +426,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Stok", methodName: "dataGrid_SelectionChanged()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -418,7 +439,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Stok", methodName: "dataGrid_Loaded()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -489,7 +511,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Stok", methodName: "StokKodTextBox_TextChanged()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -541,9 +564,9 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
-
+                LogManager.LogError(ex, className: "Stok", methodName: "GetStoklar()", stackTrace: ex.StackTrace);
                 return null;
+                throw;
             }
         }
 

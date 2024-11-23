@@ -22,44 +22,81 @@ namespace Cari_kayıt_Programı
 
         public Anasayfa()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
 
-            ViewModel = new MainViewModel();
-            DataContext = ViewModel;
+                ViewModel = new MainViewModel();
+                DataContext = ViewModel;
+
+                LogManager.LogInformation(message: "Program Başlatıldı", className: "Program", methodName: "Main");
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Program", methodName: "Main", stackTrace: ex.StackTrace);
+                MessageBox.Show("Beklenmeyen bir hata oluştu. Lütfen destek ekibiyle iletişime geçin.", "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            CheckAtStartup();
+            try
+            {
+                CheckAtStartup();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
+                throw;
+            }
         }
 
         public void CheckAtStartup()
         {
-            Check check = new Check(this);
+            try
+            {
+                Check check = new Check(this);
 
-            //_ = GuncellemeKontrol();
-            Check.AppDataCreate();
-            Check.InitializeDatabase();
-            Check.CariRenameColumnAndRemoveMail2();
-            BusinessesAtStartupCheck();
-            check.CheckAndUpdateTables();
-            check.CheckAndCreateOrRenameIsletmeFolders();
+                //_ = GuncellemeKontrol();
+                Check.AppDataCreate();
+                Check.InitializeDatabase();
+                Check.CariRenameColumnAndRemoveMail2();
+                BusinessesAtStartupCheck();
+                check.CheckAndUpdateTables();
+                check.CheckAndCreateOrRenameIsletmeFolders();
+                Check.CheckAndCreateStokTable();
 
-            Check.CheckAndCreateStokTable();
+                LogManager.LogInformation(message: "Tüm başlangıç kontrolleri tamamlandı.", className: "Anasayfa", methodName: "CheckAtStartup()");
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "CheckAtStartup()", stackTrace: ex.StackTrace);
+                throw;
+            }
+
         }
 
         public void CheckAtImport()
         {
-            Check check = new Check(this);
+            try
+            {
+                Check check = new Check(this);
 
-            Check.AppDataCreate();
-            Check.InitializeDatabase();
-            Check.CariRenameColumnAndRemoveMail2();
-            BusinessesAtStartupCheck();
-            check.CheckAndUpdateTables();
-            check.CheckAndCreateOrRenameIsletmeFolders();
+                Check.AppDataCreate();
+                Check.InitializeDatabase();
+                Check.CariRenameColumnAndRemoveMail2();
+                BusinessesAtStartupCheck();
+                check.CheckAndUpdateTables();
+                check.CheckAndCreateOrRenameIsletmeFolders();
+                Check.CheckAndCreateStokTable();
 
-            Check.CheckAndCreateStokTable();
+                LogManager.LogInformation(message: "Tüm içe aktarma kontrolleri tamamlandı.", className: "Anasayfa", methodName: "CheckAtStartup()");
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "CheckAtImport()", stackTrace: ex.StackTrace);
+                throw;
+            }
         }
 
         public class Check
@@ -120,7 +157,8 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "CheckAndUpdateTables()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -163,10 +201,12 @@ namespace Cari_kayıt_Programı
                             }
                         }
                     }
+                    LogManager.LogInformation(message: "Stok tablosunun kontrolü yapıldı.", className: "Anasayfa / Check", methodName: "CheckAndCreateStokTable");
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "CheckAndCreateStokTable()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -208,6 +248,8 @@ namespace Cari_kayıt_Programı
                             }
                         }
 
+                        LogManager.LogInformation(message: "Eksik tablolar kontrol ediliyor.", className: "Anasayfa / Check", methodName: "ManageCariKodTables()");
+
                         // Her bir iş için CariKod tablosunu oluştur veya var olup olmadığını kontrol et
                         foreach (var business in viewModel.Businesses)
                         {
@@ -246,29 +288,49 @@ namespace Cari_kayıt_Programı
                                 }
                             }
                         }
+
+                        LogManager.LogInformation(message: "Eksik tablolar oluşturuldu.", className: "Anasayfa / Check", methodName: "ManageCariKodTables()");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "ManageCariKodTables()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
             private string GetCariKodFromId(string id)
             {
-                // ID'ye göre CariKod elde etme mantığını buraya yazın
-                // Örneğin:
-                MainViewModel viewModel = (MainViewModel)_anasayfa.DataContext;
-                var business = viewModel.Businesses.FirstOrDefault(b => b.ID.ToString() == id);
-                return business?.CariKod;
+                try
+                {
+                    // ID'ye göre CariKod elde etme mantığını buraya yazın
+                    // Örneğin:
+                    MainViewModel viewModel = (MainViewModel)_anasayfa.DataContext;
+                    var business = viewModel.Businesses.FirstOrDefault(b => b.ID.ToString() == id);
+                    return business?.CariKod;
+                }
+                catch (Exception ex)
+                {
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "GetCariKodFromId()", stackTrace: ex.StackTrace);
+                    throw;
+                }
             }
 
             private static void RenameTable(SQLiteConnection connection, string oldTableName, string newTableName)
             {
-                string renameTableQuery = $"ALTER TABLE {oldTableName} RENAME TO {newTableName};";
-                using (SQLiteCommand renameCommand = new SQLiteCommand(renameTableQuery, connection))
+                try
                 {
-                    renameCommand.ExecuteNonQuery();
+                    string renameTableQuery = $"ALTER TABLE {oldTableName} RENAME TO {newTableName};";
+                    using (SQLiteCommand renameCommand = new SQLiteCommand(renameTableQuery, connection))
+                    {
+                        renameCommand.ExecuteNonQuery();
+                    }
+                    LogManager.LogInformation(message: "Tablolar adları değiştirildi.", className: "Anasayfa / Check", methodName: "RenameTable()");
+                }
+                catch (Exception ex)
+                {
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "GetCariKodFromId()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -307,7 +369,8 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "CheckAndPromptForMissingCariKod()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -331,7 +394,8 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "UpdateCariKodInDatabase()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -394,10 +458,12 @@ namespace Cari_kayıt_Programı
                             }
                         }
                     }
+                    LogManager.LogInformation(message: "Veritabanındaki tarih formatları düzeltiliyor.", className: "Anasayfa / Check", methodName: "UpdateDateFormatInTable()");
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "UpdateDateFormatInTable()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -434,13 +500,13 @@ namespace Cari_kayıt_Programı
                             }
                         }
                     }
-
                     return missingColumns;
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "HareketlerMissingColumns()", stackTrace: ex.StackTrace);
                     return missingColumns;
+                    throw;
                 }
             }
 
@@ -494,10 +560,12 @@ namespace Cari_kayıt_Programı
                             }
                         }
                     }
+                    LogManager.LogInformation(message: "Hareketler tablosundaki eksikler belirlendi ve eksik sütunlar oluşturuldu.", className: "Anasayfa / Check", methodName: "AddHareketlerMissingColumns()");
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "AddHareketlerMissingColumns()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -569,7 +637,8 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "AddColumnAtSpecificPosition()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -656,7 +725,8 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "CariRenameColumnAndRemoveMail2()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -698,8 +768,9 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "CariMissingColumns()", stackTrace: ex.StackTrace);
                     return missingColumns;
+                    throw;
                 }
             }
 
@@ -742,7 +813,8 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "AddCariMissingColumns()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -793,7 +865,8 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "CheckAndCreateOrRenameIsletmeFolders()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -848,7 +921,9 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "GetLatestReleaseInfoAsync()", stackTrace: ex.StackTrace);
                     return ($"Error: {ex.Message}", string.Empty, string.Empty, string.Empty);
+                    throw;
                 }
             }
 
@@ -861,9 +936,11 @@ namespace Cari_kayıt_Programı
                     PingReply cevap = ping.Send(hedefAdres);
                     return (cevap.Status == IPStatus.Success);
                 }
-                catch (PingException)
+                catch (PingException ex)
                 {
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "InternetErisimiKontrolEt()", stackTrace: ex.StackTrace);
                     return false;
+                    throw;
                 }
             }
 
@@ -879,7 +956,8 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "AppDataCreate()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
 
@@ -931,7 +1009,8 @@ namespace Cari_kayıt_Programı
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "InitializeDatabase()", stackTrace: ex.StackTrace);
+                    throw;
                 }
             }
         }
@@ -939,16 +1018,32 @@ namespace Cari_kayıt_Programı
         private static Timer? timer;
         public static void StartTimer()
         {
-            // Timer'ı 1 saat (3600000 milisaniye) aralıklarla ayarlıyoruz
-            timer = new Timer(3600000);
-            timer.Elapsed += OnTimedEvent;
-            timer.AutoReset = true;
-            timer.Enabled = true;
+            try
+            {
+                // Timer'ı 1 saat (3600000 milisaniye) aralıklarla ayarlıyoruz
+                timer = new Timer(3600000);
+                timer.Elapsed += OnTimedEvent;
+                timer.AutoReset = true;
+                timer.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "StartTimer()", stackTrace: ex.StackTrace);
+                throw;
+            }
         }
 
         private static async void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
-            await GuncellemeKontrol();
+            try
+            {
+                await GuncellemeKontrol();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "OnTimedEvent()", stackTrace: ex.StackTrace);
+                throw;
+            }
         }
 
         public static async Task GuncellemeKontrol()
@@ -1000,7 +1095,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "GuncellemeKontrol()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
 
@@ -1021,7 +1117,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "OpenWindow()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1029,11 +1126,13 @@ namespace Cari_kayıt_Programı
         {
             try
             {
+                LogManager.LogInformation(message: "Stok penceresi açıldı.", className: "Anasayfa", methodName: "StokButton_Click()");
                 OpenWindow(new Stok(), "S");
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "StokButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1041,11 +1140,13 @@ namespace Cari_kayıt_Programı
         {
             try
             {
+                LogManager.LogInformation(message: "Cari hesap kayıtları penceresi açıldı.", className: "Anasayfa", methodName: "CariHesapKayitlariButton_Click()");
                 OpenWindow(new CariHesapKayitlari(), "S");
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "CariHesapKayitlariButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1053,12 +1154,14 @@ namespace Cari_kayıt_Programı
         {
             try
             {
+                LogManager.LogInformation(message: "Cari hareket kayıtları penceresi açıldı.", className: "Anasayfa", methodName: "CariHareketKayitlariButton_Click()");
                 Degiskenler.selectedBusiness = null;
                 OpenWindow(new CariHareketKayitlari(), "S");
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "CariHareketKayitlariButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1066,6 +1169,8 @@ namespace Cari_kayıt_Programı
         {
             try
             {
+                LogManager.LogInformation(message: "Uygulamanın güncelliği manuel olarak kontrol ediliyor.", className: "Anasayfa", methodName: "CariHareketKayitlariButton_Click()");
+
                 Degiskenler.guncellemeOnay = false;
                 _ = GuncellemeKontrol();
 
@@ -1085,7 +1190,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "UygulamayıGuncelle_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1106,10 +1212,12 @@ namespace Cari_kayıt_Programı
                     FileName = url,
                     UseShellExecute = true
                 });
+                LogManager.LogInformation(message: "Sürüm notları açıldı.", className: "Anasayfa", methodName: "SurumNotlariButton_Click()");
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "SurumNotlariButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1160,7 +1268,8 @@ namespace Cari_kayıt_Programı
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "BusinessesAtStartupCheck()", stackTrace: ex.StackTrace);
+                throw;
             }
         }
     }
