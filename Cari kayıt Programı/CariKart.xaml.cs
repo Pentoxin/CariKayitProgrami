@@ -33,7 +33,7 @@ namespace Cari_kayıt_Programı
                 CariHesapKayitlari cariHesapKayitlari = new CariHesapKayitlari();
                 dataGrid.ItemsSource = cariHesapKayitlari.GetBusinesses();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 LogManager.LogError(ex, className: "CariKart", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
                 throw;

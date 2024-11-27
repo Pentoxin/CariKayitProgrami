@@ -2,7 +2,6 @@
 using Serilog.Context;
 using Serilog.Formatting.Json;
 using System;
-using System.Diagnostics;
 
 namespace Cari_kayıt_Programı
 {

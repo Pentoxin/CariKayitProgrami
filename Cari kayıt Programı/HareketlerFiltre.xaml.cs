@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using static Cari_kayıt_Programı.CariHareketKayitlari;
-using static Cari_kayıt_Programı.CariHesapKayitlari;
 
 namespace Cari_kayıt_Programı
 {

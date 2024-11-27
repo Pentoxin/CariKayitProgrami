@@ -73,7 +73,6 @@ namespace Cari_kayıt_Programı
                 LogManager.LogError(ex, className: "Anasayfa", methodName: "CheckAtStartup()", stackTrace: ex.StackTrace);
                 throw;
             }
-
         }
 
         public void CheckAtImport()
@@ -1020,8 +1019,8 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                // Timer'ı 1 saat (3600000 milisaniye) aralıklarla ayarlıyoruz
-                timer = new Timer(3600000);
+                // Timer'ı 2 saat (7200000 milisaniye) aralıklarla ayarlıyoruz
+                timer = new Timer(7200000);
                 timer.Elapsed += OnTimedEvent;
                 timer.AutoReset = true;
                 timer.Enabled = true;
@@ -1122,54 +1121,11 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        private void StokButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                LogManager.LogInformation(message: "Stok penceresi açıldı.", className: "Anasayfa", methodName: "StokButton_Click()");
-                OpenWindow(new Stok(), "S");
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "Anasayfa", methodName: "StokButton_Click()", stackTrace: ex.StackTrace);
-                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void CariHesapKayitlariButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                LogManager.LogInformation(message: "Cari hesap kayıtları penceresi açıldı.", className: "Anasayfa", methodName: "CariHesapKayitlariButton_Click()");
-                OpenWindow(new CariHesapKayitlari(), "S");
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "Anasayfa", methodName: "CariHesapKayitlariButton_Click()", stackTrace: ex.StackTrace);
-                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void CariHareketKayitlariButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                LogManager.LogInformation(message: "Cari hareket kayıtları penceresi açıldı.", className: "Anasayfa", methodName: "CariHareketKayitlariButton_Click()");
-                Degiskenler.selectedBusiness = null;
-                OpenWindow(new CariHareketKayitlari(), "S");
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "Anasayfa", methodName: "CariHareketKayitlariButton_Click()", stackTrace: ex.StackTrace);
-                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private void UygulamayıGuncelle_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                LogManager.LogInformation(message: "Uygulamanın güncelliği manuel olarak kontrol ediliyor.", className: "Anasayfa", methodName: "CariHareketKayitlariButton_Click()");
+                LogManager.LogInformation(message: "Uygulamanın güncelliği manuel olarak kontrol ediliyor.", className: "Anasayfa", methodName: "UygulamayıGuncelle_Click()");
 
                 Degiskenler.guncellemeOnay = false;
                 _ = GuncellemeKontrol();
