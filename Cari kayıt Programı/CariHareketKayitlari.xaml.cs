@@ -619,10 +619,11 @@ namespace Cari_kayıt_Programı
                                         }
                                         else if (properties[col].Name.Equals("Dosya", StringComparison.OrdinalIgnoreCase) && value != null && value.ToString() != "")
                                         {
-                                            if (value.ToString() != null && value.ToString() != "")
+                                            string? dosyaYolu = Path.Combine(ConfigManager.IsletmePath, carikod, Path.GetFileName(value.ToString()));
+                                            if (!string.IsNullOrEmpty(dosyaYolu))
                                             {
                                                 var cell = worksheet.Cell(row, colIndex);
-                                                string? link = value.ToString();
+                                                string? link = dosyaYolu;
                                                 cell.Value = Path.GetFileName(link);
                                                 cell.SetHyperlink(new XLHyperlink(link));
                                             }
@@ -763,10 +764,17 @@ namespace Cari_kayıt_Programı
                 var selectedOdeme = dataGrid.SelectedItem as Odeme;
                 if (selectedOdeme != null && TarihDatePicker.SelectedDate.HasValue && VadeDatePicker.SelectedDate.HasValue)
                 {
+                    Business? selectedBusiness = Degiskenler.selectedBusiness;
+                    string? kod = "";
+                    if (selectedBusiness != null)
+                    {
+                        kod = selectedBusiness.CariKod;
+                    }
+
                     TarihDatePicker.SelectedDate = DateTime.Parse(selectedOdeme.Tarih);
                     EvrakNoTextbox.Text = selectedOdeme.EvrakNo;
                     AciklamaTextbox.Text = selectedOdeme.Aciklama;
-                    DosyaPath = selectedOdeme.Dosya;
+                    DosyaPath = Path.Combine(ConfigManager.IsletmePath, kod, Path.GetFileName(selectedOdeme.Dosya));
                     DosyaIslem = "View";
                     ChangeButtonContent();
 
@@ -817,15 +825,23 @@ namespace Cari_kayıt_Programı
                 {
                     var selectedOdeme = dataGrid.SelectedItem as Odeme;
 
-                    if (selectedOdeme != null && selectedOdeme.Dosya != null && selectedOdeme.Dosya != "")
+                    Business? selectedBusiness = Degiskenler.selectedBusiness;
+                    string? kod = "";
+                    if (selectedBusiness != null)
+                    {
+                        kod = selectedBusiness.CariKod;
+                    }
+                    string dosyaYolu = Path.Combine(ConfigManager.IsletmePath, kod, Path.GetFileName(selectedOdeme.Dosya));
+
+                    if (selectedOdeme != null && !string.IsNullOrEmpty(dosyaYolu))
                     {
                         MessageBoxResult result = MessageBox.Show("Dosyayı incelemek ister misiniz?", "Dosya İnceleme", MessageBoxButton.YesNo, MessageBoxImage.Asterisk);
                         if (result == MessageBoxResult.Yes)
                         {
-                            Process.Start(new ProcessStartInfo(selectedOdeme.Dosya) { UseShellExecute = true });
+                            Process.Start(new ProcessStartInfo(dosyaYolu) { UseShellExecute = true });
                         }
                     }
-                    else if (selectedOdeme.Dosya == null || selectedOdeme.Dosya == "")
+                    else if (string.IsNullOrEmpty(dosyaYolu))
                     {
                         MessageBox.Show("Ekli dosya yok", "Hata", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }

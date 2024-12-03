@@ -64,5 +64,14 @@ namespace Cari_kayıt_Programı
                 return Path.Combine(AppDataPath, executableFileName);
             }
         }
+        
+        public static string BackupPath
+        {
+            get
+            {
+                string backupPath = ConfigurationManager.AppSettings["BackupPath"];
+                return Path.Combine(AppDataPath, backupPath);
+            }
+        }
     }
 }

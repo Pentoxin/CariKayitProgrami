@@ -568,12 +568,82 @@ namespace Cari_kayıt_Programı
                 openFileDialog.Filter = "Zip Dosyalası (*.zip)|*.zip";
                 openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
-                if (openFileDialog.ShowDialog() == true && MessageBox.Show("Varolan veriler silinecek onaylıyor musunuz?", "Uyarı", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                if (openFileDialog.ShowDialog() == true)
                 {
-                    Anasayfa anasayfa = new Anasayfa();
+                    if (MessageBox.Show("Varolan veriler silinecek, yedeklemek ister misiniz?", "Uyarı", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                    {
+                        SaveFileDialog saveFileDialog = new SaveFileDialog();
+                        saveFileDialog.Filter = "Zip Dosyası (*.zip)|*.zip";
+                        saveFileDialog.FileName = "CariKayitDB Yedek.zip";
+                        saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
+                        if (saveFileDialog.ShowDialog() == true)
+                        {
+                            string destinationFilePath = saveFileDialog.FileName;
+
+                            if (File.Exists(destinationFilePath))
+                            {
+                                File.Delete(destinationFilePath);
+                            }
+
+                            if (Directory.Exists(ConfigManager.IsletmePath))
+                            {
+                                ZipFile.CreateFromDirectory(ConfigManager.IsletmePath, destinationFilePath, CompressionLevel.Optimal, true);
+                            }
+
+                            // CariKayitDB dosyasını ekleme
+                            if (File.Exists(ConfigManager.DatabaseFileName))
+                            {
+                                using (var zipArchive = ZipFile.Open(destinationFilePath, ZipArchiveMode.Update))
+                                {
+                                    zipArchive.CreateEntryFromFile(ConfigManager.DatabaseFileName, Path.GetFileName(ConfigManager.DatabaseFileName), CompressionLevel.Optimal);
+                                }
+                            }
+                            MessageBox.Show("Veritabanı başarıyla yedeklendi.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                    }
+                    else
+                    {
+                        // 1. Yedekleme işlemi
+                        if (!Directory.Exists(ConfigManager.BackupPath))
+                        {
+                            Directory.CreateDirectory(ConfigManager.BackupPath);
+                        }
+
+                        string backupName = $"Yedek_{DateTime.Now:yyyy-MM-dd_HHmm}.zip";
+                        string backupPath = Path.Combine(ConfigManager.BackupPath, backupName);
+
+                        if (Directory.Exists(ConfigManager.IsletmePath))
+                        {
+                            ZipFile.CreateFromDirectory(ConfigManager.IsletmePath, backupPath, CompressionLevel.Optimal, true);
+                        }
+
+                        // CariKayitDB dosyasını ekleme
+                        if (File.Exists(ConfigManager.DatabaseFileName))
+                        {
+                            using (var zipArchive = ZipFile.Open(backupPath, ZipArchiveMode.Update))
+                            {
+                                zipArchive.CreateEntryFromFile(ConfigManager.DatabaseFileName, Path.GetFileName(ConfigManager.DatabaseFileName), CompressionLevel.Optimal);
+                            }
+                        }
+
+                        // 2. Eski yedekleri temizleme (son 4 yedek tutulacak)
+                        var backupFiles = Directory.GetFiles(ConfigManager.BackupPath, "*.zip")
+                            .Select(f => new FileInfo(f))
+                            .OrderByDescending(f => f.CreationTime)
+                            .Skip(5)
+                            .ToList();
+
+                        foreach (var oldBackup in backupFiles)
+                        {
+                            oldBackup.Delete();
+                        }
+                    }
+
+                    Anasayfa anasayfa = new Anasayfa();
                     string selectedFilePath = openFileDialog.FileName;
 
+                    // 3. Eski verileri sil ve yeni veriyi içe aktar
                     if (Directory.Exists(ConfigManager.IsletmePath))
                     {
                         Directory.Delete(ConfigManager.IsletmePath, true);
@@ -584,6 +654,7 @@ namespace Cari_kayıt_Programı
                     anasayfa.CheckAtImport();
                     MessageBox.Show("Veritabanı başarıyla içe aktarıldı.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
 
+                    // 4. DataGrid'i güncelle
                     dataGrid.ItemsSource = GetBusinesses();
                 }
             }
@@ -610,6 +681,7 @@ namespace Cari_kayıt_Programı
                     {
                         File.Delete(destinationFilePath);
                     }
+
                     if (Directory.Exists(ConfigManager.IsletmePath))
                     {
                         ZipFile.CreateFromDirectory(ConfigManager.IsletmePath, destinationFilePath, CompressionLevel.Optimal, true);
