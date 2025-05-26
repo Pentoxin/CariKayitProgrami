@@ -16,26 +16,6 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        // İşletme dosyasının tam yolu
-        public static string IsletmePath
-        {
-            get
-            {
-                string isletmePath = ConfigurationManager.AppSettings["IsletmePath"];
-                return Path.Combine(AppDataPath, isletmePath);
-            }
-        }
-
-        // Veritabanı dosyasının tam yolu
-        public static string DatabaseFileName
-        {
-            get
-            {
-                string databaseFileName = ConfigurationManager.AppSettings["DatabaseFileName"];
-                return Path.Combine(AppDataPath, databaseFileName);
-            }
-        }
-
         // Log dosyasının tam yolu
         public static string LogFilePath
         {
@@ -47,30 +27,19 @@ namespace Cari_kayıt_Programı
         }
 
         // Connection String tam yolu
-        public static string ConnectionString
+        public static string ServerConnection
         {
             get
             {
-                return $"Data Source={DatabaseFileName};Version=3;";
-            }
-        }
-
-        // ExecutableFileName tam yolu
-        public static string ExecutableFileName
-        {
-            get
-            {
-                string executableFileName = ConfigurationManager.AppSettings["ExecutableFileName"];
-                return Path.Combine(AppDataPath, executableFileName);
+                return "server=localhost;user=root;password=11521152;";
             }
         }
         
-        public static string BackupPath
+        public static string DbConnection
         {
             get
             {
-                string backupPath = ConfigurationManager.AppSettings["BackupPath"];
-                return Path.Combine(AppDataPath, backupPath);
+                return "server=localhost;user=root;password=11521152;database=CariTakipDB;";
             }
         }
     }
