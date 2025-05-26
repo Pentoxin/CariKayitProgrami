@@ -1,24 +1,23 @@
-﻿using ClosedXML.Excel;
+﻿using Cari_kayıt_Programı.Models;
+using ClosedXML.Excel;
 using Microsoft.Win32;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data.SQLite;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace Cari_kayıt_Programı
 {
     public partial class CariHesapKayitlari : Window
     {
         public MainViewModel ViewModel { get; set; }
+        private static Cariler? SelectedCariler { get; set; }
 
         public CariHesapKayitlari()
         {
@@ -34,13 +33,6 @@ namespace Cari_kayıt_Programı
                 LogManager.LogError(ex, className: "CariHesapKayitlari", methodName: "Main()", stackTrace: ex.StackTrace);
                 MessageBox.Show("Beklenmeyen bir hata oluştu. Lütfen destek ekibiyle iletişime geçin.", "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        public static class Degiskenler
-        {
-            public static bool guncellemeOnay { get; set; } = false;
-            public static bool guncel { get; set; }
-            public static Business? selectedBusiness { get; set; }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -60,149 +52,97 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                if (CariIsimTextBox.Text == "" || CariKodTextBox.Text == "")
+                if (string.IsNullOrWhiteSpace(UnvanTextBox.Text) || string.IsNullOrWhiteSpace(CariKodTextBox.Text))
                 {
                     MessageBox.Show("Lütfen zorunlu yerleri doldurunuz.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
-                else
+
+                using (MySqlConnection connection = DatabaseManager.GetConnection())
                 {
-                    using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
+                    connection.Open();
+
+                    List<Cariler> businessesList = new List<Cariler>();
+                    string query = "SELECT * FROM Cariler";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        connection.Open();
-
-                        List<Business> businessesList = new List<Business>();
-
-                        string query = "SELECT * FROM CariKayit";
-
-                        using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            using (SQLiteDataReader reader = command.ExecuteReader())
+                            while (reader.Read())
                             {
-                                while (reader.Read())
+                                businessesList.Add(new Cariler
                                 {
-                                    Business b = new Business
-                                    {
-                                        CariIsim = reader.GetString(2),
-                                    };
-                                    businessesList.Add(b);
-                                }
+                                    Unvan = reader.GetString("Unvan")
+                                });
                             }
                         }
+                    }
 
-                        foreach (var item in businessesList)
+                    foreach (var business in businessesList)
+                    {
+                        string unvanLower = business.Unvan?.ToLower(new CultureInfo("tr-TR")) ?? "";
+                        string inputUnvanLower = UnvanTextBox.Text.ToLower(new CultureInfo("tr-TR"));
+
+                        if (unvanLower == inputUnvanLower)
                         {
-                            if (item is Business business)
-                            {
-                                string? cariisim = business.CariIsim;
+                            MessageBox.Show("Bu cari isim daha önce kaydedilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                    }
 
-                                string CariIsimLower = cariisim.ToLower(new CultureInfo("tr-TR"));
-                                string normalizedCariIsım = CariIsimTextBox.Text.ToLower(new CultureInfo("tr-TR"));
-                                if (CariIsimLower == normalizedCariIsım)
-                                {
-                                    MessageBox.Show("Bu cari isim daha önce kaydedilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
-                                    return;
-                                }
-                            }
+                    if (MessageBox.Show("Seçilen veriyi kaydetmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
+                    {
+                        string tip = AliciRadioButton.IsChecked == true ? "A" :
+                                     SaticiRadioButton.IsChecked == true ? "S" :
+                                     ToptanciRadioButton.IsChecked == true ? "T" :
+                                     KefilRadioButton.IsChecked == true ? "K" :
+                                     MuhtahsilRadioButton.IsChecked == true ? "M" : "D";
+
+                        string insertSql = "INSERT INTO Cariler (Carikod, Unvan, Adres, Il, Ilce, Telefon1, Telefon2, PostaKodu, UlkeKodu, VergiDairesi, VergiNo, TcNo, Tip, Email, Banka, HesapNo) " +
+                                           "VALUES (@Carikod, @Unvan, @Adres, @Il, @Ilce, @Telefon1, @Telefon2, @PostaKodu, @UlkeKodu, @VergiDairesi, @VergiNo, @TcNo, @Tip, @Email, @Banka, @HesapNo)";
+
+                        using (MySqlCommand insertCommand = new MySqlCommand(insertSql, connection))
+                        {
+                            insertCommand.Parameters.AddWithValue("@CariKod", CariKodTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@Unvan", UnvanTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@Adres", AdresTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@Il", ilTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@Ilce", ilceTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@Telefon1", Telefon1TextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@Telefon2", Telefon2TextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@PostaKodu", PostaKoduTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@UlkeKodu", UlkeKoduTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@VergiDairesi", VergiDairesiTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@VergiNo", VergiNoTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@TcNo", TcKimlikNoTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@Tip", tip);
+                            insertCommand.Parameters.AddWithValue("@Email", EMailTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@Banka", BankaTextBox.Text);
+                            insertCommand.Parameters.AddWithValue("@HesapNo", HesapNoTextBox.Text);
+                            insertCommand.ExecuteNonQuery();
+                            MessageBox.Show("Cari bilgiler veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
 
-                        if (MessageBox.Show("Seçilen veriyi kaydetmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
-                        {
-                            string tip = "";
-
-                            if (AliciRadioButton.IsChecked == true)
-                            {
-                                tip = "A";
-                            }
-                            else if (SaticiRadioButton.IsChecked == true)
-                            {
-                                tip = "S";
-                            }
-                            else if (ToptanciRadioButton.IsChecked == true)
-                            {
-                                tip = "T";
-                            }
-                            else if (KefilRadioButton.IsChecked == true)
-                            {
-                                tip = "K";
-                            }
-                            else if (MuhtahsilRadioButton.IsChecked == true)
-                            {
-                                tip = "M";
-                            }
-                            else
-                            {
-                                tip = "D";
-                            }
-
-                            string insertSql = "INSERT INTO CariKayit (carikod, cariisim, adres, il, ilce, telefon1, telefon2, postakodu, ulkekodu, vergidairesi, vergino, tcno, tip, mail, banka, hesapno) VALUES (@carikod, @cariisim, @adres, @il, @ilce, @telefon1, @telefon2, @postakodu, @ulkekodu, @vergidairesi, @vergino, @tcno , @tip, @mail, @banka, @hesapno)";
-                            using (SQLiteCommand insertCommand = new SQLiteCommand(insertSql, connection))
-                            {
-                                insertCommand.Parameters.AddWithValue("@carikod", CariKodTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@cariisim", CariIsimTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@adres", AdresTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@il", ilTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@ilce", ilceTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@telefon1", Telefon1TextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@telefon2", Telefon2TextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@postakodu", PostaKoduTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@ulkekodu", UlkeKoduTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@vergidairesi", VergiDairesiTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@vergino", VergiNoTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@tcno", TcKimlikNoTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@tip", tip);
-                                insertCommand.Parameters.AddWithValue("@mail", MailTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@banka", BankaTextBox.Text);
-                                insertCommand.Parameters.AddWithValue("@hesapno", HesapNoTextBox.Text);
-                                insertCommand.ExecuteNonQuery();
-
-                                string kod = CariKodTextBox.Text;
-
-                                string tableName = $"Cari_{kod}";
-
-                                // Tablo adını çift tırnak içine alarak SQL için güvenli hale getirme
-                                string escapedTableName = $"\"{tableName}\"";
-
-                                // Yeni tabloyu oluştur
-                                string createTableSql = $"CREATE TABLE {escapedTableName} (" +
-                                                        "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                                                        "tarih TEXT, " +
-                                                        "tip TEXT, " +
-                                                        "durum TEXT, " +
-                                                        "evrakno TEXT, " +
-                                                        "aciklama TEXT, " +
-                                                        "vadetarihi TEXT, " +
-                                                        "borc INTEGER, " +
-                                                        "alacak INTEGER," +
-                                                        "dosya TEXT)";
-                                using (SQLiteCommand createTableCommand = new SQLiteCommand(createTableSql, connection))
-                                {
-                                    createTableCommand.ExecuteNonQuery();
-                                }
-                                Directory.CreateDirectory(Path.Combine(ConfigManager.IsletmePath, kod));
-
-                                MessageBox.Show("Cari bilgiler veritabanına kaydedildi.", "Kaydedildi", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-
-                            CariKodTextBox.Clear();
-                            CariIsimTextBox.Clear();
-                            AdresTextBox.Clear();
-                            ilTextBox.Clear();
-                            ilceTextBox.Clear();
-                            Telefon1TextBox.Clear();
-                            Telefon2TextBox.Clear();
-                            PostaKoduTextBox.Clear();
-                            UlkeKoduTextBox.Clear();
-                            VergiDairesiTextBox.Clear();
-                            VergiNoTextBox.Clear();
-                            TcKimlikNoTextBox.Clear();
-                            AliciRadioButton.IsChecked = true;
-                            MailTextBox.Clear();
-                            BankaTextBox.Clear();
-                            HesapNoTextBox.Clear();
-                            dataGrid.ItemsSource = GetBusinesses();
-
-                            Keyboard.ClearFocus();
-                        }
+                        // Form temizleme
+                        CariKodTextBox.Clear();
+                        UnvanTextBox.Clear();
+                        AdresTextBox.Clear();
+                        ilTextBox.Clear();
+                        ilceTextBox.Clear();
+                        Telefon1TextBox.Clear();
+                        Telefon2TextBox.Clear();
+                        PostaKoduTextBox.Clear();
+                        UlkeKoduTextBox.Clear();
+                        VergiDairesiTextBox.Clear();
+                        VergiNoTextBox.Clear();
+                        TcKimlikNoTextBox.Clear();
+                        AliciRadioButton.IsChecked = true;
+                        EMailTextBox.Clear();
+                        BankaTextBox.Clear();
+                        HesapNoTextBox.Clear();
+                        dataGrid.ItemsSource = GetBusinesses();
+                        Keyboard.ClearFocus();
                     }
                 }
             }
@@ -217,58 +157,45 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                Business selectedBusinessItem = (Business)dataGrid.SelectedItem;
+                Cariler selectedBusinessItem = (Cariler)dataGrid.SelectedItem;
 
                 if (selectedBusinessItem == null)
                 {
                     MessageBox.Show("Önce silmek istediğiniz veriyi seçiniz", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                else
+
+                if (MessageBox.Show("Seçilen veriyi silmek istediğinize emin misiniz?", "Uyarı", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
-                    if (MessageBox.Show("Seçilen veriyi silmek istediğinize emin misiniz?", "Uyarı", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                    using (MySqlConnection connection = DatabaseManager.GetConnection())
                     {
-                        using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
+                        connection.Open();
+
+                        // Kayıt silme sorgusu (CariKod üzerinden)
+                        string deleteQuery = "DELETE FROM Cariler WHERE CariKod = @CariKod";
+
+                        using (MySqlCommand command = new MySqlCommand(deleteQuery, connection))
                         {
-                            connection.Open();
-                            string query = "DELETE FROM CariKayit WHERE ID=@Id";
-
-                            using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                            {
-                                command.Parameters.AddWithValue("@Id", selectedBusinessItem.ID);
-                                command.ExecuteNonQuery();
-                            }
-
-                            string tableName = $"Cari_{selectedBusinessItem.CariKod}";
-                            string escapedTableName = $"\"{tableName}\"";
-
-                            // Önce Odeme tablosunu silme işlemi
-                            string queryOdeme = $"DROP TABLE IF EXISTS {escapedTableName}";
-                            using (SQLiteCommand commandOdeme = new SQLiteCommand(queryOdeme, connection))
-                            {
-                                commandOdeme.ExecuteNonQuery();
-                            }
-                        }
-                        dataGrid.ItemsSource = GetBusinesses();
-
-                        if (Directory.Exists(Path.Combine(ConfigManager.IsletmePath, selectedBusinessItem.CariKod)))
-                        {
-                            Directory.Delete(Path.Combine(ConfigManager.IsletmePath, selectedBusinessItem.CariKod));
+                            command.Parameters.AddWithValue("@CariKod", selectedBusinessItem.CariKod);
+                            command.ExecuteNonQuery();
                         }
                     }
-                }
-                CariIsimTextBox.Clear();
-                VergiDairesiTextBox.Clear();
-                VergiNoTextBox.Clear();
-                BankaTextBox.Clear();
-                HesapNoTextBox.Clear();
-                AdresTextBox.Clear();
-                MailTextBox.Clear();
-                Telefon1TextBox.Clear();
-                Telefon2TextBox.Clear();
-                dataGrid.SelectedItem = null;
 
-                Keyboard.ClearFocus();
+                    // Arayüz temizleme
+                    dataGrid.ItemsSource = GetBusinesses();
+                    UnvanTextBox.Clear();
+                    VergiDairesiTextBox.Clear();
+                    VergiNoTextBox.Clear();
+                    BankaTextBox.Clear();
+                    HesapNoTextBox.Clear();
+                    AdresTextBox.Clear();
+                    EMailTextBox.Clear();
+                    Telefon1TextBox.Clear();
+                    Telefon2TextBox.Clear();
+                    dataGrid.SelectedItem = null;
+
+                    Keyboard.ClearFocus();
+                }
             }
             catch (Exception ex)
             {
@@ -281,45 +208,44 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                if (Degiskenler.selectedBusiness == null)
+                if (SelectedCariler == null)
                 {
                     MessageBox.Show("Önce değiştirmek istediğiniz veriyi seçiniz", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
+                using (MySqlConnection connection = DatabaseManager.GetConnection())
                 {
                     connection.Open();
 
-                    List<Business> businessesList = new List<Business>();
+                    List<Cariler> businessesList = new List<Cariler>();
 
-                    string query = "SELECT * FROM CariKayit";
+                    string query = "SELECT CariKod, Unvan FROM Cariler";
 
-                    using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        using (SQLiteDataReader reader = command.ExecuteReader())
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                Business b = new Business
+                                Cariler b = new Cariler
                                 {
-                                    ID = reader.GetInt32(0),
-                                    CariIsim = reader.GetString(2),
+                                    CariKod = reader.GetString("CariKod"),
+                                    Unvan = reader.GetString("Unvan")
                                 };
                                 businessesList.Add(b);
                             }
                         }
                     }
 
-                    foreach (var item in businessesList)
+                    foreach (var business in businessesList)
                     {
-                        if (item is Business business && Degiskenler.selectedBusiness.ID != business.ID)
+                        if (SelectedCariler.CariKod != business.CariKod)
                         {
-                            string? cariisim = business.CariIsim;
+                            string UnvanLower = business.Unvan.ToLower(new CultureInfo("tr-TR"));
+                            string inputUnvan = UnvanTextBox.Text.ToLower(new CultureInfo("tr-TR"));
 
-                            string CariIsimLower = cariisim.ToLower(new CultureInfo("tr-TR"));
-                            string normalizedCariIsım = CariIsimTextBox.Text.ToLower(new CultureInfo("tr-TR"));
-                            if (CariIsimLower == normalizedCariIsım)
+                            if (UnvanLower == inputUnvan)
                             {
                                 MessageBox.Show("Bu cari isim daha önce kaydedilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
                                 return;
@@ -329,53 +255,50 @@ namespace Cari_kayıt_Programı
 
                     if (MessageBox.Show("Seçili veriyi değiştirmek istediğinize emin misiniz?", "Veri Güncelleme", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        string tip = "";
+                        string tip = "D";
+                        if (AliciRadioButton.IsChecked == true) tip = "A";
+                        else if (SaticiRadioButton.IsChecked == true) tip = "S";
+                        else if (ToptanciRadioButton.IsChecked == true) tip = "T";
+                        else if (KefilRadioButton.IsChecked == true) tip = "K";
+                        else if (MuhtahsilRadioButton.IsChecked == true) tip = "M";
 
-                        if (AliciRadioButton.IsChecked == true)
-                        {
-                            tip = "A";
-                        }
-                        else if (SaticiRadioButton.IsChecked == true)
-                        {
-                            tip = "S";
-                        }
-                        else if (ToptanciRadioButton.IsChecked == true)
-                        {
-                            tip = "T";
-                        }
-                        else if (KefilRadioButton.IsChecked == true)
-                        {
-                            tip = "K";
-                        }
-                        else if (MuhtahsilRadioButton.IsChecked == true)
-                        {
-                            tip = "M";
-                        }
-                        else
-                        {
-                            tip = "D";
-                        }
+                        string updateSql = @"
+                        UPDATE Cariler SET 
+                            Unvan=@Unvan, 
+                            Adres=@Adres, 
+                            Il=@Il, 
+                            Ilce=@Ilce, 
+                            Telefon1=@Telefon1, 
+                            Telefon2=@Telefon2, 
+                            PostaKodu=@PostaKodu, 
+                            UlkeKodu=@UlkeKodu, 
+                            VergiDairesi=@VergiDairesi, 
+                            VergiNo=@VergiNo, 
+                            TcNo=@TcNo, 
+                            Tip=@Tip, 
+                            Email=@Email, 
+                            Banka=@Banka, 
+                            HesapNo=@HesapNo 
+                        WHERE CariKod=@CariKod";
 
-                        string updateSql = "UPDATE CariKayit SET cariisim=@cariisim, adres=@adres, il=@il, ilce=@ilce, telefon1=@telefon1, telefon2=@telefon2, postakodu=@postakodu, ulkekodu=@ulkekodu, vergidairesi=@vergidairesi, vergino=@vergino, tcno=@tcno, tip=@tip, mail=@mail, banka=@banka, hesapno=@hesapno  WHERE ID=@ID";
-
-                        using (SQLiteCommand updateCommand = new SQLiteCommand(updateSql, connection))
+                        using (MySqlCommand updateCommand = new MySqlCommand(updateSql, connection))
                         {
-                            updateCommand.Parameters.AddWithValue("@ID", Degiskenler.selectedBusiness.ID);
-                            updateCommand.Parameters.AddWithValue("@cariisim", CariIsimTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@adres", AdresTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@il", ilTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@ilce", ilceTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@telefon1", Telefon1TextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@telefon2", Telefon2TextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@postakodu", PostaKoduTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@ulkekodu", UlkeKoduTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@vergidairesi", VergiDairesiTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@vergino", VergiNoTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@tcno", TcKimlikNoTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@tip", tip);
-                            updateCommand.Parameters.AddWithValue("@mail", MailTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@banka", BankaTextBox.Text);
-                            updateCommand.Parameters.AddWithValue("@hesapno", HesapNoTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@CariKod", SelectedCariler.CariKod);
+                            updateCommand.Parameters.AddWithValue("@Unvan", UnvanTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@Adres", AdresTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@Il", ilTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@Ilce", ilceTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@Telefon1", Telefon1TextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@Telefon2", Telefon2TextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@PostaKodu", PostaKoduTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@UlkeKodu", UlkeKoduTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@VergiDairesi", VergiDairesiTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@VergiNo", VergiNoTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@TcNo", TcKimlikNoTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@Tip", tip);
+                            updateCommand.Parameters.AddWithValue("@Email", EMailTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@Banka", BankaTextBox.Text);
+                            updateCommand.Parameters.AddWithValue("@HesapNo", HesapNoTextBox.Text);
 
                             int rowsAffected = updateCommand.ExecuteNonQuery();
 
@@ -389,8 +312,9 @@ namespace Cari_kayıt_Programı
                             }
                         }
 
+                        // Temizlik ve yenileme
                         CariKodTextBox.Clear();
-                        CariIsimTextBox.Clear();
+                        UnvanTextBox.Clear();
                         AdresTextBox.Clear();
                         ilTextBox.Clear();
                         ilceTextBox.Clear();
@@ -402,7 +326,7 @@ namespace Cari_kayıt_Programı
                         VergiNoTextBox.Clear();
                         TcKimlikNoTextBox.Clear();
                         AliciRadioButton.IsChecked = true;
-                        MailTextBox.Clear();
+                        EMailTextBox.Clear();
                         BankaTextBox.Clear();
                         HesapNoTextBox.Clear();
                         dataGrid.ItemsSource = GetBusinesses();
@@ -433,7 +357,7 @@ namespace Cari_kayıt_Programı
                     string path = saveFileDialog.FileName;
 
                     // DataGrid'deki verileri alın
-                    var businesses = dataGrid.ItemsSource as IEnumerable<Business>;
+                    var businesses = dataGrid.ItemsSource as IEnumerable<Cariler>;
 
                     // Yeni bir Excel iş kitabı oluşturun
                     using (var workbook = new XLWorkbook())
@@ -441,7 +365,7 @@ namespace Cari_kayıt_Programı
                         var worksheet = workbook.Worksheets.Add("Cari Hesap Kayıtları");
 
                         // Başlık satırını ekle
-                        var properties = typeof(Business).GetProperties();
+                        var properties = typeof(Cariler).GetProperties();
                         int colIndex = 1;
                         for (int col = 0; col < properties.Length; col++)
                         {
@@ -495,11 +419,11 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                var selectedBusiness = dataGrid.SelectedItem as Business;
+                var selectedBusiness = dataGrid.SelectedItem as Cariler;
                 if (selectedBusiness != null)
                 {
                     CariKodTextBox.Text = selectedBusiness.CariKod;
-                    CariIsimTextBox.Text = selectedBusiness.CariIsim;
+                    UnvanTextBox.Text = selectedBusiness.Unvan;
                     AdresTextBox.Text = selectedBusiness.Adres;
                     ilTextBox.Text = selectedBusiness.Il;
                     ilceTextBox.Text = selectedBusiness.Ilce;
@@ -535,7 +459,7 @@ namespace Cari_kayıt_Programı
                     {
                         DigerRadioButton.IsChecked = true;
                     }
-                    MailTextBox.Text = selectedBusiness.EPosta;
+                    EMailTextBox.Text = selectedBusiness.Email;
                     BankaTextBox.Text = selectedBusiness.Banka;
                     HesapNoTextBox.Text = selectedBusiness.HesapNo;
                 }
@@ -560,152 +484,6 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        private void IceriAktarButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.Filter = "Zip Dosyalası (*.zip)|*.zip";
-                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-                if (openFileDialog.ShowDialog() == true)
-                {
-                    if (MessageBox.Show("Varolan veriler silinecek, yedeklemek ister misiniz?", "Uyarı", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                    {
-                        SaveFileDialog saveFileDialog = new SaveFileDialog();
-                        saveFileDialog.Filter = "Zip Dosyası (*.zip)|*.zip";
-                        saveFileDialog.FileName = "CariKayitDB Yedek.zip";
-                        saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-                        if (saveFileDialog.ShowDialog() == true)
-                        {
-                            string destinationFilePath = saveFileDialog.FileName;
-
-                            if (File.Exists(destinationFilePath))
-                            {
-                                File.Delete(destinationFilePath);
-                            }
-
-                            if (Directory.Exists(ConfigManager.IsletmePath))
-                            {
-                                ZipFile.CreateFromDirectory(ConfigManager.IsletmePath, destinationFilePath, CompressionLevel.Optimal, true);
-                            }
-
-                            // CariKayitDB dosyasını ekleme
-                            if (File.Exists(ConfigManager.DatabaseFileName))
-                            {
-                                using (var zipArchive = ZipFile.Open(destinationFilePath, ZipArchiveMode.Update))
-                                {
-                                    zipArchive.CreateEntryFromFile(ConfigManager.DatabaseFileName, Path.GetFileName(ConfigManager.DatabaseFileName), CompressionLevel.Optimal);
-                                }
-                            }
-                            MessageBox.Show("Veritabanı başarıyla yedeklendi.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
-                    }
-                    else
-                    {
-                        // 1. Yedekleme işlemi
-                        if (!Directory.Exists(ConfigManager.BackupPath))
-                        {
-                            Directory.CreateDirectory(ConfigManager.BackupPath);
-                        }
-
-                        string backupName = $"Yedek_{DateTime.Now:yyyy-MM-dd_HHmm}.zip";
-                        string backupPath = Path.Combine(ConfigManager.BackupPath, backupName);
-
-                        if (Directory.Exists(ConfigManager.IsletmePath))
-                        {
-                            ZipFile.CreateFromDirectory(ConfigManager.IsletmePath, backupPath, CompressionLevel.Optimal, true);
-                        }
-
-                        // CariKayitDB dosyasını ekleme
-                        if (File.Exists(ConfigManager.DatabaseFileName))
-                        {
-                            using (var zipArchive = ZipFile.Open(backupPath, ZipArchiveMode.Update))
-                            {
-                                zipArchive.CreateEntryFromFile(ConfigManager.DatabaseFileName, Path.GetFileName(ConfigManager.DatabaseFileName), CompressionLevel.Optimal);
-                            }
-                        }
-
-                        // 2. Eski yedekleri temizleme (son 4 yedek tutulacak)
-                        var backupFiles = Directory.GetFiles(ConfigManager.BackupPath, "*.zip")
-                            .Select(f => new FileInfo(f))
-                            .OrderByDescending(f => f.CreationTime)
-                            .Skip(5)
-                            .ToList();
-
-                        foreach (var oldBackup in backupFiles)
-                        {
-                            oldBackup.Delete();
-                        }
-                    }
-
-                    Anasayfa anasayfa = new Anasayfa();
-                    string selectedFilePath = openFileDialog.FileName;
-
-                    // 3. Eski verileri sil ve yeni veriyi içe aktar
-                    if (Directory.Exists(ConfigManager.IsletmePath))
-                    {
-                        Directory.Delete(ConfigManager.IsletmePath, true);
-                    }
-
-                    ZipFile.ExtractToDirectory(selectedFilePath, ConfigManager.AppDataPath, true);
-
-                    anasayfa.CheckAtImport();
-                    MessageBox.Show("Veritabanı başarıyla içe aktarıldı.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    // 4. DataGrid'i güncelle
-                    dataGrid.ItemsSource = GetBusinesses();
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "CariHesapKayitlari", methodName: "IceriAktarButton_Click()", stackTrace: ex.StackTrace);
-                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void DisariAktarButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = "Zip Dosyası (*.zip)|*.zip";
-                saveFileDialog.FileName = "CariKayitDB Yedek.zip";
-                saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                if (saveFileDialog.ShowDialog() == true)
-                {
-                    string destinationFilePath = saveFileDialog.FileName;
-
-                    if (File.Exists(destinationFilePath))
-                    {
-                        File.Delete(destinationFilePath);
-                    }
-
-                    if (Directory.Exists(ConfigManager.IsletmePath))
-                    {
-                        ZipFile.CreateFromDirectory(ConfigManager.IsletmePath, destinationFilePath, CompressionLevel.Optimal, true);
-                    }
-
-                    // CariKayitDB dosyasını ekleme
-                    if (File.Exists(ConfigManager.DatabaseFileName))
-                    {
-                        using (var zipArchive = ZipFile.Open(destinationFilePath, ZipArchiveMode.Update))
-                        {
-                            zipArchive.CreateEntryFromFile(ConfigManager.DatabaseFileName, Path.GetFileName(ConfigManager.DatabaseFileName), CompressionLevel.Optimal);
-                        }
-                    }
-
-                    MessageBox.Show("Veritabanı başarıyla dışa aktarıldı.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "CariHesapKayitlari", methodName: "DisariAktarButton_Click()", stackTrace: ex.StackTrace);
-                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private void CariKodTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
@@ -714,17 +492,17 @@ namespace Cari_kayıt_Programı
 
                 bool var = false;
 
-                foreach (var item in viewModel.Businesses)
+                foreach (var item in viewModel.Cariler)
                 {
-                    if (item is Business business)
+                    if (item is Cariler business)
                     {
                         string? carikod = business.CariKod;
 
                         if (CariKodTextBox.Text == carikod)
                         {
-                            Degiskenler.selectedBusiness = business;
+                            SelectedCariler = business;
 
-                            CariIsimTextBox.Text = business.CariIsim;
+                            UnvanTextBox.Text = business.Unvan;
                             AdresTextBox.Text = business.Adres;
                             ilTextBox.Text = business.Il;
                             ilceTextBox.Text = business.Ilce;
@@ -760,7 +538,7 @@ namespace Cari_kayıt_Programı
                             {
                                 DigerRadioButton.IsChecked = true;
                             }
-                            MailTextBox.Text = business.EPosta;
+                            EMailTextBox.Text = business.Email;
                             BankaTextBox.Text = business.Banka;
                             HesapNoTextBox.Text = business.HesapNo;
                             dataGrid.SelectedItem = business;
@@ -770,7 +548,7 @@ namespace Cari_kayıt_Programı
                         }
                         else
                         {
-                            CariIsimTextBox.Clear();
+                            UnvanTextBox.Clear();
                             AdresTextBox.Clear();
                             ilTextBox.Clear();
                             ilceTextBox.Clear();
@@ -782,7 +560,7 @@ namespace Cari_kayıt_Programı
                             VergiNoTextBox.Clear();
                             TcKimlikNoTextBox.Clear();
                             AliciRadioButton.IsChecked = true;
-                            MailTextBox.Clear();
+                            EMailTextBox.Clear();
                             BankaTextBox.Clear();
                             HesapNoTextBox.Clear();
                             dataGrid.SelectedItem = null;
@@ -812,43 +590,33 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
+                MainViewModel viewModel = (MainViewModel)this.DataContext;
+                string userInput = CariKodTextBox.Text;
+
+                if (string.IsNullOrWhiteSpace(userInput))
                 {
-                    connection.Open();
-
-                    string userInput = CariKodTextBox.Text;
-
-                    if (string.IsNullOrWhiteSpace(userInput))
-                    {
-                        MessageBox.Show("Lütfen bir CariKod yazınız.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-
-                    // Kullanıcının yazdığı değere göre sorgu oluştur
-                    string query = "SELECT MAX(CariKod) FROM CariKayit WHERE CariKod LIKE @UserInput";
-                    using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                    {
-                        // Kullanıcının yazdığı değere '%' ekleyerek başlangıcına uygun değerleri getir
-                        command.Parameters.AddWithValue("@UserInput", userInput + "%");
-                        var result = command.ExecuteScalar();
-
-                        if (result != null && result != DBNull.Value)
-                        {
-                            string maxCariKod = result.ToString();
-
-                            // Bir sonraki CariKod'u belirle
-                            string newCariKod = GetNextCariKod(maxCariKod);
-
-                            // TextBox'a yeni CariKod'u yaz
-                            CariKodTextBox.Text = newCariKod;
-                        }
-                        else
-                        {
-                            // Eğer uygun bir sonuç yoksa kullanıcı girdisine ilk numarayı ekle
-                            CariKodTextBox.Text = userInput + "001";
-                        }
-                    }
+                    MessageBox.Show("Lütfen bir CariKod yazınız.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
+
+                // MVVM'deki Cariler listesini kullan
+                var maxCari = viewModel.Cariler
+                    .Where(c => c.CariKod != null && c.CariKod.StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(c => c.CariKod)
+                    .FirstOrDefault();
+
+                string newCariKod;
+
+                if (maxCari != null)
+                {
+                    newCariKod = GetNextCariKod(maxCari.CariKod);
+                }
+                else
+                {
+                    newCariKod = userInput + "001";
+                }
+
+                CariKodTextBox.Text = newCariKod;
             }
             catch (Exception ex)
             {
@@ -857,11 +625,12 @@ namespace Cari_kayıt_Programı
             }
         }
 
+
         private string GetNextCariKod(string currentCariKod)
         {
             try
             {
-                if (string.IsNullOrEmpty(currentCariKod))
+                if (string.IsNullOrWhiteSpace(currentCariKod))
                     return "D001";
 
                 // Eğer cari kod 'D001' formatındaysa
@@ -910,186 +679,55 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        public ObservableCollection<Business> Businesses(string searchTerm)
+        public ObservableCollection<Cariler> GetBusinesses()
         {
             try
             {
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
-                viewModel.Businesses.Clear();
+                viewModel.Cariler.Clear();
 
-                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
+                using (MySqlConnection connection = DatabaseManager.GetConnection())
                 {
                     connection.Open();
 
-                    string query = "SELECT * FROM CariKayit WHERE ID LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(carikod) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(cariisim) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(adres) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(il) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(ilce) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(vergidairesi) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(vergino) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(banka) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(hesapno) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(adres) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(mail) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(tcno) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(telefon1) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(telefon2) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(postakodu) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(ulkekodu) LIKE '%' || LOWER(@searchTerm) || '%' OR LOWER(tip) LIKE '%' || LOWER(@searchTerm) || '%' ";
+                    string query = "SELECT * FROM Cariler";
 
-                    using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@searchTerm", searchTerm);
-
-                        using (SQLiteDataReader reader = command.ExecuteReader())
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                Business b = new Business
+                                Cariler b = new Cariler
                                 {
-                                    ID = reader.GetInt32(0),
-                                    CariKod = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                    CariIsim = reader.GetString(2),
-                                    Adres = reader.GetString(3),
-                                    Il = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                    Ilce = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                    Telefon1 = reader.GetString(6),
-                                    Telefon2 = reader.GetString(7),
-                                    PostaKodu = reader.IsDBNull(8) ? null : reader.GetString(8),
-                                    UlkeKodu = reader.IsDBNull(9) ? null : reader.GetString(9),
-                                    VergiDairesi = reader.GetString(10),
-                                    VergiNo = reader.GetString(11),
-                                    TcNo = reader.IsDBNull(12) ? null : reader.GetString(12),
-                                    Tip = reader.IsDBNull(13) ? null : reader.GetString(13),
-                                    EPosta = reader.GetString(14),
-                                    Banka = reader.GetString(15),
-                                    HesapNo = reader.GetString(16),
+                                    CariKod = reader.GetString("CariKod"),
+                                    Unvan = reader.GetString("Unvan"),
+                                    Adres = reader.IsDBNull(reader.GetOrdinal("Adres")) ? null : reader.GetString("Adres"),
+                                    Il = reader.IsDBNull(reader.GetOrdinal("Il")) ? null : reader.GetString("Il"),
+                                    Ilce = reader.IsDBNull(reader.GetOrdinal("Ilce")) ? null : reader.GetString("Ilce"),
+                                    Telefon1 = reader.IsDBNull(reader.GetOrdinal("Telefon1")) ? null : reader.GetString("Telefon1"),
+                                    Telefon2 = reader.IsDBNull(reader.GetOrdinal("Telefon2")) ? null : reader.GetString("Telefon2"),
+                                    PostaKodu = reader.IsDBNull(reader.GetOrdinal("PostaKodu")) ? null : reader.GetString("PostaKodu"),
+                                    UlkeKodu = reader.IsDBNull(reader.GetOrdinal("UlkeKodu")) ? null : reader.GetString("UlkeKodu"),
+                                    VergiDairesi = reader.IsDBNull(reader.GetOrdinal("VergiDairesi")) ? null : reader.GetString("VergiDairesi"),
+                                    VergiNo = reader.IsDBNull(reader.GetOrdinal("VergiNo")) ? null : reader.GetString("VergiNo"),
+                                    TcNo = reader.IsDBNull(reader.GetOrdinal("TcNo")) ? null : reader.GetString("TcNo"),
+                                    Tip = reader.IsDBNull(reader.GetOrdinal("Tip")) ? null : reader.GetString("Tip"),
+                                    Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? null : reader.GetString("Email"),
+                                    Banka = reader.IsDBNull(reader.GetOrdinal("Banka")) ? null : reader.GetString("Banka"),
+                                    HesapNo = reader.IsDBNull(reader.GetOrdinal("HesapNo")) ? null : reader.GetString("HesapNo"),
                                 };
-                                viewModel.Businesses.Add(b);
+                                viewModel.Cariler.Add(b);
                             }
                         }
                     }
                 }
-                return viewModel.Businesses;
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "CariHesapKayitlari", methodName: "Businesses()", stackTrace: ex.StackTrace);
-                return null;
-                throw;
-            }
-        }
-
-        public ObservableCollection<Business> GetBusinesses()
-        {
-            try
-            {
-                MainViewModel viewModel = (MainViewModel)this.DataContext;
-                viewModel.Businesses.Clear();
-
-                using (SQLiteConnection connection = new SQLiteConnection(ConfigManager.ConnectionString))
-                {
-                    connection.Open();
-
-                    string query = "SELECT * FROM CariKayit";
-
-                    using (SQLiteCommand command = new SQLiteCommand(query, connection))
-                    {
-                        using (SQLiteDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                Business b = new Business
-                                {
-                                    ID = reader.GetInt32(0),
-                                    CariKod = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                    CariIsim = reader.GetString(2),
-                                    Adres = reader.GetString(3),
-                                    Il = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                    Ilce = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                    Telefon1 = reader.GetString(6),
-                                    Telefon2 = reader.GetString(7),
-                                    PostaKodu = reader.IsDBNull(8) ? null : reader.GetString(8),
-                                    UlkeKodu = reader.IsDBNull(9) ? null : reader.GetString(9),
-                                    VergiDairesi = reader.GetString(10),
-                                    VergiNo = reader.GetString(11),
-                                    TcNo = reader.IsDBNull(12) ? null : reader.GetString(12),
-                                    Tip = reader.IsDBNull(13) ? null : reader.GetString(13),
-                                    EPosta = reader.GetString(14),
-                                    Banka = reader.GetString(15),
-                                    HesapNo = reader.GetString(16),
-                                };
-                                viewModel.Businesses.Add(b);
-                            }
-                        }
-                    }
-                }
-                return viewModel.Businesses;
+                return viewModel.Cariler;
             }
             catch (Exception ex)
             {
                 LogManager.LogError(ex, className: "CariHesapKayitlari", methodName: "GetBusinesses()", stackTrace: ex.StackTrace);
                 return null;
-                throw;
-            }
-        }
-
-        public class Business
-        {
-            public int ID { get; set; }
-            public string? CariKod { get; set; }
-            public string? CariIsim { get; set; }
-            public string? Adres { get; set; }
-            public string? Il { get; set; }
-            public string? Ilce { get; set; }
-            public string? Telefon1 { get; set; }
-            public string? Telefon2 { get; set; }
-            public string? PostaKodu { get; set; }
-            public string? UlkeKodu { get; set; }
-            public string? VergiDairesi { get; set; }
-            public string? VergiNo { get; set; }
-            public string? TcNo { get; set; }
-            public string? Tip { get; set; }
-            public string? EPosta { get; set; }
-            public string? Banka { get; set; }
-            public string? HesapNo { get; set; }
-        }
-
-        private void Page_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                if (!IsMouseOverDataGrid(e))
-                {
-                    dataGrid.SelectedItem = null;
-
-                    Keyboard.ClearFocus();
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "CariHesapKayitlari", methodName: "Page_PreviewMouseDown()", stackTrace: ex.StackTrace);
-                throw;
-            }
-        }
-
-        private bool IsMouseOverDataGrid(MouseButtonEventArgs e)
-        {
-            try
-            {
-                DependencyObject originalSource = e.OriginalSource as DependencyObject;
-
-                // Tıklanan öğenin DataGrid, Button, TextBox, RadioButton veya GroupBox olup olmadığını kontrol et
-                while (originalSource != null)
-                {
-                    if (originalSource == dataGrid)
-                    {
-                        return true;
-                    }
-
-                    if (originalSource is Button ||
-                        originalSource is TextBox ||
-                        originalSource is RadioButton ||
-                        originalSource is GroupBox)
-                    {
-                        return true;
-                    }
-
-                    originalSource = VisualTreeHelper.GetParent(originalSource);
-                }
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "CariHesapKayitlari", methodName: "IsMouseOverDataGrid()", stackTrace: ex.StackTrace);
-                return false;
                 throw;
             }
         }

@@ -42,17 +42,32 @@
     <Window.DataContext>
         <local:MainViewModel />
     </Window.DataContext>
+    
     <Grid>
-        <DataGrid x:Name="dataGrid" BorderBrush="Black" BorderThickness="1" Language="tr-TR" ItemsSource="{Binding Stoklar}" materialDesign:DataGridAssist.CornerRadius="8" AutoGenerateColumns="False" Margin="10,240,10,10" SelectionChanged="dataGrid_SelectionChanged" IsReadOnly="True" Loaded="dataGrid_Loaded" GridLinesVisibility="All" AlternationCount="1" AlternatingRowBackground="LightGray" HorizontalGridLinesBrush="Black">
+        <DataGrid x:Name="dataGrid" BorderBrush="Black" BorderThickness="1" Language="tr-TR" ItemsSource="{Binding Stoklar}" materialDesign:DataGridAssist.CornerRadius="8" AutoGenerateColumns="False" Margin="10,240,10,10" SelectionChanged="dataGrid_SelectionChanged" IsReadOnly="True" GridLinesVisibility="All" AlternationCount="1" AlternatingRowBackground="LightGray" HorizontalGridLinesBrush="Black">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding ID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Stok Kod" Binding="{Binding StokKod}" />
-                <DataGridTextColumn Header="Stok Adı" Binding="{Binding StokAdi}" />
+                <DataGridTextColumn Header="Stok Adı" Binding="{Binding StokAd}" />
                 <DataGridTextColumn Header="KDV S. O." Binding="{Binding KdvSatis}" />
                 <DataGridTextColumn Header="KDV A. O." Binding="{Binding KdvAlis}" />
-                <DataGridTextColumn Header="Ölçü Birimi 1" Binding="{Binding OlcuBirimi1}" />
-                <DataGridTextColumn Header="Ölçü Birimi 2" Binding="{Binding OlcuBirimi2}" />
-                <DataGridTextColumn Header="Ölçü Birimi 2 Oran" Binding="{Binding OlcuBirimi2Oran}" />
+                <DataGridTextColumn Header="Ölçü Birimi 1" Binding="{Binding OlcuBirimi1.BirimAdi}" />
+                <DataGridTextColumn Header="Ölçü Birimi 2" Binding="{Binding OlcuBirimi2.BirimAdi}" />
+                <DataGridTemplateColumn Header="Ölçü Oranı">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} {1} = {2} {3}">
+                                        <Binding Path="OlcuOranPay"/>
+                                        <Binding Path="OlcuBirimi2.BirimAdi" TargetNullValue="-" />
+                                        <Binding Path="OlcuOranPayda"/>
+                                        <Binding Path="OlcuBirimi1.BirimAdi" TargetNullValue="-" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
         <Button x:Name="KaydetButton" ToolTip="Kaydet" materialDesign:ButtonAssist.CornerRadius="5" Margin="10,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Left" Width="30" Padding="1,1,1,1" IsDefault="True" IsTabStop="False" Click="KaydetButton_Click">
@@ -62,14 +77,14 @@
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button x:Name="DeleteButton" ToolTip="Kaydı Sil" materialDesign:ButtonAssist.CornerRadius="5" Margin="50,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="17" HorizontalAlignment="Left" Width="30" Padding="4,4,4,4" IsTabStop="False" Click="DeleteButton_Click">
+        <Button x:Name="DeleteButton" ToolTip="Kaydı Sil" materialDesign:ButtonAssist.CornerRadius="5" Margin="50,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="17" HorizontalAlignment="Left" Width="30" Padding="4,4,4,4" IsTabStop="False" Click="DeleteButton_Click" IsEnabled="False">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Delete" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button x:Name="Updatebutton" ToolTip="Kaydı Güncelle" materialDesign:ButtonAssist.CornerRadius="5" Margin="90,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="18" HorizontalAlignment="Left" Width="30" Padding="4,4,4,4" IsTabStop="False" Click="Updatebutton_Click">
+        <Button x:Name="Updatebutton" ToolTip="Kaydı Güncelle" materialDesign:ButtonAssist.CornerRadius="5" Margin="90,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="18" HorizontalAlignment="Left" Width="30" Padding="4,4,4,4" IsTabStop="False" Click="Updatebutton_Click" IsEnabled="False">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Pencil" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -83,29 +98,75 @@
                 </StackPanel>
             </Button.Content>
         </Button>
-        <TextBox x:Name="StokKodTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Stok Kodu*" Margin="10,50,0,0" TabIndex="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" TextChanged="StokKodTextBox_TextChanged"/>
-        <TextBox x:Name="StokAdTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Stok Adı*" Margin="10,90,0,0" TabIndex="2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300"/>
+        <TextBox x:Name="StokKodTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Stok Kodu*" Margin="10,50,0,0" TabIndex="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" TextChanged="StokKodTextBox_TextChanged" MaxLength="50" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
+        <TextBox x:Name="StokAdTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Stok Adı*" Margin="10,90,0,0" TabIndex="2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300" MaxLength="255" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
         <StackPanel Margin="10,130,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="210">
             <Label Content="KDV" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,0,0,0" Height="22" Background="#FFF1F1F1" Panel.ZIndex="1"/>
             <GroupBox Header="Deneme" Height="90" Style="{StaticResource DefaultGroupBoxStyle}" Margin="0,-11,0,0" >
                 <Grid>
-                    <Label Content="Satış KDV Oranı" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,5,0,0" />
-                    <Label Content="Alış KDV Oranı" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,3" />
+                    <Label Content="Satış KDV Oranı*" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,5,0,0" />
+                    <Label Content="Alış KDV Oranı*" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,3" />
 
-                    <TextBox x:Name="SatisKDVOranTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:TextFieldAssist.PrefixText="%" Width="58" HorizontalAlignment="Right" VerticalAlignment="Top" TabIndex="3"/>
-                    <TextBox x:Name="AlisKDVOranTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:TextFieldAssist.PrefixText="%" Width="58" HorizontalAlignment="Right" VerticalAlignment="Bottom" TabIndex="4"/>
+                    <TextBox x:Name="SatisKDVOranTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:TextFieldAssist.PrefixText="%" PreviewTextInput="OnlyNumber_PreviewTextInput" Width="58" HorizontalAlignment="Right" VerticalAlignment="Top" TabIndex="3" MaxLength="3" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
+                    <TextBox x:Name="AlisKDVOranTextBox" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:TextFieldAssist.PrefixText="%" PreviewTextInput="OnlyNumber_PreviewTextInput" Width="58" HorizontalAlignment="Right" VerticalAlignment="Bottom" TabIndex="4" MaxLength="3" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
                 </Grid>
             </GroupBox>
         </StackPanel>
         <StackPanel Margin="350,44,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="421">
             <Label Content="Ölçü Birimleri" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,0,0,0" Height="22" Background="#FFF1F1F1" Panel.ZIndex="1"/>
-            <GroupBox Header="Deneme" Height="90" Style="{StaticResource DefaultGroupBoxStyle}" Margin="0,-11,0,0" >
+            <materialDesign:PopupBox HorizontalAlignment="Right" materialDesign:PopupMode="MouseOverEager" VerticalAlignment="Top" Panel.ZIndex="1" StaysOpen="False" Padding="8" PlacementMode="BottomAndAlignRightEdges" Margin="0,-24,8,0" PopupUniformCornerRadius="5" PopupElevation="Dp8">
+                <ContentControl>
+                    <StackPanel Width="260">
+                        <TextBlock Text="Ölçü Oranı Açıklaması" FontWeight="Bold" FontSize="14" Margin="0,0,0,8"/>
+                        <TextBlock TextWrapping="Wrap" Cursor="">
+                            Stok takibinde 1. ölçü birimi, ürünün asıl sayıldığı birimdir (örneğin: adet).<LineBreak/>
+                            2. ölçü birimi ise genellikle paketleme veya alış şeklidir (örneğin: koli).<LineBreak/>
+                            <LineBreak/>
+                            Örnek:<LineBreak/>
+                            Ürün: Makarna<LineBreak/>
+                            • 1. ölçü birimi: adet (raf takibi için)<LineBreak/>
+                            • 2. ölçü birimi: koli (tedarik şekli)<LineBreak/>
+                            <LineBreak/>
+                            Eğer 1 koli içinde 10 adet varsa:<LineBreak/>
+                            • Sol kutuya: 1  → Bu, 2. birimi (koli) temsil eder<LineBreak/>
+                            • Sağ kutuya: 10 → Bu, 1. birimi (adet) temsil eder<LineBreak/>
+                            <LineBreak/>
+                            Yani "1 koli = 10 adet" şeklinde tanımlanır.
+                        </TextBlock>
+                    </StackPanel>
+
+                </ContentControl>
+                <materialDesign:PopupBox.ToggleContent>
+                    <materialDesign:PackIcon Kind="InformationOutline" Width="24" Height="24" Foreground="SlateGray" Cursor="Hand" Background="#FFF1F1F1"/>
+                </materialDesign:PopupBox.ToggleContent>
+            </materialDesign:PopupBox>
+            <GroupBox Height="90" Style="{StaticResource DefaultGroupBoxStyle}" Margin="0,-11,0,0" >
                 <Grid>
-                    <ComboBox x:Name="OlcuBirimi1ComboBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Ölçü Birimi 1" materialDesign:TextFieldAssist.HasClearButton="True" Width="120" Padding="6,6,6,6" IsEditable="True" TabIndex="5"/>
-                    <ComboBox x:Name="OlcuBirimi2ComboBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Ölçü Birimi 2" materialDesign:TextFieldAssist.HasClearButton="True" Width="120" Padding="6,6,6,6" IsEditable="True" Margin="130,0,0,0" TabIndex="6"/>
-                    <TextBox x:Name="OlcuBirimiOran1" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Pay" Width="58" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="260,0,0,0" Text="1" TabIndex="7"/>
+                    <ComboBox x:Name="OlcuBirimi1ComboBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedComboBox}" ItemsSource="{Binding OlcuBirimleri}" SelectedValuePath="Id" materialDesign:HintAssist.Hint="Ölçü Birimi 1*" materialDesign:TextFieldAssist.HasClearButton="True" Width="120" Padding="6,6,6,6" TabIndex="5" materialDesign:ComboBoxAssist.MaxLength="20" TextSearch.TextPath="BirimAdi" ToolTip="Ana ölçü birimi: Örneğin 'koli'. Bu birim, oranlamanın sol tarafında yer alır.">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BirimAdi}" ToolTipService.Placement="Right" ToolTipService.PlacementTarget="{Binding RelativeSource={RelativeSource Self}}">
+                                    <TextBlock.ToolTip>
+                                        <TextBlock Text="{Binding Aciklama}" />
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox x:Name="OlcuBirimi2ComboBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedComboBox}" ItemsSource="{Binding OlcuBirimleri}" SelectedValuePath="Id" materialDesign:HintAssist.Hint="Ölçü Birimi 2" materialDesign:TextFieldAssist.HasClearButton="True" Width="120" Padding="6,6,6,6" Margin="130,0,0,0" TabIndex="6" materialDesign:ComboBoxAssist.MaxLength="20" TextSearch.TextPath="BirimAdi" ToolTip="Alt ölçü birimi: Örneğin 'adet'. Bu birim, oranlamanın sağ tarafında yer alır.">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BirimAdi}" ToolTipService.Placement="Right" ToolTipService.PlacementTarget="{Binding RelativeSource={RelativeSource Self}}">
+                                    <TextBlock.ToolTip>
+                                        <TextBlock Text="{Binding Aciklama}" />
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBox x:Name="OlcuBirimiOran1" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Pay" Width="58" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="260,0,0,0" Text="1" TabIndex="7" PreviewTextInput="OnlyNumber_PreviewTextInput" MaxLength="3" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden" ToolTip="Pay: Ana ölçü biriminin miktarı. Örnek: 1 koli = 10 adet için buraya 1 yazılır."/>
                     <Label Content="/" HorizontalAlignment="Left" Margin="323,0,0,0" VerticalAlignment="Center" Width="13"/>
-                    <TextBox x:Name="OlcuBirimiOran2" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Payda" VerticalAlignment="Center" Margin="341,0,0,0" HorizontalAlignment="Left" Width="58" Text="1" TabIndex="8"/>
+                    <TextBox x:Name="OlcuBirimiOran2" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Payda" VerticalAlignment="Center" Margin="341,0,0,0" HorizontalAlignment="Left" Width="58" Text="1" TabIndex="8" PreviewTextInput="OnlyNumber_PreviewTextInput" MaxLength="3" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden" ToolTip="Payda: Alt ölçü biriminin miktarı. Örnek: 1 koli = 10 adet için buraya 10 yazılır." />
                 </Grid>
             </GroupBox>
         </StackPanel>

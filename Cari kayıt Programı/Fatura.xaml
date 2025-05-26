@@ -1,0 +1,191 @@
+﻿<Window x:Class="Cari_kayıt_Programı.Fatura"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Cari_kayıt_Programı"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:helpers="clr-namespace:Cari_kayıt_Programı.Helpers"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        mc:Ignorable="d" Title="Fatura" Height="600" Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <Style x:Key="DefaultGroupBoxStyle" TargetType="GroupBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Border Name="PART_Border" BorderBrush="#FF494949" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5" Padding="10">
+                            <DockPanel>
+                                <ContentPresenter Margin="{TemplateBinding Padding}" />
+                            </DockPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="PART_Border" Property="BorderBrush" Value="#FFc1c1c1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Window.DataContext>
+        <local:MainViewModel />
+    </Window.DataContext>
+
+    <Grid>
+        <TabControl x:Name="MainTabControl" HorizontalContentAlignment="Left" Grid.RowSpan="4">
+            <TabItem x:Name="UstBilgilerTabItem" Header="Üst Bilgiler" Padding="10,6,10,6" Height="30" IsTabStop="False">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="160"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="NumaraTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Numara*" TextWrapping="NoWrap" TabIndex="1" VerticalAlignment="Top" Padding="7,7,7,7" Height="32" Margin="10,10,35,0" TextChanged="Ortak_TextChanged" MaxLength="50" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
+                    <TextBox x:Name="CariKodTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Cari Kod*" Margin="10,52,35,0" TextWrapping="NoWrap" VerticalAlignment="Top" Height="32" TabIndex="2" Padding="7,7,7,7" TextChanged="CariKodTextBox_TextChanged" MaxLength="50" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
+                    <DatePicker x:Name="TarihDatePicker" Style="{StaticResource MaterialDesignOutlinedDatePicker}" helpers:SmartDateBehavior.EnableSmartParsing="True" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Tarih*" Language="tr-TR"  SelectedDate="{Binding TarihDate, Mode=TwoWay}" SelectedDateFormat="Short" TabIndex="3" Margin="10,94,35,0" VerticalAlignment="Top" Padding="7,7,7,7" Height="32" SelectedDateChanged="Ortak_SelectedDateChanged" />
+                    <DatePicker x:Name="VadeDatePicker" Style="{StaticResource MaterialDesignOutlinedDatePicker}" helpers:SmartDateBehavior.EnableSmartParsing="True" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Vade Tarihi*" Language="tr-TR" DisplayDateStart="{Binding TarihDate, Mode=TwoWay}" SelectedDate="{Binding VadeDate, Mode=TwoWay}" SelectedDateFormat="Short" TabIndex="4" IsTabStop="True" Margin="10,136,35,0" VerticalAlignment="Top" Padding="7,7,7,7" Height="32" SelectedDateChanged="Ortak_SelectedDateChanged"/>
+                    <ComboBox x:Name="TipComboBox" Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Tip*"  Margin="10,178,35,0" VerticalAlignment="Top" Padding="7,7,7,7" Height="32" SelectionChanged="TipComboBox_SelectionChanged" materialDesign:ComboBoxAssist.MaxLength="20" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden" TabIndex="5">
+                        <ComboBoxItem Content="Kapalı"/>
+                        <ComboBoxItem Content="Açık"/>
+                        <ComboBoxItem Content="Muhtelif"/>
+                        <ComboBoxItem Content="İade"/>
+                        <ComboBoxItem Content="Zayi İade"/>
+                    </ComboBox>
+                    <CheckBox x:Name="KDVDahilMiCheckBox" Content="KDV Dahil" Style="{StaticResource MaterialDesignFilterChipCheckBox}" Margin="10,220,35,0" VerticalAlignment="Top" Cursor="Hand" Height="32" HorizontalAlignment="Stretch" TabIndex="6" Checked="KDVDahilMiCheckBox_Changed" Unchecked="KDVDahilMiCheckBox_Changed"/>
+                    <Button x:Name="CariKartButton" materialDesign:ButtonAssist.CornerRadius="5" HorizontalAlignment="Right" Margin="0,53,0,0" VerticalAlignment="Top" Height="30" Width="30" Padding="0,0,0,0" Click="CariKartButton_Click" IsTabStop="False" ToolTip="Cari Defter" >
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Book" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Cursor=""/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                    <StackPanel Margin="30,0,30,0" VerticalAlignment="Top" Grid.Column="1" IsEnabled="False">
+                        <Label Content="Cari Bilgiler" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,0,0,0" Background="#FFE5E5E5" Panel.ZIndex="1" />
+                        <GroupBox x:Name="CariBilgilerGroupBox" Height="170" Style="{StaticResource DefaultGroupBoxStyle}" Margin="0,-11,0,0" >
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="185*"/>
+                                    <ColumnDefinition Width="93*"/>
+                                    <ColumnDefinition Width="93*"/>
+                                    <ColumnDefinition Width="185*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="UnvanTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Unvan" TextWrapping="NoWrap" TabIndex="3" VerticalAlignment="Top" Padding="7,7,7,7" Grid.ColumnSpan="4" Height="32" Margin="0,5,0,0"/>
+                                <TextBox x:Name="AdresTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Adres" TextWrapping="NoWrap" TabIndex="3" VerticalAlignment="Top" Padding="7,7,7,7" Margin="0,42,0,0" Grid.ColumnSpan="4" Height="32"/>
+                                <TextBox x:Name="IlTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="İl" TabIndex="4" VerticalAlignment="Top" Margin="0,79,2.5,0" Padding="7,7,7,7" Height="32" Grid.ColumnSpan="2"/>
+                                <TextBox x:Name="IlceTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="İlçe" TabIndex="5" VerticalAlignment="Top" Padding="7,7,7,7" Margin="2.5,79,0,0" Grid.Column="2" Height="32" Grid.ColumnSpan="2"/>
+                                <TextBox x:Name="VergiDairesiTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Vergi Dairesi" VerticalAlignment="Top" TabIndex="10" Margin="0,116,2.5,0" Padding="7,7,7,7" Grid.Column="0"/>
+                                <TextBox x:Name="VergiNoTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Vergi No" Margin="2.5,116,2.5,0" VerticalAlignment="Top" TabIndex="11" Grid.ColumnSpan="2" Padding="7,7,7,7" Grid.Column="1" />
+                                <TextBox x:Name="TcKimlikNoTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="T.C Kimlik No" Margin="2.5,116,0,0" VerticalAlignment="Top" TabIndex="12" Padding="7,7,7,7" Grid.Column="4"/>
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                    <TextBox x:Name="AciklamaTextbox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Açıklama" TextWrapping="NoWrap" TabIndex="7" Margin="30,191,30,0" Grid.Column="1" Padding="7,7,7,7" VerticalAlignment="Top" MaxLength="255" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="KalemBilgileriTabItem" Header="Kalem Bilgileri" Padding="10,6,10,6" Height="30" Visibility="Visible" TabIndex="8">
+                <Grid Background="#FFE5E5E5" Margin="0,0,0,-3">
+                    <Button x:Name="StokEkleButton" ToolTip="Stok Ekle" materialDesign:ButtonAssist.CornerRadius="5" Margin="30,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Left" Width="30" Padding="0,0,0,0" IsDefault="True" IsTabStop="False" Click="StokEkleButton_Click" IsEnabled="False">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="PlusBold" Foreground="#FFFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="StokDegistirButton" ToolTip="Stok Değiştir" materialDesign:ButtonAssist.CornerRadius="5" Margin="70,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Left" Width="30" Padding="0,0,0,0" IsTabStop="False" Click="StokDegistirButton_Click" IsEnabled="False">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Pencil" Foreground="#FFFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="StokSilButton" ToolTip="Stok Sil" materialDesign:ButtonAssist.CornerRadius="5" Margin="110,10,0,0" Height="30" VerticalAlignment="Top" TabIndex="15" HorizontalAlignment="Left" Width="30" Padding="0,0,0,0" IsTabStop="False" Click="StokSilButton_Click" IsEnabled="False">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="MinusThick" Foreground="#FFFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                    <StackPanel Margin="30,45,30,0" VerticalAlignment="Top" Grid.Column="1">
+                        <Label Content="Kalem Girişi" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,0,0,0" Height="22" Background="#FFE5E5E5" Panel.ZIndex="1"/>
+                        <GroupBox x:Name="KalemGirisiGroupBox" Height="101" Style="{StaticResource DefaultGroupBoxStyle}" Margin="0,-11,0,0" >
+                            <WrapPanel MinWidth="710">
+                                <TextBox x:Name="StokKodTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Stok Kodu*" TabIndex="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" TextChanged="StokKodTextBox_TextChanged" Padding="7,7,7,7" Margin="0,5,10,0" MaxLength="50" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
+                                <Button x:Name="StokKartButton" materialDesign:ButtonAssist.CornerRadius="5" HorizontalAlignment="Right" VerticalAlignment="Top" Height="30" Width="30" Padding="0,0,0,0" Click="StokKartButton_Click" IsTabStop="False" ToolTip="Stok Defter" Margin="0,5,10,0" Cursor="Hand" >
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Book" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Cursor=""/>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                                <TextBox x:Name="StokAdTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Stok Adı*" Margin="0,5,10,0" TabIndex="2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300" Padding="7,7,7,7" MaxLength="255" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden" IsEnabled="False"/>
+                                <TextBox x:Name="MiktarTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" PreviewTextInput="OnlyNumber_PreviewTextInput" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Miktar*" TabIndex="3" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" Padding="7,7,7,7" Margin="0,5,10,0" MaxLength="10" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden" IsEnabled="False"/>
+                                <TextBox x:Name="BirimFiyatTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" PreviewTextInput="OnlyNumber_PreviewTextInput" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Birim Fiyatı*" TabIndex="4" materialDesign:TextFieldAssist.PrefixText="₺" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" Padding="7,7,7,7" Margin="0,5,10,0" MaxLength="10" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden" IsEnabled="False"/>
+                                <TextBox x:Name="IadeMaliyetTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" PreviewTextInput="OnlyNumber_PreviewTextInput" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="İade Maliyet" TabIndex="5" materialDesign:TextFieldAssist.PrefixText="₺" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" Padding="7,7,7,7" Margin="0,5,10,0" MaxLength="10" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden" IsEnabled="False"/>
+                                <TextBox x:Name="IskontoTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" PreviewTextInput="OnlyNumber_PreviewTextInput" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="İskonto" TabIndex="6" materialDesign:TextFieldAssist.PrefixText="%" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="7,7,7,7" Margin="0,5,10,0" Width="80" MaxLength="3" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden" IsEnabled="False"/>
+                                <DatePicker x:Name="FiiliTarihPicker" Style="{StaticResource MaterialDesignOutlinedDatePicker}" helpers:SmartDateBehavior.EnableSmartParsing="True" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Fiili Tarih" Language="tr-TR" SelectedDate="{x:Static sys:DateTime.Now}" SelectedDateFormat="Short"  Width="120" TabIndex="7" IsTabStop="True" Padding="7,7,7,7" Margin="0,5,10,0" IsEnabled="False"/>
+                                <ComboBox x:Name="OlcuBirimiComboBox" Style="{StaticResource MaterialDesignOutlinedComboBox}" SelectedValuePath="Id" TextSearch.TextPath="BirimAdi" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Ölçü Birimi*" materialDesign:TextFieldAssist.HasClearButton="True" Width="120" Padding="7,7,7,7" TabIndex="8" materialDesign:ComboBoxAssist.MaxLength="20" Margin="0,5,10,0" VerticalAlignment="Stretch" IsEnabled="False" >
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding BirimAdi}" ToolTipService.Placement="Right" ToolTipService.PlacementTarget="{Binding RelativeSource={RelativeSource Self}}">
+                                                <TextBlock.ToolTip>
+                                                    <TextBlock Text="{Binding Aciklama}" />
+                                                </TextBlock.ToolTip>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </WrapPanel>
+                        </GroupBox>
+                    </StackPanel>
+                    <GroupBox Height="64" Style="{StaticResource DefaultGroupBoxStyle}" Margin="30,167,30,0" VerticalAlignment="Top" >
+                        <Grid>
+                            <TextBox x:Name="ToplamMiktarTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5"  materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Toplam Miktar" TabIndex="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" Padding="7,7,7,7" Margin="0,5,0,0" IsReadOnly="True" Focusable="False" IsTabStop="False"/>
+                            <TextBox x:Name="BakiyeTextBox" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:TextFieldAssist.PrefixText="₺" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Bakiye" TabIndex="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="150" Padding="7,7,7,7" Margin="160,5,0,0" IsReadOnly="True" Focusable="False" IsTabStop="False"/>
+                        </Grid>
+                    </GroupBox>
+                    <DataGrid x:Name="DataGrid" BorderBrush="Black" BorderThickness="1" Language="tr-TR" ItemsSource="{Binding YeniFatura.Detaylar}" materialDesign:DataGridAssist.CornerRadius="8" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="All" AlternationCount="1" AlternatingRowBackground="LightGray" HorizontalGridLinesBrush="Black" Margin="30,241,30,30" Focusable="False" IsHitTestVisible="False" Cursor="">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Stok Kod" Binding="{Binding StokKod}" />
+                            <DataGridTextColumn Header="Stok Adı" Binding="{Binding StokAd}" />
+                            <DataGridTextColumn Header="Miktar" Binding="{Binding Miktar}" />
+                            <DataGridTextColumn Header="Birim Fiyat" Binding="{Binding BirimFiyat, StringFormat={}{0:C}}" />
+                            <DataGridTextColumn Header="Tutar" Binding="{Binding Tutar, StringFormat={}{0:C}}" />
+                            <DataGridTextColumn Header="İskonto" Binding="{Binding Iskonto}" />
+                            <DataGridTextColumn Header="İade Maliyet" Binding="{Binding IadeMaliyet}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="ToplamlarTabItem" Header="Toplamlar" Padding="10,6,10,6" Height="30" Visibility="Visible" TabIndex="9">
+                <Grid Background="#FFE5E5E5">
+                    <TextBox x:Name="AraToplamTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Ara Toplam" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="₺" Margin="20,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False" IsTabStop="False"/>
+                    <TextBox x:Name="KDV1TutarTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="KDV 1" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="₺" Margin="20,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False" IsTabStop="False"/>
+                    <TextBox x:Name="KDV2TutarTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="KDV 2" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="₺" Margin="20,104,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <TextBox x:Name="KDV3TutarTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="KDV 3" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="₺" Margin="20,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <TextBox x:Name="KDV4TutarTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="KDV 4" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="₺" Margin="20,188,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <TextBox x:Name="KDV5TutarTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="KDV 5" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="₺" Margin="20,230,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <TextBox x:Name="KDV1TextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="KDV 1 %" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="%" Margin="240,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <TextBox x:Name="KDV2TextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="KDV 2 %" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="%" Margin="240,104,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <TextBox x:Name="KDV3TextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="KDV 3 %" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="%" Margin="240,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <TextBox x:Name="KDV4TextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="KDV 4 %" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="%" Margin="240,188,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <TextBox x:Name="KDV5TextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="KDV 5 %" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="%" Margin="240,230,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <TextBox x:Name="KDVTutarToplamTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Toplam KDV" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="₺" Margin="20,272,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <TextBox x:Name="GenelToplamTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Genel Toplam" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="₺" Margin="20,398,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" Focusable="False"/>
+                    <Button x:Name="KaydetButton" Content="Kaydet" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,40,20" ToolTip="Faturayı Kaydet" Click="KaydetButton_Click" IsDefault="True"/>
+                    <TextBox x:Name="IskontoTutarTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="İskonto Tutar" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="₺" Margin="20,314,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" TextChanged="IskontoTutarTextBox_TextChanged" TabIndex="10" />
+                    <TextBox x:Name="TevkifatTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="Tevkifat" Padding="7,7,7,7" Margin="20,356,0,0" materialDesign:TextFieldAssist.PrefixText="%" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" MaxLength="3" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden" TextChanged="TevkifatTextBox_TextChanged" TabIndex="12" />
+                    <TextBox x:Name="IskontoOranTextBox" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Background="#FFE5E5E5" materialDesign:HintAssist.HintPaddingBrush="#FFE5E5E5" materialDesign:HintAssist.Hint="İskonto Oran %" Padding="7,7,7,7" materialDesign:TextFieldAssist.PrefixText="%" Margin="240,314,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" MaxLength="6" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden" TextChanged="IskontoOranTextBox_TextChanged" TabIndex="11" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

@@ -31,10 +31,6 @@ namespace Cari_kayıt_Programı.UserControls
         {
             try
             {
-                if (WindowName == "CariHareketKayitlari")
-                {
-                    Degiskenler.selectedBusiness = null;
-                }
                 OpenWindow(WindowName);
             }
             catch (Exception ex)
@@ -47,6 +43,8 @@ namespace Cari_kayıt_Programı.UserControls
         // Tüm pencereleri tanımlayın
         private readonly Dictionary<string, Func<Window>> _windowFactories = new Dictionary<string, Func<Window>>
         {
+            { "AlisFaturasi", () => new Fatura("Alış") },
+            { "SatisFaturasi", () => new Fatura("Satış") },
             { "CariHesapKayitlari", () => new CariHesapKayitlari() },
             { "CariHareketKayitlari", () => new CariHareketKayitlari() },
             { "Stok", () => new Stok() }

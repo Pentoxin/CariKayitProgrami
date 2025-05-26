@@ -1,45 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <RootNamespace>Cari_kayıt_Programı</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Notebook_icon.ico</ApplicationIcon>
-    <PackageIcon>Notebook_icon.png</PackageIcon>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <PackageIcon>app.png</PackageIcon>
     <Company>Gökmen Ali Üngör</Company>
-    <ApplicationManifest></ApplicationManifest>
+    <ApplicationManifest>
+    </ApplicationManifest>
     <AssemblyVersion>2.0.0</AssemblyVersion>
     <FileVersion>2.0.0</FileVersion>
-    <StartupObject></StartupObject>
+    <StartupObject>
+    </StartupObject>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-
   <ItemGroup>
     <EditorConfigFiles Remove="C:\Users\GOKMEN\Documents\Visual Studio Project\Cari kayıt Programı\Cari kayıt Programı\.editorconfig" />
   </ItemGroup>
-
   <ItemGroup>
-    <Content Include="Notebook_icon.ico" />
+    <Content Include="app.ico" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="C:\Users\GOKMEN\Documents\Visual Studio Project\Cari kayıt Programı\Cari kayıt Programı\.editorconfig" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.104.2" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
-    <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.9.2" />
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
+    <PackageReference Include="MySql.Data" Version="9.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Serilog" Version="4.1.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
-    <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.5" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -52,16 +49,14 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
   <ItemGroup>
-    <None Update="Notebook_icon.png">
+    <None Update="app.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
@@ -70,5 +65,4 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-
 </Project>

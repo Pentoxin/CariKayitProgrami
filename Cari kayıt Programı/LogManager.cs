@@ -22,7 +22,7 @@ namespace Cari_kayıt_Programı
                 .CreateLogger();
         }
 
-        public static void LogInformation(string message, string className, string methodName, string stackTrace = null, string user = null, string additionalInfo = null)
+        public static void LogInformation(string message, string className, string methodName, string? stackTrace = null, string? user = null, string? additionalInfo = null)
         {
             using (LogContext.PushProperty("User", user ?? "Unknown"))
             using (LogContext.PushProperty("AdditionalInfo", additionalInfo))
@@ -34,7 +34,7 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        public static void LogWarning(string message, string className, string methodName, string stackTrace = null, string user = null, string additionalInfo = null)
+        public static void LogWarning(string message, string className, string methodName, string? stackTrace = null, string? user = null, string additionalInfo = null)
         {
             using (LogContext.PushProperty("User", user ?? "Unknown"))
             using (LogContext.PushProperty("AdditionalInfo", additionalInfo))
@@ -46,7 +46,7 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        public static void LogError(Exception ex, string className, string methodName, string stackTrace = null, string user = null, string additionalInfo = null)
+        public static void LogError(Exception ex, string className, string methodName, string? stackTrace = null, string? user = null, string? additionalInfo = null)
         {
             using (LogContext.PushProperty("User", user ?? "Unknown"))
             using (LogContext.PushProperty("AdditionalInfo", additionalInfo))

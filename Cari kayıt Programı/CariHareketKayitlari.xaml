@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Cari_kayıt_Programı"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        xmlns:uc="clr-namespace:Cari_kayıt_Programı.UserControls"
+        xmlns:helpers="clr-namespace:Cari_kayıt_Programı.Helpers"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -13,7 +15,7 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
-        Title="CariHareketKayitlari" Height="622" Width="966" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded" PreviewMouseDown="Page_PreviewMouseDown">
+        Title="Cari Hareket Kayıtları" Height="622" Width="966" WindowStartupLocation="CenterOwner" PreviewMouseDown="Page_PreviewMouseDown">
 
     <Window.Resources>
         <Style x:Key="CustomMaterialDesignTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" TargetType="TextBox">
@@ -72,9 +74,9 @@
 
     <Grid>
         <Label x:Name="IsletmeAdiLabel" Content="Label" ContentTemplate="{StaticResource WrappedLabelTemplate}" HorizontalAlignment="Left" Margin="210,50,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold" MaxWidth="729" Height="42"/>
-        <DataGrid x:Name="dataGrid" BorderBrush="Black" BorderThickness="1" Language="tr-TR" materialDesign:DataGridAssist.CornerRadius="8" ItemsSource="{Binding Odemeler}" AutoGenerateColumns="False" Margin="10,206,10,57" IsReadOnly="True" SelectionChanged="dataGrid_SelectionChanged" GridLinesVisibility="All" AlternationCount="1" AlternatingRowBackground="LightGray" HorizontalGridLinesBrush="Black">
+        <DataGrid x:Name="dataGrid" BorderBrush="Black" BorderThickness="1" Language="tr-TR" materialDesign:DataGridAssist.CornerRadius="8" ItemsSource="{Binding Odemeler}" AutoGenerateColumns="False" Margin="10,210,10,57" IsReadOnly="True" SelectionChanged="dataGrid_SelectionChanged" GridLinesVisibility="All" AlternationCount="1" AlternatingRowBackground="LightGray" HorizontalGridLinesBrush="Black">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding ID}" Visibility="Hidden" />
+                <DataGridTextColumn Header="ID" Binding="{Binding HareketID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Tarih" Binding="{Binding Tarih}" MinWidth="61" />
                 <DataGridTextColumn Header="Tip" Binding="{Binding Tip}" MinWidth="51" />
                 <DataGridTextColumn Header="Durum" Binding="{Binding Durum}" MinWidth="51" Visibility="Hidden"/>
@@ -91,30 +93,6 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTemplateColumn x:Name="DosyaColumn" Header="Dosya" MinWidth="68" >
-                    <DataGridTemplateColumn.CellStyle>
-                        <Style TargetType="DataGridCell">
-                            <Setter Property="Padding" Value="5"/>
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="BorderBrush" Value="Transparent"/>
-                        </Style>
-                    </DataGridTemplateColumn.CellStyle>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button x:Name="PART_Button" Click="Button_Click" BorderThickness="0" Background="#E5FAFAFA" HorizontalAlignment="Center" VerticalAlignment="Center" Height="26" Width="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                <materialDesign:PackIcon Kind="Magnify" Foreground="#FF3F51B5" Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                            </Button>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding Dosya}" Value="">
-                                    <Setter Property="Visibility" Value="Collapsed" TargetName="PART_Button"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Dosya}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed" TargetName="PART_Button"/>
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
         <Button x:Name="YeniHareketButton" ToolTip="Kaydet" materialDesign:ButtonAssist.CornerRadius="5" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="30" Width="30" Click="YeniHareketButton_Click" Padding="0,0,0,0" IsDefault="False">
@@ -134,7 +112,7 @@
         <Button x:Name="DegistirHareketButton" materialDesign:ButtonAssist.CornerRadius="5" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Height="30" Width="30" Click="DegistirHareketButton_Click" Padding="0,0,0,0" IsTabStop="False" ToolTip="Kaydı Güncelle" IsEnabled="False">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon x:Name="DegistirIcon" Kind="pencil" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    <materialDesign:PackIcon Kind="pencil" Foreground="#FFF" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 </StackPanel>
             </Button.Content>
         </Button>
@@ -151,7 +129,7 @@
         <Button x:Name="CariKartButton" materialDesign:ButtonAssist.CornerRadius="5" HorizontalAlignment="Left" Margin="170,56,0,0" VerticalAlignment="Top" Height="30" Width="30" Padding="0,0,0,0" Click="CariKartButton_Click" IsTabStop="False" ToolTip="Cari Defter" >
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Book" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <materialDesign:PackIcon Kind="Book" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Cursor=""/>
                 </StackPanel>
             </Button.Content>
         </Button>
@@ -162,51 +140,26 @@
                 </StackPanel>
             </Button.Content>
         </Button>
-        <TextBox x:Name="CariKodTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Cari Kod*" Margin="10,50,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="150" Height="NaN" TabIndex="1" TextChanged="CariKodTextbox_TextChanged"/>
-        <WrapPanel Margin="10,102,10,0" VerticalAlignment="Top" MinWidth="946">
-            <DatePicker x:Name="TarihDatePicker" materialDesign:HintAssist.Hint="Tarih*" Language="tr-TR" Style="{StaticResource CustomMaterialDesignOutlinedDatePicker}" SelectedDate="{Binding TarihDate, Mode=TwoWay}" SelectedDateFormat="Short"  Width="120" TabIndex="2" IsTabStop="True" Margin="0,0,10,10" />
-            <TextBox x:Name="EvrakNoTextbox" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Evrak No" TextWrapping="NoWrap" Width="150" Height="NaN" TabIndex="3" Margin="0,0,10,10"/>
-            <TextBox x:Name="AciklamaTextbox" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Açıklama*" TextWrapping="NoWrap" Width="219" Height="NaN" TabIndex="4" Margin="0,0,10,10"/>
-            <DatePicker x:Name="VadeDatePicker" DisplayDateStart="{Binding TarihDate, Mode=TwoWay}" materialDesign:HintAssist.Hint="Vade Tarihi*" Language="tr-TR" Style="{StaticResource CustomMaterialDesignOutlinedDatePicker}" SelectedDate="{Binding VadeDate, Mode=TwoWay}" SelectedDateFormat="Short"  Width="120" TabIndex="5" IsTabStop="True" Margin="0,0,10,10"/>
-            <GroupBox x:Name="YukleGroupBox" Header="GroupBox" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" Height="42" Width="280" Margin="0,0,10,10" >
-                <Grid Margin="-10,-10, 0,-10" Width="270">
-                    <Button x:Name="YukleButton" BorderThickness="0.5" materialDesign:ButtonAssist.CornerRadius="4" BorderBrush="Gray" Style="{StaticResource CustomDisabledButtonStyle}" Background="#E5FAFAFA" Click="YukleButton_Click" Padding="10,4,10,4" Margin="7,0,0,0" Height="26" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" TabIndex="8">
-                        <Button.Content>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="FileUpload" Foreground="Black" Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
-                                <TextBlock Text="Dosya Yükle" Height="18"  Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Tag="8"/>
-                            </StackPanel>
-                        </Button.Content>
-                    </Button>
-
-                    <Border x:Name="YukleBorder" BorderBrush="Gray" Margin="7,45,0,0" Style="{StaticResource CustomDisabledBorderStyle}" BorderThickness="0.5" CornerRadius="4" Background="#E5FAFAFA" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Padding="10,4,10,4" MaxWidth="260">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="YukleTextbox" Text="Dosya Yükle" Height="18"  Foreground="Black" VerticalAlignment="Center" FontSize="14" MaxWidth="222"/>
-                            <Button x:Name="YukleButton2" Style="{StaticResource MaterialDesignIconButton}" Width="17" Click="YukleButton_Click" Height="17" Margin="2,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Center" >
-                                <Button.Content>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="CancelThick" Foreground="Black" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,1,0"/>
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-                        </StackPanel>
-                    </Border>
-                </Grid>
-            </GroupBox>
-            <GroupBox x:Name="BAGroupBox" Header="GroupBox" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" Height="42" Width="150" Margin="0,0,10,10">
+        <TextBox x:Name="CariKodTextbox" HorizontalAlignment="Left" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Cari Kod*" Margin="10,50,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="150" Height="NaN" TabIndex="1" TextChanged="CariKodTextbox_TextChanged" MaxLength="50" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
+        <WrapPanel Margin="10,100,10,0" VerticalAlignment="Top" MinWidth="946">
+            <DatePicker x:Name="TarihDatePicker" helpers:SmartDateBehavior.EnableSmartParsing="True" materialDesign:HintAssist.Hint="Tarih*" Language="tr-TR" Style="{StaticResource CustomMaterialDesignOutlinedDatePicker}" SelectedDate="{Binding TarihDate, Mode=TwoWay}" SelectedDateFormat="Short"  Width="120" TabIndex="2" IsTabStop="True" Margin="0,2,10,10" />
+            <TextBox x:Name="EvrakNoTextbox" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Evrak No" TextWrapping="NoWrap" Width="200" Height="NaN" TabIndex="3" Margin="0,2,10,10" MaxLength="50" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
+            <TextBox x:Name="AciklamaTextbox" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Açıklama*" TextWrapping="NoWrap" Width="300" Height="NaN" TabIndex="4" Margin="0,2,10,10" MaxLength="50" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
+            <DatePicker x:Name="VadeDatePicker" helpers:SmartDateBehavior.EnableSmartParsing="True" DisplayDateStart="{Binding TarihDate, Mode=TwoWay}" materialDesign:HintAssist.Hint="Vade Tarihi*" Language="tr-TR" Style="{StaticResource CustomMaterialDesignOutlinedDatePicker}" SelectedDate="{Binding VadeDate, Mode=TwoWay}" SelectedDateFormat="Short"  Width="120" TabIndex="5" IsTabStop="True" Margin="0,2,10,10"/>
+            <GroupBox x:Name="BAGroupBox" Header="GroupBox" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" Height="42" Width="150" Margin="0,2,10,10">
                 <Grid Margin="-10,-11,-10,0" Height="42">
                     <RadioButton x:Name="BorcRadioButton" Content="Borç" GroupName="TipGroup" TabIndex="6" HorizontalAlignment="Left" VerticalAlignment="Center" Height="39" Margin="10,0,0,0" Width="59" Padding="4,2,0,0" IsChecked="True"/>
                     <RadioButton x:Name="AlacakRadioButton" Content="Alacak" GroupName="TipGroup" Margin="70,0,0,0" TabIndex="7" Height="39" VerticalAlignment="Center" />
                 </Grid>
             </GroupBox>
-            <GroupBox x:Name="AKGroupBox" Header="GroupBox" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" Height="42" Width="150" Margin="0,0,10,10">
+            <GroupBox x:Name="AKGroupBox" Header="GroupBox" BorderThickness="1" BorderBrush="Gray" Style="{StaticResource DefaultGroupBoxStyle}" Height="42" Width="150" Margin="0,2,10,10">
                 <Grid Margin="-10,-11,-10,0" Height="42">
                     <RadioButton x:Name="AcikRadioButton" Content="Açık" GroupName="DurumGroup" TabIndex="6" HorizontalAlignment="Left" VerticalAlignment="Center" Height="39" Margin="10,0,0,0" Width="59" Padding="4,2,0,0" IsChecked="True"/>
                     <RadioButton x:Name="KapaliRadioButton" Content="Kapalı" GroupName="DurumGroup" Margin="70,0,0,0" TabIndex="7" Height="39" VerticalAlignment="Center" />
                 </Grid>
             </GroupBox>
-            <TextBox x:Name="TutarTextbox" materialDesign:TextFieldAssist.PrefixText="₺" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Tutar*" DataObject.Pasting="TutarTextBox_Pasting" TextWrapping="NoWrap" Width="200" Height="NaN" TabIndex="8" PreviewTextInput="TutarTextBox_PreviewTextInput" Margin="0,0,10,10"  />
-            <TextBox x:Name="txtSearch" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Arama" materialDesign:TextFieldAssist.HasClearButton="True" TabIndex="9" TextChanged="txtSearch_TextChanged" Padding="12,12,12,12" Width="399" Margin="0,0,10,10" />
+            <TextBox x:Name="TutarTextbox" materialDesign:TextFieldAssist.PrefixText="₺" Style="{StaticResource CustomMaterialDesignTextBox}"  materialDesign:HintAssist.Hint="Tutar*" DataObject.Pasting="TutarTextBox_Pasting" TextWrapping="NoWrap" Width="200" Height="NaN" TabIndex="8" PreviewTextInput="TutarTextBox_PreviewTextInput" Margin="0,2,10,10" MaxLength="10" materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"/>
+            <TextBox x:Name="txtSearch" Style="{StaticResource CustomMaterialDesignTextBox}" materialDesign:HintAssist.Hint="Arama" materialDesign:TextFieldAssist.HasClearButton="True" TabIndex="9" TextChanged="txtSearch_TextChanged" Padding="12,12,12,12" Width="400" Margin="0,2,10,10" />
         </WrapPanel>
     </Grid>
 </Window>

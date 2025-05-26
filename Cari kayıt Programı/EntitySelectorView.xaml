@@ -1,0 +1,49 @@
+﻿<Window x:Class="Cari_kayıt_Programı.EntitySelectorView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Cari_kayıt_Programı"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        xmlns:models="clr-namespace:Cari_kayıt_Programı.Models" d:DataContext="{d:DesignInstance Type=models:EntitySelectorViewModel}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        mc:Ignorable="d" Title="Veri Seçici" Height="500" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sol: Filtre Paneli -->
+        <ScrollViewer Grid.Column="0" Margin="10">
+            <ItemsControl ItemsSource="{Binding Filters}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="5">
+                            <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}" Padding="7,7,7,7" materialDesign:HintAssist.Hint="{Binding DisplayName}" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Sağ: DataGrid -->
+        <StackPanel Grid.Column="1" Margin="10">
+            <DataGrid ItemsSource="{Binding FilteredItems}" 
+                      SelectedItem="{Binding SelectedItem}" 
+                      AutoGenerateColumns="True" 
+                      IsReadOnly="True"
+                      BorderBrush="Black" BorderThickness="1" Language="tr-TR" materialDesign:DataGridAssist.CornerRadius="8" MaxHeight="399"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                <Button materialDesign:ButtonAssist.CornerRadius="5" Content="Seç" Width="75" Margin="0,0,5,0" Click="Select_Click"/>
+                <Button materialDesign:ButtonAssist.CornerRadius="5" Content="İptal" Width="75" Click="Cancel_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
