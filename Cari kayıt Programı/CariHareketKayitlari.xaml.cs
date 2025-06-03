@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -64,71 +64,58 @@ namespace Cari_kayıt_Programı
                         return;
                     }
 
-                    DateTime selectedDate = TarihDatePicker.SelectedDate.Value;
-                    DateTime selectedVadeDate = VadeDatePicker.SelectedDate.Value;
-
-                    string tip = AlacakRadioButton.IsChecked == true ? "A" : "B";
+                    string faturaTip = AlacakRadioButton.IsChecked == true ? "Satış" : "Alış";
                     string durum = AcikRadioButton.IsChecked == true ? "Açık" : "Kapalı";
 
-                    double alacak = tip == "A" ? Convert.ToDouble(TutarTextbox.Text) : 0.0;
-                    double borc = tip == "B" ? Convert.ToDouble(TutarTextbox.Text) : 0.0;
-
-                    Odeme yeniOdeme = new Odeme
+                    CariHareketGorunum yeniHareket = new CariHareketGorunum
                     {
                         CariKod = cariKod,
-                        Tarih = selectedDate.ToString("yyyy-MM-dd"),
-                        Tip = tip,
-                        Durum = durum,
-                        EvrakNo = EvrakNoTextbox.Text,
+                        Tarih = TarihDatePicker.SelectedDate ?? DateTime.Now,
+                        FaturaTip = faturaTip,
+                        Tip = durum,
+                        Numara = EvrakNoTextbox.Text,
                         Aciklama = AciklamaTextbox.Text,
-                        VadeTarihi = selectedVadeDate.ToString("yyyy-MM-dd"),
-                        Borc = borc,
-                        Alacak = alacak
+                        VadeTarih = VadeDatePicker.SelectedDate ?? DateTime.Now,
+                        Tutar = Convert.ToDecimal(TutarTextbox.Text)
                     };
 
                     if (MessageBox.Show("Veriyi kaydetmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
                         return;
 
+                    MainViewModel viewModel = (MainViewModel)this.DataContext;
+
+                    var girilenNumara = EvrakNoTextbox.Text.Trim();
+                    var faturaNumarasi = viewModel.Hareketler.FirstOrDefault(f => string.Equals(f.Numara?.Trim(), girilenNumara, StringComparison.OrdinalIgnoreCase));
+
+                    if (faturaNumarasi != null)
+                    {
+                        MessageBox.Show("Bu fatura numarası zaten mevcut.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
                     using (MySqlConnection connection = DatabaseManager.GetConnection())
                     {
                         connection.Open();
 
-                        if (!string.IsNullOrWhiteSpace(yeniOdeme.EvrakNo))
-                        {
-                            string checkQuery = "SELECT COUNT(*) FROM CariHareketler WHERE CariKod = @CariKod AND LOWER(EvrakNo) = @EvrakNo";
-                            using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection))
-                            {
-                                checkCmd.Parameters.AddWithValue("@CariKod", cariKod);
-                                checkCmd.Parameters.AddWithValue("@EvrakNo", yeniOdeme.EvrakNo.ToLower(new CultureInfo("tr-TR")));
-
-                                int count = Convert.ToInt32(checkCmd.ExecuteScalar());
-                                if (count > 0)
-                                {
-                                    MessageBox.Show("Bu evrak numarası daha önce kaydedilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
-                                    return;
-                                }
-                            }
-                        }
-
-                        string insertQuery = @"
-                    INSERT INTO CariHareketler (CariKod, Tarih, Tip, Durum, EvrakNo, Aciklama, VadeTarihi, Borc, Alacak)
-                    VALUES (@CariKod, @Tarih, @Tip, @Durum, @EvrakNo, @Aciklama, @VadeTarihi, @Borc, @Alacak)";
+                        string insertQuery = @"INSERT INTO Faturalar (EvrakNo, CariKod, Tarih, VadeTarih, Tip, Durum, Aciklama, ToplamTutar)
+                            VALUES (@EvrakNo, @CariKod, @Tarih, @VadeTarih, @Tip, @Durum, @Aciklama, @ToplamTutar)";
 
                         using (MySqlCommand cmd = new MySqlCommand(insertQuery, connection))
                         {
-                            cmd.Parameters.AddWithValue("@CariKod", yeniOdeme.CariKod);
-                            cmd.Parameters.AddWithValue("@Tarih", yeniOdeme.Tarih);
-                            cmd.Parameters.AddWithValue("@Tip", yeniOdeme.Tip);
-                            cmd.Parameters.AddWithValue("@Durum", yeniOdeme.Durum);
-                            cmd.Parameters.AddWithValue("@EvrakNo", yeniOdeme.EvrakNo);
-                            cmd.Parameters.AddWithValue("@Aciklama", yeniOdeme.Aciklama);
-                            cmd.Parameters.AddWithValue("@VadeTarihi", yeniOdeme.VadeTarihi);
-                            cmd.Parameters.AddWithValue("@Borc", yeniOdeme.Borc);
-                            cmd.Parameters.AddWithValue("@Alacak", yeniOdeme.Alacak);
+                            cmd.Parameters.AddWithValue("@CariKod", yeniHareket.CariKod);
+                            cmd.Parameters.AddWithValue("@Tarih", yeniHareket.Tarih);
+                            cmd.Parameters.AddWithValue("@Tip", yeniHareket.FaturaTip);
+                            cmd.Parameters.AddWithValue("@Durum", yeniHareket.Tip);
+                            cmd.Parameters.AddWithValue("@EvrakNo", yeniHareket.Numara);
+                            cmd.Parameters.AddWithValue("@Aciklama", yeniHareket.Aciklama);
+                            cmd.Parameters.AddWithValue("@VadeTarih", yeniHareket.VadeTarih);
+                            cmd.Parameters.AddWithValue("@ToplamTutar", yeniHareket.Tutar);
 
                             cmd.ExecuteNonQuery();
                         }
                     }
+                    // Yeni hareketi ViewModel'e ekle
+                    viewModel.Hareketler.Add(yeniHareket);
 
                     // Arayüz temizliği
                     TarihDatePicker.SelectedDate = DateTime.Now;
@@ -169,46 +156,75 @@ namespace Cari_kayıt_Programı
                     return;
                 }
 
-                // Seçilen öğenin ID'sini alın
-                int selectedOdemeId = 0; // varsayılan olarak 0 ayarlandı
+                int? selectedFaturaId = null;
                 if (dataGrid.SelectedItem != null)
                 {
-                    // Seçilen öğenin ID'sini alma
-                    if (dataGrid.SelectedItem is Odeme selectedOdeme)
+                    if (dataGrid.SelectedItem is CariHareketGorunum selectedHareket)
                     {
-                        selectedOdemeId = selectedOdeme.HareketID;
+                        selectedFaturaId = selectedHareket.FaturaID;
                     }
                 }
 
                 // Seçilen öğenin ID'si 0'dan büyükse silme işlemini gerçekleştir
-                if (selectedOdemeId > 0)
+                if (selectedFaturaId != null)
                 {
                     if (MessageBox.Show("Veriyi silmek istediğinize emin misiniz?", "Sil", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        // Veritabanı bağlantısını açın ve silme işlemini gerçekleştirin
-                        using (MySqlConnection connection = DatabaseManager.GetConnection())
+                        int? ID = selectedFaturaId;
+
+                        try
                         {
-                            connection.Open();
-
-                            string deleteQuery = "DELETE FROM CariHareketler WHERE HareketID = @OdemeId AND CariKod = @CariKod";
-
-                            using (MySqlCommand deleteCommand = new MySqlCommand(deleteQuery, connection))
+                            using (MySqlConnection connection = DatabaseManager.GetConnection())
                             {
-                                deleteCommand.Parameters.AddWithValue("@OdemeId", selectedOdemeId);
-                                deleteCommand.Parameters.AddWithValue("@CariKod", cariKod);
+                                connection.Open();
 
-                                int rowsAffected = deleteCommand.ExecuteNonQuery();
+                                // İşlemi tek bir transaction içinde yapalım
+                                using (var transaction = connection.BeginTransaction())
+                                {
+                                    try
+                                    {
+                                        // Önce FaturaDetay tablosundan sil
+                                        string deleteDetailsQuery = "DELETE FROM FaturaDetay WHERE FaturaID = @FaturaID";
+                                        using (var deleteDetailsCmd = new MySqlCommand(deleteDetailsQuery, connection, transaction))
+                                        {
+                                            deleteDetailsCmd.Parameters.AddWithValue("@FaturaID", ID);
+                                            deleteDetailsCmd.ExecuteNonQuery();
+                                        }
 
-                                if (rowsAffected > 0)
-                                {
-                                    MessageBox.Show("Hareket başarıyla silindi.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Hareket silinemedi.", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                                        // Sonra Faturalar tablosundan sil
+                                        string deleteFaturaQuery = "DELETE FROM Faturalar WHERE FaturaID = @FaturaID";
+                                        using (var deleteFaturaCmd = new MySqlCommand(deleteFaturaQuery, connection, transaction))
+                                        {
+                                            deleteFaturaCmd.Parameters.AddWithValue("@FaturaID", ID);
+                                            int rowsAffected = deleteFaturaCmd.ExecuteNonQuery();
+
+                                            if (rowsAffected > 0)
+                                            {
+                                                transaction.Commit();
+                                                MessageBox.Show("Fatura ve detayları başarıyla silindi.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+                                            }
+                                            else
+                                            {
+                                                transaction.Rollback();
+                                                MessageBox.Show("Fatura bulunamadı veya silinemedi.", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                                            }
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        transaction.Rollback();
+                                        MessageBox.Show("Silme işlemi sırasında bir hata oluştu: " + ex.Message, "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                                        LogManager.LogError(ex, "FaturaSil", "DeleteFaturaWithDetails", ex.StackTrace);
+                                    }
                                 }
                             }
                         }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Veritabanı bağlantı hatası: " + ex.Message, "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                            LogManager.LogError(ex, "FaturaSil", "OuterConnection", ex.StackTrace);
+                        }
+
 
                         LoadDataGrid();
                         TarihDatePicker.SelectedDate = DateTime.Now;
@@ -243,6 +259,8 @@ namespace Cari_kayıt_Programı
         {
             try
             {
+                MainViewModel viewModel = (MainViewModel)this.DataContext;
+
                 Cariler? selectedBusiness = SelectedCariler;
                 string? cariKod = selectedBusiness?.CariKod;
 
@@ -252,14 +270,23 @@ namespace Cari_kayıt_Programı
                     return;
                 }
 
-                int selectedOdemeId = 0;
-                if (dataGrid.SelectedItem is Odeme selectedOdeme)
+                string selectedNumara = "";
+                if (dataGrid.SelectedItem != null)
                 {
-                    selectedOdemeId = selectedOdeme.HareketID;
+                    if (dataGrid.SelectedItem is CariHareketGorunum selectedHareket)
+                    {
+                        if (selectedHareket.FaturaDetay)
+                        {
+                            MessageBox.Show("Seçilen hareketin fatura detayı mevcut, işlem yapılamaz.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return; // İşlemi durdur
+                        }
+
+                        selectedNumara = selectedHareket.Numara;
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Lütfen değiştirmek istediğiniz hareketi seçiniz.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Lütfen düzenlemek istediğiniz hareketi seçiniz.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -269,84 +296,58 @@ namespace Cari_kayıt_Programı
                     TarihDatePicker.SelectedDate.HasValue &&
                     VadeDatePicker.SelectedDate.HasValue)
                 {
-                    DateTime selectedDate = TarihDatePicker.SelectedDate.Value;
-                    DateTime selectedVadeDate = VadeDatePicker.SelectedDate.Value;
-
-                    string tip = AlacakRadioButton.IsChecked == true ? "A" : "B";
+                    string faturaTip = AlacakRadioButton.IsChecked == true ? "Satış" : "Alış";
                     string durum = AcikRadioButton.IsChecked == true ? "Açık" : "Kapalı";
 
-                    double alacak = tip == "A" ? Convert.ToDouble(TutarTextbox.Text) : 0.0;
-                    double borc = tip == "B" ? Convert.ToDouble(TutarTextbox.Text) : 0.0;
-
-                    Odeme yeniOdeme = new Odeme
+                    CariHareketGorunum yeniHareket = new CariHareketGorunum
                     {
-                        Tarih = selectedDate.ToString("yyyy-MM-dd"),
-                        Tip = tip,
-                        Durum = durum,
-                        EvrakNo = EvrakNoTextbox.Text,
+                        CariKod = cariKod,
+                        Tarih = TarihDatePicker.SelectedDate ?? DateTime.Now,
+                        FaturaTip = faturaTip,
+                        Tip = durum,
+                        Numara = EvrakNoTextbox.Text,
                         Aciklama = AciklamaTextbox.Text,
-                        VadeTarihi = selectedVadeDate.ToString("yyyy-MM-dd"),
-                        Borc = borc,
-                        Alacak = alacak
+                        VadeTarih = VadeDatePicker.SelectedDate ?? DateTime.Now,
+                        Tutar = Convert.ToDecimal(TutarTextbox.Text)
                     };
 
-                    if (selectedOdemeId > 0)
+                    if (string.IsNullOrWhiteSpace(selectedNumara))
                     {
                         using (MySqlConnection connection = DatabaseManager.GetConnection())
                         {
                             connection.Open();
 
-                            // EvrakNo kontrolü (CariKod içinde benzersiz mi?)
-                            if (!string.IsNullOrWhiteSpace(yeniOdeme.EvrakNo))
-                            {
-                                string kontrolQuery = @"SELECT EvrakNo FROM CariHareketler 
-                                                WHERE CariKod = @CariKod AND HareketID != @HareketID";
-                                using (MySqlCommand kontrolCmd = new MySqlCommand(kontrolQuery, connection))
-                                {
-                                    kontrolCmd.Parameters.AddWithValue("@CariKod", cariKod);
-                                    kontrolCmd.Parameters.AddWithValue("@HareketID", selectedOdemeId);
+                            var girilenNumara = EvrakNoTextbox.Text.Trim();
+                            var faturaNumarasi = viewModel.Hareketler.FirstOrDefault(f => string.Equals(f.Numara?.Trim(), girilenNumara, StringComparison.OrdinalIgnoreCase));
 
-                                    using (MySqlDataReader reader = kontrolCmd.ExecuteReader())
-                                    {
-                                        while (reader.Read())
-                                        {
-                                            string mevcutEvrakNo = reader.GetString("EvrakNo")?.ToLower(new CultureInfo("tr-TR")) ?? "";
-                                            string girilenEvrakNo = yeniOdeme.EvrakNo.ToLower(new CultureInfo("tr-TR"));
-                                            if (mevcutEvrakNo == girilenEvrakNo)
-                                            {
-                                                MessageBox.Show("Bu evrak numarası daha önce kaydedilmiş.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
+                            if (faturaNumarasi != null)
+                            {
+                                MessageBox.Show("Bu fatura numarası zaten mevcut.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
                             }
 
                             if (MessageBox.Show("Veriyi değiştirmek istediğinize emin misiniz?", "Kaydet", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                             {
-                                string updateQuery = @"UPDATE CariHareketler
+                                string updateQuery = @"UPDATE Faturalar
                                                SET Tarih = @Tarih,
                                                    Tip = @Tip,
                                                    Durum = @Durum,
-                                                   EvrakNo = @EvrakNo,
+                                                   Numara = @Numara,
                                                    Aciklama = @Aciklama,
-                                                   VadeTarihi = @VadeTarihi,
-                                                   Borc = @Borc,
-                                                   Alacak = @Alacak
-                                               WHERE HareketID = @HareketID AND CariKod = @CariKod";
+                                                   VadeTarih = @VadeTarih,
+                                                   ToplamTutar = @ToplamTutar
+                                               WHERE FaturaID = @FaturaID";
 
                                 using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, connection))
                                 {
-                                    updateCmd.Parameters.AddWithValue("@Tarih", yeniOdeme.Tarih);
-                                    updateCmd.Parameters.AddWithValue("@Tip", yeniOdeme.Tip);
-                                    updateCmd.Parameters.AddWithValue("@Durum", yeniOdeme.Durum);
-                                    updateCmd.Parameters.AddWithValue("@EvrakNo", yeniOdeme.EvrakNo);
-                                    updateCmd.Parameters.AddWithValue("@Aciklama", yeniOdeme.Aciklama);
-                                    updateCmd.Parameters.AddWithValue("@VadeTarihi", yeniOdeme.VadeTarihi);
-                                    updateCmd.Parameters.AddWithValue("@Borc", yeniOdeme.Borc);
-                                    updateCmd.Parameters.AddWithValue("@Alacak", yeniOdeme.Alacak);
-                                    updateCmd.Parameters.AddWithValue("@HareketID", selectedOdemeId);
-                                    updateCmd.Parameters.AddWithValue("@CariKod", cariKod);
+                                    updateCmd.Parameters.AddWithValue("@FaturaID", yeniHareket.FaturaID);
+                                    updateCmd.Parameters.AddWithValue("@Tarih", yeniHareket.Tarih);
+                                    updateCmd.Parameters.AddWithValue("@Tip", yeniHareket.FaturaTip);
+                                    updateCmd.Parameters.AddWithValue("@Durum", yeniHareket.Tip);
+                                    updateCmd.Parameters.AddWithValue("@Numara", yeniHareket.Numara);
+                                    updateCmd.Parameters.AddWithValue("@Aciklama", yeniHareket.Aciklama);
+                                    updateCmd.Parameters.AddWithValue("@VadeTarih", yeniHareket.VadeTarih);
+                                    updateCmd.Parameters.AddWithValue("@ToplamTutar", yeniHareket.Tutar);
                                     updateCmd.ExecuteNonQuery();
                                 }
                             }
@@ -406,7 +407,7 @@ namespace Cari_kayıt_Programı
                     string path = saveFileDialog.FileName;
 
                     // DataGrid'deki verileri alın
-                    var odemeler = dataGrid.ItemsSource as IEnumerable<Odeme>;
+                    var odemeler = dataGrid.ItemsSource as IEnumerable<CariHareketGorunum>;
 
                     // Yeni bir Excel iş kitabı oluşturun
                     using (var workbook = new XLWorkbook())
@@ -424,7 +425,7 @@ namespace Cari_kayıt_Programı
                         worksheet.Cell(4, 4).Value = $"V.Dairesi: {vergiDairesi}";
 
                         // Başlık satırını ekle
-                        var properties = typeof(Odeme).GetProperties();
+                        var properties = typeof(CariHareketGorunum).GetProperties();
                         int colIndex = 1;
                         for (int col = 0; col < properties.Length; col++)
                         {
@@ -567,8 +568,8 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                var selectedOdeme = dataGrid.SelectedItem as Odeme;
-                if (selectedOdeme != null && TarihDatePicker.SelectedDate.HasValue && VadeDatePicker.SelectedDate.HasValue)
+                var selectedHareket = dataGrid.SelectedItem as CariHareketGorunum;
+                if (selectedHareket != null && TarihDatePicker.SelectedDate.HasValue && VadeDatePicker.SelectedDate.HasValue)
                 {
                     Cariler? selectedBusiness = SelectedCariler;
                     string? kod = "";
@@ -577,34 +578,34 @@ namespace Cari_kayıt_Programı
                         kod = selectedBusiness.CariKod;
                     }
 
-                    TarihDatePicker.SelectedDate = DateTime.Parse(selectedOdeme.Tarih);
-                    EvrakNoTextbox.Text = selectedOdeme.EvrakNo;
-                    AciklamaTextbox.Text = selectedOdeme.Aciklama;
+                    TarihDatePicker.SelectedDate = selectedHareket.Tarih;
+                    EvrakNoTextbox.Text = selectedHareket.Numara;
+                    AciklamaTextbox.Text = selectedHareket.Aciklama;
 
-                    VadeDatePicker.SelectedDate = DateTime.Parse(selectedOdeme.VadeTarihi);
+                    VadeDatePicker.SelectedDate = selectedHareket.VadeTarih;
 
-                    if (selectedOdeme.Tip == "A")
-                    {
-                        AlacakRadioButton.IsChecked = true;
-                        TutarTextbox.Text = selectedOdeme.Alacak.ToString();
-                    }
-                    else if (selectedOdeme.Tip == "B")
-                    {
-                        BorcRadioButton.IsChecked = true;
-                        TutarTextbox.Text = selectedOdeme.Borc.ToString();
-                    }
+                    AlacakRadioButton.IsChecked = true;
+                    TutarTextbox.Text = selectedHareket.Tutar.ToString();
 
-                    if (selectedOdeme.Durum == "Açık")
+                    if (selectedHareket.Tip == "Açık")
                     {
                         AcikRadioButton.IsChecked = true;
                     }
-                    else if (selectedOdeme.Durum == "Kapalı")
+                    else if (selectedHareket.Tip == "Kapalı")
                     {
                         KapaliRadioButton.IsChecked = true;
                     }
 
                     YeniHareketButton.IsEnabled = false;
-                    DegistirHareketButton.IsEnabled = true;
+
+                    if (selectedHareket.FaturaDetay)
+                    {
+                        DegistirHareketButton.IsEnabled = false;
+                    }
+                    else
+                    {
+                        DegistirHareketButton.IsEnabled = true;
+                    }
                 }
                 else
                 {
@@ -688,7 +689,7 @@ namespace Cari_kayıt_Programı
                     BakiyeTopTextbox.Foreground = Brushes.Black;
 
                     MainViewModel? viewModel = (MainViewModel)this.DataContext;
-                    viewModel.Odemeler.Clear();
+                    viewModel.Hareketler.Clear();
                     BorcTopTextbox.Text = "";
                     AlacakTopTextbox.Text = "";
                     BakiyeTopTextbox.Text = "";
@@ -705,11 +706,9 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                Cariler? selectedBusiness = SelectedCariler;
-                if (selectedBusiness != null)
+                if (DataContext is MainViewModel vm)
                 {
-                    string searchTerm = txtSearch.Text;
-                    SearchGetOdemeler(selectedBusiness.CariKod, searchTerm);
+                    vm.FilterHareketler(txtSearch.Text);
                 }
             }
             catch (Exception ex)
@@ -734,25 +733,32 @@ namespace Cari_kayıt_Programı
                     if (startDate.HasValue && endDate.HasValue)
                     {
                         LoadDataGrid();
-                        var filteredData = viewModel.Odemeler.Where(x => DateTime.TryParse(x.Tarih, out DateTime tarih) && tarih >= startDate.Value && tarih <= endDate.Value).ToList();
+                        var filteredData = viewModel.Hareketler.Where(x => x.Tarih >= startDate.Value && x.Tarih <= endDate.Value).ToList();
 
                         if (FiltreDegiskenler.tip != "T")
                         {
-                            filteredData = filteredData.Where(x => x.Tip.Equals(FiltreDegiskenler.tip, StringComparison.OrdinalIgnoreCase)).ToList();
+                            filteredData = filteredData.Where(x => x.FaturaTip.Equals(FiltreDegiskenler.tip, StringComparison.OrdinalIgnoreCase)).ToList();
                         }
 
-                        double bakiye = 0, borcTop = 0, alacakTop = 0;
-                        foreach (var odeme in filteredData)
+                        decimal bakiye = 0, borcTop = 0, alacakTop = 0;
+                        foreach (var hareket in filteredData)
                         {
-                            bakiye += odeme.Borc - odeme.Alacak;
-                            odeme.Bakiye = bakiye;
-                            borcTop += odeme.Borc;
-                            alacakTop += odeme.Alacak;
+                            if (hareket.Tip == "Alış") // para giriyor benden alıyor
+                            {
+                                borcTop += hareket.Tutar;
+                                bakiye += hareket.Tutar;
+                            }
+                            else if (hareket.Tip == "Satış") // para çıkıyor bana satıyor
+                            {
+                                alacakTop += hareket.Tutar;
+                                bakiye -= hareket.Tutar;
+                            }
+                            hareket.Bakiye = bakiye;
                         }
 
-                        BorcTopTextbox.Text = borcTop.ToString("C");
-                        AlacakTopTextbox.Text = alacakTop.ToString("C");
-                        BakiyeTopTextbox.Text = bakiye.ToString("C");
+                        viewModel.CariBorcToplam = borcTop;
+                        viewModel.CariAlacakToplam = alacakTop;
+                        viewModel.CariBakiye = bakiye;
 
                         if (bakiye < 0)
                         {
@@ -767,8 +773,8 @@ namespace Cari_kayıt_Programı
                             BakiyeTopTextbox.Foreground = Brushes.Black;
                         }
 
-                        viewModel.Odemeler = new ObservableCollection<Odeme>(filteredData);
-                        viewModel.Odemeler = new ObservableCollection<Odeme>(viewModel.Odemeler.OrderBy(o => DateTime.Parse(o.Tarih)));
+                        viewModel.Hareketler = new ObservableCollection<CariHareketGorunum>(filteredData);
+                        viewModel.Hareketler = new ObservableCollection<CariHareketGorunum>(viewModel.Hareketler.OrderBy(o => o.Tarih));
 
                         TarihDatePicker.SelectedDate = DateTime.Now;
                         EvrakNoTextbox.Clear();
@@ -891,7 +897,7 @@ namespace Cari_kayıt_Programı
                             BakiyeTopTextbox.Clear();
                             BakiyeTopTextbox.Foreground = Brushes.Black;
 
-                            viewModel.Odemeler.Clear();
+                            viewModel.Hareketler.Clear();
                             BorcTopTextbox.Text = "";
                             AlacakTopTextbox.Text = "";
                             BakiyeTopTextbox.Text = "";
@@ -931,192 +937,41 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        public void LoadDataGrid()
+        public async Task LoadDataGrid()
         {
             try
             {
-                Cariler? selectedBusiness = SelectedCariler;
-                if (selectedBusiness != null)
-                {
-                    GetOdemeler(selectedBusiness.CariKod);
-
-                    // Her sütunun genişliğini içerdiği metne göre ayarla
-                    foreach (var column in dataGrid.Columns)
-                    {
-                        column.Width = DataGridLength.Auto;
-
-                        // Sütunu yeniden boyutlandırmak için
-                        column.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells);
-                    }
-                }
                 MainViewModel viewModel = (MainViewModel)this.DataContext;
-                if (viewModel.Odemeler.Count == 0)
+
+                // Seçili cari varsa hareketleri yükle
+                if (SelectedCariler is Cariler selectedBusiness)
                 {
-                    // Her sütunun genişliğini içerdiği Sütuna göre ayarla
-                    foreach (var column in dataGrid.Columns)
-                    {
-                        column.Width = DataGridLength.Auto;
-                        // Sütunu yeniden boyutlandırmak için
-                        column.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader);
-                    }
+                    await viewModel.GetCariHareketlerAsync(selectedBusiness.CariKod);
                 }
+
+                // Sütun genişliklerini ayarla
+                foreach (var column in dataGrid.Columns)
+                {
+                    column.Width = DataGridLength.Auto;
+                    column.Width = new DataGridLength(1,
+                        viewModel.Hareketler != null && viewModel.Hareketler.Count > 0
+                        ? DataGridLengthUnitType.SizeToCells
+                        : DataGridLengthUnitType.SizeToHeader);
+                }
+
+                if (viewModel.CariBakiye < 0)
+                    BakiyeTopTextbox.Foreground = Brushes.Red;
+                else if (viewModel.CariBakiye > 0)
+                    BakiyeTopTextbox.Foreground = Brushes.Green;
+                else
+                    BakiyeTopTextbox.Foreground = Brushes.Black;
+
             }
             catch (Exception ex)
             {
                 LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "LoadDataGrid()", stackTrace: ex.StackTrace);
                 throw;
             }
-        }
-
-        public void SearchGetOdemeler(string? businessKod, string? searchTerm)
-        {
-            try
-            {
-                MainViewModel viewModel = (MainViewModel)this.DataContext;
-                viewModel.Odemeler.Clear();
-
-                using (MySqlConnection connection = DatabaseManager.GetConnection())
-                {
-                    connection.Open();
-
-                    string query = @"
-                SELECT * FROM CariHareketler 
-                WHERE CariKod = @CariKod AND (
-                    LOWER(Tarih) LIKE CONCAT('%', LOWER(@searchTerm), '%') OR
-                    LOWER(EvrakNo) LIKE CONCAT('%', LOWER(@searchTerm), '%') OR
-                    LOWER(Aciklama) LIKE CONCAT('%', LOWER(@searchTerm), '%') OR
-                    LOWER(VadeTarihi) LIKE CONCAT('%', LOWER(@searchTerm), '%') OR
-                    CAST(Borc AS CHAR) LIKE CONCAT('%', @searchTerm, '%') OR
-                    CAST(Alacak AS CHAR) LIKE CONCAT('%', @searchTerm, '%')
-                )";
-
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@CariKod", businessKod);
-                        command.Parameters.AddWithValue("@searchTerm", searchTerm ?? "");
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                Odeme odeme = new Odeme
-                                {
-                                    HareketID = reader.GetInt32("HareketID"),
-                                    Tarih = reader.GetString("Tarih"),
-                                    Tip = reader.GetString("Tip"),
-                                    Durum = reader.GetString("Durum"),
-                                    EvrakNo = reader.GetString("EvrakNo"),
-                                    Aciklama = reader.GetString("Aciklama"),
-                                    VadeTarihi = reader.GetString("VadeTarihi"),
-                                    Borc = reader.GetDouble("Borc"),
-                                    Alacak = reader.GetDouble("Alacak")
-                                };
-                                viewModel.Odemeler.Add(odeme);
-                            }
-                        }
-                    }
-
-                    // Bakiye hesaplama ve görünüm güncelleme
-                    double bakiye = 0, borcTop = 0, alacakTop = 0;
-                    viewModel.Odemeler = new ObservableCollection<Odeme>(viewModel.Odemeler.OrderBy(o => DateTime.Parse(o.Tarih)));
-                    foreach (var odeme in viewModel.Odemeler)
-                    {
-                        bakiye += odeme.Borc - odeme.Alacak;
-                        odeme.Bakiye = bakiye;
-                        borcTop += odeme.Borc;
-                        alacakTop += odeme.Alacak;
-                    }
-
-                    BorcTopTextbox.Text = borcTop.ToString("C");
-                    AlacakTopTextbox.Text = alacakTop.ToString("C");
-                    BakiyeTopTextbox.Text = bakiye.ToString("C");
-
-                    BakiyeTopTextbox.Foreground = bakiye < 0 ? Brushes.Red : (bakiye > 0 ? Brushes.Green : Brushes.Black);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "SearchGetOdemeler()", stackTrace: ex.StackTrace);
-                throw;
-            }
-        }
-
-        public void GetOdemeler(string? businessKod)
-        {
-            try
-            {
-                MainViewModel viewModel = (MainViewModel)this.DataContext;
-                viewModel.Odemeler.Clear();
-
-                using (MySqlConnection connection = DatabaseManager.GetConnection())
-                {
-                    connection.Open();
-
-                    string query = "SELECT * FROM CariHareketler WHERE CariKod = @CariKod";
-
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@CariKod", businessKod);
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                Odeme odeme = new Odeme
-                                {
-                                    HareketID = reader.GetInt32("HareketID"),
-                                    Tarih = reader.GetDateTime("Tarih").ToString("dd.MM.yyyy"),
-                                    Tip = reader.GetString("Tip"),
-                                    Durum = reader.GetString("Durum"),
-                                    EvrakNo = reader.GetString("EvrakNo"),
-                                    Aciklama = reader.GetString("Aciklama"),
-                                    VadeTarihi = reader.GetDateTime("VadeTarihi").ToString("dd.MM.yyyy"),
-                                    Borc = reader.GetDouble("Borc"),
-                                    Alacak = reader.GetDouble("Alacak")
-                                };
-                                viewModel.Odemeler.Add(odeme);
-                            }
-                        }
-                    }
-                }
-
-                // Bakiye ve görünüm hesaplamaları
-                double bakiye = 0, borcTop = 0, alacakTop = 0;
-                viewModel.Odemeler = new ObservableCollection<Odeme>(viewModel.Odemeler.OrderBy(o => DateTime.Parse(o.Tarih)));
-                foreach (var odeme in viewModel.Odemeler)
-                {
-                    bakiye += odeme.Borc - odeme.Alacak;
-                    odeme.Bakiye = bakiye;
-                    borcTop += odeme.Borc;
-                    alacakTop += odeme.Alacak;
-                }
-
-                BorcTopTextbox.Text = borcTop.ToString("C");
-                AlacakTopTextbox.Text = alacakTop.ToString("C");
-                BakiyeTopTextbox.Text = bakiye.ToString("C");
-
-                BakiyeTopTextbox.Foreground = bakiye < 0 ? Brushes.Red : (bakiye > 0 ? Brushes.Green : Brushes.Black);
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "CariHareketKayitlari", methodName: "GetOdemeler()", stackTrace: ex.StackTrace);
-                throw;
-            }
-        }
-
-        public class Odeme
-        {
-            public int HareketID { get; set; }
-            public string? CariKod { get; set; }
-            public required string Tarih { get; set; }
-            public required string Tip { get; set; }
-            public required string Durum { get; set; }
-            public string? EvrakNo { get; set; }
-            public required string Aciklama { get; set; }
-            public string? VadeTarihi { get; set; }
-            public required double Borc { get; set; }
-            public required double Alacak { get; set; }
-            public double Bakiye { get; set; }
         }
 
         private void Page_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -1127,7 +982,7 @@ namespace Cari_kayıt_Programı
                 if (!IsMouseOverDataGrid(e))
                 {
                     Cariler? selectedBusiness = SelectedCariler;
-                    var selectedOdeme = dataGrid.SelectedItem as Odeme;
+                    var selectedOdeme = dataGrid.SelectedItem as CariHareketGorunum;
                     if (selectedBusiness != null && selectedOdeme != null)
                     {
                         LoadDataGrid();
