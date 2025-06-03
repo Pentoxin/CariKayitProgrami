@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
-using static Cari_kayıt_Programı.CariHareketKayitlari;
 
 namespace Cari_kayıt_Programı
 {
@@ -14,7 +14,10 @@ namespace Cari_kayıt_Programı
     public partial class MainViewModel : ObservableObject
     {
         [ObservableProperty]
-        private ObservableCollection<Odeme> odemeler; // Silinecek
+        private ObservableCollection<CariHareketGorunum> hareketler;
+        
+        [ObservableProperty]
+        private ObservableCollection<CariHareketGorunum> filteredHareketler;
 
         [ObservableProperty]
         private ObservableCollection<Cariler> cariler;
@@ -50,7 +53,8 @@ namespace Cari_kayıt_Programı
 
         public MainViewModel()
         {
-            Odemeler = new ObservableCollection<Odeme>(); // Silinecek
+            Hareketler = new ObservableCollection<CariHareketGorunum>();
+            FilteredHareketler = new ObservableCollection<CariHareketGorunum>();
             Cariler = new ObservableCollection<Cariler>();
             Stoklar = new ObservableCollection<Stoklar>();
             Faturalar = new ObservableCollection<Faturalar>();
@@ -151,6 +155,147 @@ namespace Cari_kayıt_Programı
             }
 
             return detaylar;
+        }
+
+        private decimal _cariBorcToplam;
+        public decimal CariBorcToplam
+        {
+            get => _cariBorcToplam;
+            set { _cariBorcToplam = value; OnPropertyChanged(nameof(CariBorcToplam)); }
+        }
+
+        private decimal _cariAlacakToplam;
+        public decimal CariAlacakToplam
+        {
+            get => _cariAlacakToplam;
+            set { _cariAlacakToplam = value; OnPropertyChanged(nameof(CariAlacakToplam)); }
+        }
+
+        private decimal _cariBakiye;
+        public decimal CariBakiye
+        {
+            get => _cariBakiye;
+            set { _cariBakiye = value; OnPropertyChanged(nameof(CariBakiye)); }
+        }
+
+        public async Task GetCariHareketlerAsync(string cariKod)
+        {
+            var list = new List<CariHareketGorunum>();
+
+            try
+            {
+                using var conn = DatabaseManager.GetConnection();
+                await conn.OpenAsync();
+
+                var cmd = new MySqlCommand(@"SELECT F.FaturaID, F.Numara, F.CariKod, F.Tarih, F.VadeTarih, F.FaturaTipi, F.Tip, F.Aciklama, F.ToplamTutar,
+                    EXISTS (SELECT 1 FROM FaturaDetay FD WHERE FD.FaturaID = F.FaturaID LIMIT 1) AS DetayVarMi
+                    FROM Faturalar F WHERE F.CariKod = @CariKod AND (F.Tip = 'Açık' OR F.Tip = 'Kapalı')
+                    ORDER BY FaturaID ASC;", conn);
+                cmd.Parameters.AddWithValue("@CariKod", cariKod);
+
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    list.Add(new CariHareketGorunum
+                    {
+                        FaturaID = reader.GetInt32("FaturaID"),
+                        Numara = reader.GetString("Numara"),
+                        CariKod = reader.GetString("CariKod"),
+                        Tarih = reader.GetDateTime("Tarih"),
+                        VadeTarih = reader.GetDateTime("VadeTarih"),
+                        FaturaTip = reader.GetString("FaturaTipi"),
+                        Aciklama = reader["Aciklama"]?.ToString() ?? "",
+                        Tutar = reader.GetDecimal("ToplamTutar"),
+                        Tip = reader.GetString("Tip") ?? "Kapalı",
+                        FaturaDetay = reader.GetBoolean("DetayVarMi")
+                    });
+                }
+
+                decimal cariBakiye = 0;
+                decimal cariBorcToplam = 0;
+                decimal cariAlacakToplam = 0;
+
+                foreach (var hareket in list)
+                {
+                    if (hareket.FaturaTip == "Alış") // Para giriyor → Borçlanıyor
+                    {
+                        cariBorcToplam += hareket.Tutar;
+                        cariBakiye += hareket.Tutar;
+                    }
+                    else if (hareket.FaturaTip == "Satış") // Para çıkıyor → Alacaklı
+                    {
+                        cariAlacakToplam += hareket.Tutar;
+                        cariBakiye -= hareket.Tutar;
+                    }
+
+                    // Her hareketin o andaki bakiyesi
+                    hareket.Bakiye = cariBakiye;
+                }
+
+                // İlgili property'lere aktar (ViewModel'de tanımlı olmalı)
+                CariBorcToplam = cariBorcToplam;
+                CariAlacakToplam = cariAlacakToplam;
+                CariBakiye = cariBakiye;
+
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, "MainViewModel", "GetCariHareketlerAsync", ex.StackTrace);
+            }
+            Hareketler = new ObservableCollection<CariHareketGorunum>(list);
+            FilteredHareketler = new ObservableCollection<CariHareketGorunum>(list);
+        }
+
+        public void FilterHareketler(string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                FilteredHareketler = new ObservableCollection<CariHareketGorunum>(Hareketler);
+            }
+            else
+            {
+                searchTerm = searchTerm.ToLower();
+
+                var filtered = Hareketler.Where(h =>
+                    (h.Numara != null && h.Numara.ToLower().Contains(searchTerm)) ||
+                    h.Tarih.ToString("d").ToLower().Contains(searchTerm) ||
+                    h.VadeTarih.ToString("d").ToLower().Contains(searchTerm) ||
+                    (h.FaturaTip != null && h.FaturaTip.ToLower().Contains(searchTerm)) ||
+                    (h.Tip != null && h.Tip.ToLower().Contains(searchTerm)) ||
+                    (h.Aciklama != null && h.Aciklama.ToLower().Contains(searchTerm)) ||
+                    h.Tutar.ToString("C").ToLower().Contains(searchTerm) ||
+                    h.Bakiye.ToString("C").ToLower().Contains(searchTerm)
+                );
+
+                decimal cariBakiye = 0;
+                decimal cariBorcToplam = 0;
+                decimal cariAlacakToplam = 0;
+
+                foreach (var hareket in filtered)
+                {
+                    if (hareket.FaturaTip == "Alış") // Para giriyor → Borçlanıyor
+                    {
+                        cariBorcToplam += hareket.Tutar;
+                        cariBakiye += hareket.Tutar;
+                    }
+                    else if (hareket.FaturaTip == "Satış") // Para çıkıyor → Alacaklı
+                    {
+                        cariAlacakToplam += hareket.Tutar;
+                        cariBakiye -= hareket.Tutar;
+                    }
+
+                    // Her hareketin o andaki bakiyesi
+                    hareket.Bakiye = cariBakiye;
+                }
+
+                // İlgili property'lere aktar (ViewModel'de tanımlı olmalı)
+                CariBorcToplam = cariBorcToplam;
+                CariAlacakToplam = cariAlacakToplam;
+                CariBakiye = cariBakiye;
+
+                FilteredHareketler = new ObservableCollection<CariHareketGorunum>(filtered);
+            }
         }
     }
 }

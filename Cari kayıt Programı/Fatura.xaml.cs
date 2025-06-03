@@ -496,7 +496,9 @@ namespace Cari_kayıt_Programı
                 }
 
                 // Fatura numarası kontrolü
-                var faturaNumarasi = viewModel.Faturalar.FirstOrDefault(f => f.Numara == NumaraTextBox.Text);
+                var girilenNumara = NumaraTextBox.Text.Trim();
+                var faturaNumarasi = viewModel.Hareketler.FirstOrDefault(f => string.Equals(f.Numara?.Trim(), girilenNumara, StringComparison.OrdinalIgnoreCase));
+
                 if (faturaNumarasi != null)
                 {
                     MessageBox.Show("Bu fatura numarası zaten mevcut.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);

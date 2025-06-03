@@ -1,14 +1,8 @@
 ﻿using AutoUpdaterDotNET;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
 
 namespace Cari_kayıt_Programı
@@ -64,21 +58,21 @@ namespace Cari_kayıt_Programı
         }
 
         public static void CheckAndCreateAppDataFolders()
+        {
+            try
             {
-                try
+                // Önce AppData klasörü varsa kontrol et yoksa oluştur
+                if (!Directory.Exists(ConfigManager.AppDataPath))
                 {
-                    // Önce AppData klasörü varsa kontrol et yoksa oluştur
-                    if (!Directory.Exists(ConfigManager.AppDataPath))
-                    {
-                        Directory.CreateDirectory(ConfigManager.AppDataPath);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "CheckAndCreateAppDataAndIsletmeFolders()", stackTrace: ex.StackTrace);
-                    throw;
+                    Directory.CreateDirectory(ConfigManager.AppDataPath);
                 }
             }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "CheckAndCreateAppDataAndIsletmeFolders()", stackTrace: ex.StackTrace);
+                throw;
+            }
+        }
 
         private void UygulamayıGuncelle_Click(object sender, RoutedEventArgs e)
         {

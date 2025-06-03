@@ -54,5 +54,25 @@ namespace Cari_kayıt_Programı
                 LogManager.LogError(ex, className: "EntitySelectorView", methodName: "Cancel_Click", ex.StackTrace);
             }            
         }
+
+        private void DataGrid_PreviewMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (SelectedItem != null)
+                {
+                    DialogResult = true;
+                    Close();
+                }
+                else
+                {
+                    MessageBox.Show("Lütfen bir öğe seçin.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "EntitySelectorView", methodName: "DataGrid_PreviewMouseDoubleClick", ex.StackTrace);
+            }
+        }
     }
 }

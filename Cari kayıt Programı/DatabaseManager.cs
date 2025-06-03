@@ -72,20 +72,6 @@ namespace Cari_kayıt_Programı
                     HesapNo VARCHAR(100)
                 );
 
-                CREATE TABLE IF NOT EXISTS CariHareketler (
-                    HareketID INT AUTO_INCREMENT PRIMARY KEY,
-                    CariKod VARCHAR(50) NOT NULL,
-                    Tarih DATE NOT NULL,
-                    Tip VARCHAR(20) NOT NULL,
-                    Durum VARCHAR(20) NOT NULL,
-                    EvrakNo VARCHAR(50) NOT NULL UNIQUE,
-                    Aciklama VARCHAR(50) NOT NULL,
-                    VadeTarihi VARCHAR(50) NOT NULL,
-                    Borc DECIMAL(12,2) DEFAULT 0,
-                    Alacak DECIMAL(12,2) DEFAULT 0,
-                    FOREIGN KEY (CariKod) REFERENCES Cariler(CariKod)
-                );
-
                 CREATE TABLE IF NOT EXISTS OlcuBirimleri (
                     Id INT AUTO_INCREMENT PRIMARY KEY,
                     BirimAdi VARCHAR(20) NOT NULL UNIQUE,
