@@ -13,7 +13,7 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        mc:Ignorable="d" Title="Cari Kayıt Programı" Height="450" Width="800" WindowStartupLocation="CenterScreen" WindowState="Maximized" MinWidth="550" MinHeight="350" Loaded="Window_Loaded">
+        mc:Ignorable="d" Title="Cari Kayıt Programı" Height="450" Width="800" WindowStartupLocation="CenterScreen" WindowState="Maximized" MinWidth="550" MinHeight="350">
 
     <Window.Resources>
         <Style x:Key="DefaultGroupBoxStyle" TargetType="GroupBox">

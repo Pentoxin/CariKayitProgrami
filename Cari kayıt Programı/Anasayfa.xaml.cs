@@ -18,12 +18,6 @@ namespace Cari_kayıt_Programı
                 InitializeComponent();
 
                 var startup = new StartupService();
-                if (!startup.InitializeApplication())
-                {
-                    MessageBox.Show("Program başlatılamadı. Bağlantı yapılamadı.", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Environment.Exit(1);
-                    return;
-                }
 
                 ViewModel = new MainViewModel();
                 DataContext = ViewModel;
@@ -34,51 +28,6 @@ namespace Cari_kayıt_Programı
             {
                 LogManager.LogError(ex, className: "Program", methodName: "Main", stackTrace: ex.StackTrace);
                 MessageBox.Show("Beklenmeyen bir hata oluştu. Lütfen destek ekibiyle iletişime geçin.", "Kritik Hata", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                CheckAtStartup();
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "Anasayfa", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
-                throw;
-            }
-        }
-
-        public static void CheckAtStartup()
-        {
-            try
-            {
-                CheckAndCreateAppDataFolders();
-
-                LogManager.LogInformation(message: "Tüm başlangıç kontrolleri tamamlandı.", className: "Anasayfa", methodName: "CheckAtStartup()");
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "Anasayfa", methodName: "CheckAtStartup()", stackTrace: ex.StackTrace);
-                throw;
-            }
-        }
-
-        public static void CheckAndCreateAppDataFolders()
-        {
-            try
-            {
-                // Önce AppData klasörü varsa kontrol et yoksa oluştur
-                if (!Directory.Exists(ConfigManager.AppDataPath))
-                {
-                    Directory.CreateDirectory(ConfigManager.AppDataPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "CheckAndCreateAppDataAndIsletmeFolders()", stackTrace: ex.StackTrace);
-                throw;
             }
         }
 
