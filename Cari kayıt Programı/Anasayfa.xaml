@@ -61,6 +61,8 @@
             <MenuItem Header="Yardım" Padding="12,0,12,0" >
                 <MenuItem Header="Güncelleştirmeleri Denetle" Click="UygulamayıGuncelle_Click" Icon="{materialDesign:PackIcon Kind=Update}"/>
                 <MenuItem Header="Sürüm Notları" Click="SurumNotlariButton_Click" Icon="{materialDesign:PackIcon Kind=NoteTextOutline}"/>
+                <Separator/>
+                <MenuItem Header="Veritabanı Ayarları" Click="VeritabaniAyarlari_Click" Icon="{materialDesign:PackIcon Kind=DatabaseCogOutline}" />
             </MenuItem>
         </Menu>
     </Grid>

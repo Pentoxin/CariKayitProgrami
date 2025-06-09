@@ -5,8 +5,7 @@ namespace Cari_kayıt_Programı
 {
     class DatabaseManager
     {
-        private readonly string _serverConnection;
-        private readonly string _dbConnection;
+
 
         public void InitializeDatabase()
         {
@@ -14,25 +13,11 @@ namespace Cari_kayıt_Programı
             CreateTablesIfNotExists();
         }
 
-        public DatabaseManager()
-        {
-            try
-            {
-                _serverConnection = ConfigManager.ServerConnection;
-                _dbConnection = ConfigManager.DbConnection;
-            }
-            catch (MySqlException ex)
-            {
-                LogManager.LogError(ex, className: "DatabaseManager", methodName: "DatabaseManager", stackTrace: ex.StackTrace);
-                MessageBox.Show($"Veritabanı bağlantı hatası: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private void CreateDatabaseIfNotExists()
         {
             try
             {
-                using var connection = new MySqlConnection(_serverConnection);
+                using var connection = new MySqlConnection(ConfigManager.ServerConnection);
                 connection.Open();
                 var cmd = new MySqlCommand("CREATE DATABASE IF NOT EXISTS CariTakipDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;", connection);
                 cmd.ExecuteNonQuery();
@@ -49,7 +34,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                using var connection = new MySqlConnection(_dbConnection);
+                using var connection = new MySqlConnection(ConfigManager.DbConnection);
                 connection.Open();
 
                 var script = @"

@@ -17,6 +17,14 @@ namespace Cari_kayıt_Programı
             {
                 InitializeComponent();
 
+                var startup = new StartupService();
+                if (!startup.InitializeApplication())
+                {
+                    MessageBox.Show("Program başlatılamadı. Bağlantı yapılamadı.", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Environment.Exit(1);
+                    return;
+                }
+
                 ViewModel = new MainViewModel();
                 DataContext = ViewModel;
 
@@ -78,15 +86,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                LogManager.LogInformation(message: "Uygulamanın güncelliği manuel olarak kontrol ediliyor.", className: "Anasayfa", methodName: "UygulamayıGuncelle_Click()");
-
-                AutoUpdater.Mandatory = false; // XML’de belirtilmemişse zorunlu olmasın
-                AutoUpdater.ShowRemindLaterButton = true; // 'Daha sonra hatırlat' butonu
-                AutoUpdater.ShowSkipButton = true; // 'Bu sürümü atla' butonu
-                AutoUpdater.UpdateMode = Mode.Normal;
-
-                // XML dosyanın linki
-                AutoUpdater.Start("https://raw.githubusercontent.com/Pentoxin/CariKayitProgrami/main/update.xml");
+                StartupService.AppUpdateCheck();
             }
             catch (Exception ex)
             {
@@ -118,6 +118,20 @@ namespace Cari_kayıt_Programı
             catch (Exception ex)
             {
                 LogManager.LogError(ex, className: "Anasayfa", methodName: "SurumNotlariButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void VeritabaniAyarlari_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var ayarPenceresi = new MySqlSettingsWindow();
+                ayarPenceresi.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "VeritabaniAyarlari_Click()", stackTrace: ex.StackTrace);
                 MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
