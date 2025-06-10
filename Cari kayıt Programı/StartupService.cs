@@ -1,7 +1,6 @@
 ﻿using AutoUpdaterDotNET;
 using System;
 using System.IO;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Windows;
 
 namespace Cari_kayıt_Programı
@@ -65,7 +64,7 @@ namespace Cari_kayıt_Programı
         {
             try
             {
-                AutoUpdater.Mandatory = true; // Zorunlu olmasın
+                AutoUpdater.Mandatory = false; // Zorunlu olmasın
                 AutoUpdater.ShowRemindLaterButton = true; // Daha sonra hatırlat
                 AutoUpdater.ShowSkipButton = false; // Güncellemeyi atla
                 AutoUpdater.UpdateMode = Mode.Forced; // Kullanıcıya arayüz gösterilir
