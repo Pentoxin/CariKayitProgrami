@@ -9,7 +9,7 @@ namespace Cari_kayıt_Programı
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is double amount)
+            if (value is decimal amount)
             {
                 if (amount > 0)
                 {

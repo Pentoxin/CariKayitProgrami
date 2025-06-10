@@ -1,14 +1,8 @@
 ﻿using AutoUpdaterDotNET;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
 
 namespace Cari_kayıt_Programı
@@ -23,6 +17,8 @@ namespace Cari_kayıt_Programı
             {
                 InitializeComponent();
 
+                var startup = new StartupService();
+
                 ViewModel = new MainViewModel();
                 DataContext = ViewModel;
 
@@ -35,64 +31,11 @@ namespace Cari_kayıt_Programı
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                CheckAtStartup();
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "Anasayfa", methodName: "Window_Loaded()", stackTrace: ex.StackTrace);
-                throw;
-            }
-        }
-
-        public static void CheckAtStartup()
-        {
-            try
-            {
-                CheckAndCreateAppDataFolders();
-
-                LogManager.LogInformation(message: "Tüm başlangıç kontrolleri tamamlandı.", className: "Anasayfa", methodName: "CheckAtStartup()");
-            }
-            catch (Exception ex)
-            {
-                LogManager.LogError(ex, className: "Anasayfa", methodName: "CheckAtStartup()", stackTrace: ex.StackTrace);
-                throw;
-            }
-        }
-
-        public static void CheckAndCreateAppDataFolders()
-            {
-                try
-                {
-                    // Önce AppData klasörü varsa kontrol et yoksa oluştur
-                    if (!Directory.Exists(ConfigManager.AppDataPath))
-                    {
-                        Directory.CreateDirectory(ConfigManager.AppDataPath);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogManager.LogError(ex, className: "Anasayfa / Check", methodName: "CheckAndCreateAppDataAndIsletmeFolders()", stackTrace: ex.StackTrace);
-                    throw;
-                }
-            }
-
         private void UygulamayıGuncelle_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                LogManager.LogInformation(message: "Uygulamanın güncelliği manuel olarak kontrol ediliyor.", className: "Anasayfa", methodName: "UygulamayıGuncelle_Click()");
-
-                AutoUpdater.Mandatory = false; // XML’de belirtilmemişse zorunlu olmasın
-                AutoUpdater.ShowRemindLaterButton = true; // 'Daha sonra hatırlat' butonu
-                AutoUpdater.ShowSkipButton = true; // 'Bu sürümü atla' butonu
-                AutoUpdater.UpdateMode = Mode.Normal;
-
-                // XML dosyanın linki
-                AutoUpdater.Start("https://raw.githubusercontent.com/Pentoxin/CariKayitProgrami/main/update.xml");
+                StartupService.AppUpdateCheck();
             }
             catch (Exception ex)
             {
@@ -124,6 +67,20 @@ namespace Cari_kayıt_Programı
             catch (Exception ex)
             {
                 LogManager.LogError(ex, className: "Anasayfa", methodName: "SurumNotlariButton_Click()", stackTrace: ex.StackTrace);
+                MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void VeritabaniAyarlari_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var ayarPenceresi = new MySqlSettingsWindow();
+                ayarPenceresi.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError(ex, className: "Anasayfa", methodName: "VeritabaniAyarlari_Click()", stackTrace: ex.StackTrace);
                 MessageBox.Show($"Hata Oluştu: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

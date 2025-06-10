@@ -13,7 +13,7 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        mc:Ignorable="d" Title="Cari Kayıt Programı" Height="450" Width="800" WindowStartupLocation="CenterScreen" WindowState="Maximized" MinWidth="550" MinHeight="350" Loaded="Window_Loaded">
+        mc:Ignorable="d" Title="Cari Kayıt Programı" Height="450" Width="800" WindowStartupLocation="CenterScreen" WindowState="Maximized" MinWidth="550" MinHeight="350">
 
     <Window.Resources>
         <Style x:Key="DefaultGroupBoxStyle" TargetType="GroupBox">
@@ -61,6 +61,8 @@
             <MenuItem Header="Yardım" Padding="12,0,12,0" >
                 <MenuItem Header="Güncelleştirmeleri Denetle" Click="UygulamayıGuncelle_Click" Icon="{materialDesign:PackIcon Kind=Update}"/>
                 <MenuItem Header="Sürüm Notları" Click="SurumNotlariButton_Click" Icon="{materialDesign:PackIcon Kind=NoteTextOutline}"/>
+                <Separator/>
+                <MenuItem Header="Veritabanı Ayarları" Click="VeritabaniAyarlari_Click" Icon="{materialDesign:PackIcon Kind=DatabaseCogOutline}" />
             </MenuItem>
         </Menu>
     </Grid>
