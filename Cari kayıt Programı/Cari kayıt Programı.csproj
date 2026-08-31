@@ -26,7 +26,7 @@
     <None Include="C:\Users\GOKMEN\Documents\Visual Studio Project\Cari kayıt Programı\Cari kayıt Programı\.editorconfig" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.9.2" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.9.3" />
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
